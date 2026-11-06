@@ -335,6 +335,120 @@ dl.gl dd { margin: 2px 0 0; color: var(--muted); }
 .track .b, .cols .seg2, .drawer-p { animation: none; }
 .chart .draw { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ===== v4: coluna estreita, cartões arredondados ===== */
+:root { --maxw: 1160px; --pad: clamp(14px, 3vw, 28px); --r: 22px; --card-solid: #131313; }
+:root[data-mode="light"] { --card-solid: #fff; }
+.wrap { width: min(var(--maxw), calc(100% - 2 * var(--pad))); margin-inline: auto; padding-inline: 0; }
+.top { padding-block: 18px 14px; }
+.live-st { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); border: 1px solid var(--card-line); background: var(--card-solid); border-radius: 999px; padding: 7px 14px 7px 12px; }
+.live-st:hover { border-color: var(--line-strong); color: var(--white); }
+.live-st i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+.live-st.busy i { background: var(--muted); box-shadow: 0 0 0 3px var(--line); }
+.live-st.bad i { background: var(--red); box-shadow: 0 0 0 3px var(--red-dim); }
+.live-st b { color: var(--white); font-weight: 500; }
+.btn { border-color: var(--card-line); background: var(--card-solid); }
+.btn.ico { width: 33px; height: 33px; }
+/* topo da análise */
+.hero { padding-block: 34px 20px; gap: 32px; }
+.hero h1 { font-size: clamp(32px, 4.6vw, 58px); }
+.hero .lead { font-size: 14.5px; }
+/* filtros */
+.bar { top: 10px; margin-top: 2px; background: var(--card-solid); border: 1px solid var(--card-line); border-radius: 20px; padding: 10px 12px; gap: 8px; }
+.bar .k { display: none !important; }
+.chip, .seg { border-color: var(--card-line); background: var(--panel-2); }
+.seg button[aria-pressed="true"], .chip[aria-pressed="true"] { background: var(--white); color: var(--black); }
+.pop { border-radius: 18px; padding: 10px; }
+.pop label, .pop .it { border-radius: 10px; }
+.tokens { display: flex; gap: 6px; flex-wrap: wrap; padding-top: 2px; }
+.tok { display: inline-flex; align-items: center; gap: 7px; background: transparent; border: 1px dashed var(--line-strong); border-radius: 999px; padding: 3px 4px 3px 11px; font-size: 12px; color: var(--white); }
+.tok b { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--panel-2); font-weight: 500; color: var(--muted); line-height: 1; }
+.tok:hover b { background: var(--white); color: var(--black); }
+/* indicadores */
+.kpis { margin: 14px auto 0; border-radius: var(--r); padding-inline: 6px; }
+.kpi { padding: 22px 18px; } .kpi + .kpi { padding-left: 18px; }
+.kpi .v { font-size: clamp(26px, 3vw, 40px); }
+.meter { height: 6px; border-radius: 999px; } .meter i { border-radius: 999px; } .meter b { border-radius: 2px; top: -3px; bottom: -3px; }
+/* módulos em cartões, duas colunas */
+main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14px 0 30px; }
+.mod { display: flex; flex-direction: column; gap: 16px; padding: 22px 24px 24px; background: var(--card); border: 1px solid var(--card-line); border-radius: var(--r); min-width: 0; }
+.mod.wide { grid-column: 1 / -1; }
+.mod-head { position: static; gap: 6px; }
+.mod-head h2 { font-size: 19px; letter-spacing: -.02em; }
+.mod-head p { font-size: 13px; max-width: 72ch; }
+.mod-body { background: none; border: 0; border-radius: 0; padding: 0; gap: 18px; }
+.insight { font-size: 16px; }
+/* marcas arredondadas */
+.hrow { min-height: 30px; }
+.track { height: 12px; border-radius: 999px; }
+.hb .track { background: color-mix(in oklab, var(--them) 40%, transparent); }
+.track .b, .track .b.pos, .track .b.neg { border-radius: 999px; }
+.track .zero { border-radius: 2px; }
+.stack { height: 14px; border-radius: 999px; }
+.cols { gap: 4px; height: 176px; }
+.cols .seg2 i, .cols .seg2 i.us, .cols .seg2 i:last-child { border-radius: 5px; }
+.dtrack .ln { border-radius: 999px; }
+.tbl-wrap { border-radius: 16px; }
+.stats { border-radius: 16px; } .covg i { border-radius: 8px; } .spark i { border-radius: 4px; }
+.drawer-p { border-radius: 22px 0 0 22px; }
+.chart .path { stroke-width: 2.25; }
+footer { display: block; padding-block: 10px 50px; }
+footer ul { margin-top: 10px; }
+/* legenda curta */
+.lg2 { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); align-items: center; }
+.lg2 i { display: inline-block; width: 16px; height: 0; border-top: 2px solid var(--white); vertical-align: 3px; margin-right: 6px; }
+.lg2 i.d { border-top: 2px dashed var(--muted); }
+.lg2 i.o { border-top: 2px dotted var(--muted); }
+.lg2 i.bx { width: 10px; height: 10px; border: 0; border-radius: 3px; background: var(--white); vertical-align: -1px; }
+.lg2 i.bm { width: 2px; height: 12px; border: 0; border-radius: 2px; background: var(--muted); vertical-align: -2px; }
+.thead { display: flex; justify-content: space-between; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-bottom: 8px; }
+/* radar */
+.radar svg { display: block; width: 100%; height: auto; max-height: 380px; overflow: visible; }
+.radar .ring { fill: none; stroke: var(--line-strong); stroke-dasharray: 1.5 4; stroke-linecap: round; }
+.radar .spoke { stroke: var(--line); }
+.radar .lab { fill: var(--muted); font-size: 10.5px; letter-spacing: .12em; font-weight: 600; font-family: var(--font); }
+.radar .tk { fill: var(--faint); font-size: 9.5px; font-family: var(--font); }
+.radar .od { fill: var(--muted); }
+.radar .s1 { stroke: var(--white); stroke-width: 2; stroke-linejoin: round; }
+.radar .s2 { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.radar .s3 { fill: none; stroke: var(--faint); stroke-width: 1.75; stroke-dasharray: .5 5; stroke-linecap: round; }
+.radar .vx { fill: var(--white); stroke: var(--card-solid); stroke-width: 2; }
+.radar .hit { fill: transparent; }
+.radar .ax:hover .hit { fill: color-mix(in oklab, var(--white) 4%, transparent); }
+.radar .ax:hover .lab { fill: var(--white); }
+.radar .ax:hover .od { fill: var(--white); }
+/* hoje */
+.today { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-radius: var(--r); margin-top: 0; overflow: hidden; }
+.today > div { padding: 24px 26px; }
+.today .t-lines { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--card-line); }
+.today h2 { font-size: clamp(28px, 3.4vw, 42px); margin: 12px 0 6px; }
+.today .nums { display: flex; gap: 8px; height: auto; margin: 18px 0 18px; }
+.today .nums > div { flex: 1; background: var(--panel-2); border-radius: 14px; padding: 10px 14px; min-width: 0; }
+.today .nums b { font-size: 22px; }
+.today .cols { height: 92px; gap: 3px; }
+.today .cols .seg2 i { border-radius: 3px; }
+.tl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 36px; }
+.tl { display: grid; grid-template-columns: minmax(84px, 140px) minmax(0, 1fr) 40px 76px; gap: 12px; align-items: center; min-height: 34px; font-size: 13px; transition: opacity .2s; }
+.tl .nm { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl .bar2 { position: relative; height: 10px; border-radius: 999px; background: var(--them); }
+.tl .bar2 i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--us); }
+.tl .bar2 b { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 2px; background: var(--muted); }
+.tl .v { text-align: right; font-weight: 600; }
+.tl .p { text-align: right; font-size: 12px; white-space: nowrap; }
+.tl.low { opacity: .55; }
+.tl-grid:hover .tl:not(:hover) { opacity: .4; }
+@media (max-width: 980px) {
+  main { grid-template-columns: minmax(0, 1fr); }
+  .today { grid-template-columns: minmax(0, 1fr); }
+  .today > div + div { border-left: 0; border-top: 1px solid var(--card-line); }
+  .tl-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .bar { position: static; }
+  .mod { padding: 18px 16px 20px; } .today > div { padding: 20px 18px; }
+  .tl { grid-template-columns: minmax(70px, 100px) minmax(0, 1fr) 36px 64px; gap: 8px; }
+  .kpi { padding: 18px 14px; } .kpi + .kpi { padding-left: 14px; }
+}
 </style>
 </head>
 <body>
@@ -350,7 +464,7 @@ dl.gl dd { margin: 2px 0 0; color: var(--muted); }
 const CONFIG = {
   api: 'https://script.google.com/macros/s/AKfycbxAYXsmAEpQfmPZ_QixFPbKSvrUS1Wp83hVb8kvwqsdOy31AhpvaV2MSURjfGNpzJHOtg/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
-  refreshMin: 10,
+  refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
 const MARK = '<svg viewBox="0 0 936 621" aria-hidden="true"><path fill="currentColor" d="M0 436 256 318V621H0zM340 276 596 158V621H340zM680 118 936 0V621H680z"/><path fill="#ec5a55" d="M256 318 340 421V621L256 516z"/><path fill="#4f9ea1" d="M596 158 680 256V616L596 513z"/></svg>';
 const $ = (s, el = document) => el.querySelector(s);
@@ -503,13 +617,66 @@ function divbars(items, {val, right, tip, us, color}) {
 function columns(items, {label, us, them, tip, top, h}) {
   if (!items.length) return '<div class="empty">Sem dados.</div>';
   const mx = Math.max(...items.map((x) => us(x) + them(x)), 1e-9);
-  return `<div class="cols">${items.map((it, i) => { const a = us(it), b = them(it); const H = h || 150;
+  return `<div class="cols">${items.map((it, i) => { const a = us(it), b = them(it); const H = h || 136;
     return `<div class="c"${tipAttr(tip(it))}><div class="pct">${top ? top(it) : ''}</div><div class="seg2" style="--i:${i}"><i class="us" style="height:${a / mx * H}px"></i><i style="height:${b / mx * H}px"></i></div><div class="lbl">${esc(label(it))}</div></div>`; }).join('')}</div>`;
+}
+/** Curva suave que não passa do valor dos pontos vizinhos (sem picos falsos). */
+function smoothOpen(p) {
+  let d = `M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
+    const lo = Math.min(p1[1], p2[1]), hi = Math.max(p1[1], p2[1]), cl = (y) => Math.max(lo, Math.min(hi, y));
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${cl(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${cl(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+function closedSmooth(p) {
+  const n = p.length; let d = `M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d + 'Z';
+}
+/** Radar: um eixo por linha/mercado. series: [{kind:'s1'|'s2'|'s3', values:[0..1|null]}]. s1 = cheio, s2 = tracejado, s3 = pontilhado. */
+let radN = 0;
+function radarSvg(axes, series, {tip, max} = {}) {
+  const N = axes.length;
+  if (N < 3) return '<div class="empty">O radar precisa de pelo menos 3 linhas no recorte.</div>';
+  const vals = series.flatMap((x) => x.values).filter(Number.isFinite);
+  if (!vals.length) return '<div class="empty">Sem dados ainda.</div>';
+  const mx = max || Math.min(1, Math.max(.1, Math.ceil(Math.max(...vals) * 1.12 * 10) / 10));
+  const W = 560, H = 392, cx = W / 2, cy = H / 2 + 2, R = 126, id = 'rg' + (++radN), st = 2 * Math.PI / N;
+  const ang = (i) => -Math.PI / 2 + i * st;
+  const at = (a, r) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const P = (i, v) => at(ang(i), R * Math.max(0, Math.min(1, (v || 0) / mx)));
+  const f = (q) => `${q[0].toFixed(1)},${q[1].toFixed(1)}`;
+  const wrap2 = (t) => { t = String(t).toUpperCase(); if (t.length <= 12 || !t.includes(' ')) return [t];
+    const sp = [...t.matchAll(/ /g)].map((m) => m.index).sort((a, b) => Math.abs(a - t.length / 2) - Math.abs(b - t.length / 2))[0]; return [t.slice(0, sp), t.slice(sp + 1)]; };
+  let g = `<defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${cx}" cy="${cy}" r="${R}"><stop offset="0" style="stop-color:var(--white);stop-opacity:.02"/><stop offset="1" style="stop-color:var(--white);stop-opacity:.3"/></radialGradient></defs>`;
+  for (let k = 1; k <= 4; k++) g += `<circle class="ring" cx="${cx}" cy="${cy}" r="${R * k / 4}"/>`;
+  for (let i = 0; i < N; i++) g += `<line class="spoke" x1="${cx}" y1="${cy}" x2="${f(at(ang(i), R)).split(',')[0]}" y2="${f(at(ang(i), R)).split(',')[1]}"/>`;
+  g += `<text class="tk" x="${cx + 5}" y="${cy - R / 2 - 4}">${pct(mx / 2, 0)}</text><text class="tk" x="${cx + 5}" y="${cy - R - 4}">${pct(mx, 0)}</text>`;
+  const order = ['s1', 's2', 's3'];
+  for (const k of order) for (const x of series.filter((y) => y.kind === k)) {
+    if (!x.values.some(Number.isFinite)) continue;
+    g += `<path class="${k}" d="${closedSmooth(x.values.map((v, i) => P(i, v)))}"${k === 's1' ? ` fill="url(#${id})"` : ''}/>`;
+  }
+  for (const x of series.filter((y) => y.kind === 's1')) x.values.forEach((v, i) => { if (Number.isFinite(v)) { const q = P(i, v); g += `<circle class="vx" cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3.6"/>`; } });
+  for (let i = 0; i < N; i++) {
+    const a = ang(i), c = Math.cos(a), sn = Math.sin(a), o = at(a, R + 13), l = at(a, R + 30);
+    const lines = wrap2(axes[i].label), anchor = Math.abs(c) < .25 ? 'middle' : c > 0 ? 'start' : 'end';
+    const y0 = sn < -.3 ? l[1] - (lines.length - 1) * 12 : sn > .3 ? l[1] + 8 : l[1] - (lines.length - 1) * 6 + 4;
+    const w0 = at(a - st / 2, R + 46), w1 = at(a, R + 46), w2 = at(a + st / 2, R + 46);
+    g += `<g class="ax"${tip ? tipAttr(tip(i)) : ''}><path class="hit" d="M${cx},${cy}L${f(w0)}L${f(w1)}L${f(w2)}Z"/><circle class="od" cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="3"/>` +
+      `<text class="lab" text-anchor="${anchor}">${lines.map((t, k) => `<tspan x="${l[0].toFixed(1)}" y="${(y0 + k * 12).toFixed(1)}">${esc(t)}</tspan>`).join('')}</text></g>`;
+  }
+  return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg></div>`;
 }
 /** Linhas (uma escala só). series: [{name, color, dash, values:[n|null]}]; tip(i) → texto. */
 function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
   const el = document.getElementById(id); if (!el) return;
-  const W = Math.max(320, el.clientWidth || 640), H = 250, L = 46, R = 12, T = 12, B = 28;
+  const W = Math.max(320, el.clientWidth || 640), H = 232, L = 46, R = 12, T = 12, B = 28;
   const vals = series.flatMap((s) => s.values).filter(Number.isFinite);
   if (!vals.length || xs.length < 2) { el.innerHTML = '<div class="empty">Poucos dias para desenhar a curva.</div>'; return; }
   let lo = y0 ?? Math.min(...vals), hi = y1 ?? Math.max(...vals); const pad = (hi - lo) * .12 || .05; if (y0 == null) lo = Math.max(0, lo - pad); if (y1 == null) hi += pad;
@@ -518,11 +685,13 @@ function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
   for (let k = 0; k <= 4; k++) { const v = lo + (hi - lo) * k / 4; g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${L - 8}" y="${Y(v) + 3.5}" text-anchor="end">${esc(yFmt(v))}</text>`; }
   const step = Math.max(1, Math.ceil(xs.length / Math.max(4, Math.floor(W / 80))));
   xs.forEach((x, i) => { if (i % step === 0) g += `<text x="${X(i)}" y="${H - 8}" text-anchor="middle">${esc(xFmt(x))}</text>`; });
-  const paths = series.map((s) => { let d = '', pen = false;
-    s.values.forEach((v, i) => { if (!Number.isFinite(v)) { pen = false; return; } d += `${pen ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`; pen = true; });
-    return `<path class="path${s.dash ? '' : ' draw'}" d="${d}" stroke="${s.color}" ${s.dash ? 'stroke-dasharray="5 5" opacity=".8"' : ''} pathLength="1000" style="--len:1000"/>`; }).join('');
+  const paths = series.map((s, si) => { const runs = []; let run = [];
+    s.values.forEach((v, i) => { if (!Number.isFinite(v)) { if (run.length) runs.push(run); run = []; return; } run.push([X(i), Y(v)]); }); if (run.length) runs.push(run);
+    const d = runs.map(smoothOpen).join('');
+    const area = !s.dash && si === 0 ? runs.filter((r) => r.length > 1).map((r) => `${smoothOpen(r)}L${r[r.length - 1][0].toFixed(1)},${H - B}L${r[0][0].toFixed(1)},${H - B}Z`).join('') : '';
+    return (area ? `<path d="${area}" fill="url(#${id}g)" stroke="none"/>` : '') + `<path class="path" d="${d}" stroke="${s.color}" ${s.dash ? 'stroke-dasharray="5 5" opacity=".8"' : ''}/>`; }).join('');
   const lastPts = series.filter((s) => !s.dash).map((s) => { const i = s.values.length - 1; return Number.isFinite(s.values[i]) ? `<circle cx="${X(i)}" cy="${Y(s.values[i])}" r="4" fill="${s.color}" stroke="var(--black)" stroke-width="2"/>` : ''; }).join('');
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img">${g}${paths}${lastPts}<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--white);stop-opacity:.14"/><stop offset="1" style="stop-color:var(--white);stop-opacity:0"/></linearGradient></defs>${g}${paths}${lastPts}<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
   const svg = el.querySelector('svg'), xh = svg.querySelector('.xh'), dots = svg.querySelector('.dots');
   svg.addEventListener('mousemove', (e) => { const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width;
     const i = Math.max(0, Math.min(xs.length - 1, Math.round((x - L) / (W - L - R) * (xs.length - 1))));
@@ -565,24 +734,24 @@ function shell() {
   const demo = DB.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><span class="stamp" id="stamp"></span><button class="btn" id="reload" title="Buscar dados novos">Atualizar</button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" title="Sobre os dados, a coleta e como ler">?</button></div></header>
+    <div class="acts"><button class="live-st" id="reload"><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <section class="wrap" id="today"></section>
   <section class="wrap hero" id="hero"></section>
   <nav class="wrap bar" id="bar"></nav>
   <section class="wrap kpis" id="kpis"></section>
   <main class="wrap" id="main"></main>
-  <footer class="wrap"><div><p class="eyebrow">Método</p></div><ul>
+  <footer class="wrap"><p class="eyebrow">Método</p><ul>
     <li><b>Passageiros</b> = poltronas ocupadas do ônibus na última leitura da ClickBus antes da partida (capacidade − livres). O estoque é o do ônibus inteiro: entra guichê, site da viação e outros apps.</li>
     <li><b>Parcela</b> = passageiros da viação ÷ passageiros de todas as viações nas linhas, datas, classes e horários filtrados. <b>Parcela de oferta</b> = mesma conta com as poltronas oferecidas.</li>
     <li>Ônibus que aparece em dois anúncios (terminais ou marcas diferentes) conta uma vez, dividido entre as marcas. Viações sem capacidade no anúncio ficam fora.</li>
     <li>Comparação = mesmo número de dias imediatamente antes. <b>Em venda</b> = viagens de hoje a D+14 com o que já foi vendido até agora.</li>
     <li id="srcInfo"></li></ul></footer>`;
   bindMode();
-  $('#reload').onclick = () => boot(true);
+  $('#reload').onclick = () => refresh(true);
   $('#helpB').onclick = openHelp;
   $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') closeHelp(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
   if ($('#leaveDemo')) $('#leaveDemo').onclick = () => { store.set('demo', null); history.replaceState(null, '', location.pathname); RAW = DB = null; boot(); };
   buildBar();
 }
@@ -599,7 +768,7 @@ function buildBar() {
     <span class="k">Período</span>
     <div class="seg" id="perS">${[['7', '7d'], ['14', '14d'], ['30', '30d'], ['60', '60d'], ['90', '90d'], ['mes', 'Mês'], ['custom', 'De–até']].map(([v, l]) => `<button data-v="${v}">${l}</button>`).join('')}</div>
     <span id="custom" class="bar-row" style="gap:6px"><input type="date" class="date" id="fromI"><span class="mut">–</span><input type="date" class="date" id="toI"></span>
-    <button class="chip" id="cmpB">Comparar com período anterior</button>
+    <button class="chip" id="cmpB" title="Comparar com o mesmo número de dias logo antes">Comparar</button>
   </div>
   <div class="bar-row">
     <details class="dd" id="ddF" title="Quem é o “nós” das contas"><summary class="chip fsum" id="sumF"></summary><div class="pop wide" id="focusL">
@@ -608,17 +777,20 @@ function buildBar() {
       <div class="grp"><span>Marcas JCA</span></div>${viac.filter((v) => v.g === 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
       <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
     </div></details>
-    <details class="dd" id="ddR"><summary class="chip" id="sumR"></summary><div class="pop">${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span>${esc(m)}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
+    <details class="dd" id="ddR"><summary class="chip fsum" id="sumR"></summary><div class="pop" id="rteL"><label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="rq" placeholder="Buscar linha" autocomplete="off"></label>${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span>${esc(m)}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
       <div class="grp"><button id="allR">todas as linhas</button></div></div></details>
-    <details class="dd" id="ddC"><summary class="chip" id="sumC"></summary><div class="pop">${dims.classes.map((c, i) => `<label><input type="checkbox" data-c="${i}">${esc(c)}</label>`).join('')}<div class="grp"><button id="allC">todas as classes</button></div></div></details>
-    <details class="dd" id="ddH"><summary class="chip" id="sumH"></summary><div class="pop" id="hrs">${HOURS.map((h) => `<label><input type="checkbox" data-h="${h.k}">${h.l}<small>${h.a}h–${h.b}h59</small></label>`).join('')}<div class="grp"><button id="allH">qualquer horário</button></div></div></details>
-    <details class="dd" id="ddW"><summary class="chip" id="sumW"></summary><div class="pop" id="wds">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-w="${d}">${WDL[d]}</label>`).join('')}<div class="grp"><button data-wset="1,2,3,4">seg–qui</button><button data-wset="5,6,0">sex–dom</button><button id="allW">todos</button></div></div></details>
+    <details class="dd" id="ddC"><summary class="chip fsum" id="sumC"></summary><div class="pop">${dims.classes.map((c, i) => `<label><input type="checkbox" data-c="${i}">${esc(c)}</label>`).join('')}<div class="grp"><button id="allC">todas as classes</button></div></div></details>
+    <details class="dd" id="ddH"><summary class="chip fsum" id="sumH"></summary><div class="pop" id="hrs">${HOURS.map((h) => `<label><input type="checkbox" data-h="${h.k}">${h.l}<small>${h.a}h–${h.b}h59</small></label>`).join('')}<div class="grp"><button id="allH">qualquer horário</button></div></div></details>
+    <details class="dd" id="ddW"><summary class="chip fsum" id="sumW"></summary><div class="pop" id="wds">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-w="${d}">${WDL[d]}</label>`).join('')}<div class="grp"><button data-wset="1,2,3,4">seg–qui</button><button data-wset="5,6,0">sex–dom</button><button id="allW">todos</button></div></div></details>
     <span class="sp"></span><button class="chip" id="groupB" title="Somar as marcas do grupo no ranking">Marcas JCA juntas</button><button class="chip" id="clearB">Limpar filtros</button>
-  </div>`;
+  </div>
+  <div class="tokens" id="tokens" hidden></div>`;
   const bar = $('#bar');
+  if (!bar.dataset.b) { bar.dataset.b = '1'; // ouvintes uma vez só (a barra é refeita quando chegam viações novas)
   bar.addEventListener('click', (e) => {
-    const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.f !== undefined) { F.focus = b.dataset.f; $('#ddF').open = false; }
+    const dims = DB.dims; const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.tok) dropTok(b.dataset.tok);
+    else if (b.dataset.f !== undefined) { F.focus = b.dataset.f; $('#ddF').open = false; }
     else if (b.closest('#viewS')) F.view = b.dataset.v;
     else if (b.closest('#perS')) F.per = b.dataset.v;
     else if (b.id === 'cmpB') F.cmp = !F.cmp;
@@ -634,7 +806,7 @@ function buildBar() {
     update();
   });
   bar.addEventListener('change', (e) => {
-    const t = e.target;
+    const dims = DB.dims; const t = e.target;
     if (t.dataset.r !== undefined) { if (!F.routes.size) dims.rotas.forEach((_, i) => F.routes.add(i)); toggle(F.routes, Number(t.dataset.r)); if (F.routes.size === dims.rotas.length) F.routes.clear(); }
     else if (t.dataset.c !== undefined) { if (!F.classes.size) dims.classes.forEach((_, i) => F.classes.add(i)); toggle(F.classes, Number(t.dataset.c)); if (F.classes.size === dims.classes.length) F.classes.clear(); }
     else if (t.dataset.h !== undefined) toggle(F.hours, t.dataset.h);
@@ -644,10 +816,19 @@ function buildBar() {
     update();
   });
   document.addEventListener('click', (e) => { for (const d of $$('details.dd[open]')) if (!d.contains(e.target)) d.open = false; });
+  document.addEventListener('toggle', () => setTimeout(flush, 50), true);
+  }
+  $('#rq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#rteL label:not(.find)').forEach((l) => l.hidden = !!q && !nrm(l.textContent).includes(q)); });
+  $('#ddR').addEventListener('toggle', () => { if ($('#ddR').open) { $('#rq').value = ''; $$('#rteL label').forEach((l) => l.hidden = false); } });
   $('#fq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#focusL .it').forEach((b) => b.hidden = !!q && !nrm(b.textContent).includes(q)); });
   $('#ddF').addEventListener('toggle', () => { if ($('#ddF').open) { $('#fq').value = ''; $$('#focusL .it').forEach((b) => b.hidden = false); setTimeout(() => $('#fq').focus(), 30); } });
 }
 const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
+function dropTok(k) {
+  const [t, v] = k.split(':');
+  if (t === 'focus') F.focus = 'JCA'; else if (t === 'routes') F.routes.clear(); else if (t === 'r') F.routes.delete(Number(v));
+  else if (t === 'c') F.classes.delete(Number(v)); else if (t === 'h') F.hours.delete(v); else if (t === 'w') F.wds.delete(Number(v)); else if (t === 'wds') F.wds.clear();
+}
 function syncBar() {
   const press = (sel, on) => $$(sel).forEach((b) => b.setAttribute('aria-pressed', String(on(b))));
   press('#viewS button', (b) => b.dataset.v === F.view);
@@ -676,6 +857,15 @@ function syncBar() {
   $('#sumR').textContent = !nR ? 'Todas as linhas' : nR === 1 ? shortRoute(DB.dims.rotas[[...F.routes][0]].l) : mk.length === 1 && DB.dims.rotas.filter((r) => r.m === mk[0]).length === nR ? `${mk[0]} · ida e volta` : `${nR} linhas`;
   $('#sumC').textContent = !nC ? 'Todas as classes' : nC === 1 ? DB.dims.classes[[...F.classes][0]] : `${nC} classes`;
   $('#sumR').setAttribute('aria-pressed', String(!!nR)); $('#sumC').setAttribute('aria-pressed', String(!!nC));
+  // filtros ativos como fichas removíveis
+  const tk = [];
+  if (F.focus !== 'JCA') tk.push(['focus', `Foco: ${focusName()}`]);
+  if (nR) (nR <= 3 ? [...F.routes].map((i) => ['r:' + i, shortRoute(DB.dims.rotas[i].l)]) : [['routes', `${nR} linhas`]]).forEach((x) => tk.push(x));
+  for (const i of F.classes) tk.push(['c:' + i, DB.dims.classes[i]]);
+  for (const h of HOURS) if (F.hours.has(h.k)) tk.push(['h:' + h.k, h.l]);
+  if (F.wds.size) (F.wds.size <= 3 ? [...F.wds].map((d) => ['w:' + d, WDL[d]]) : [['wds', `${F.wds.size} dias da semana`]]).forEach((x) => tk.push(x));
+  $('#tokens').innerHTML = tk.map(([k, l]) => `<button class="tok" data-tok="${esc(k)}" title="Tirar este filtro">${esc(l)}<b>×</b></button>`).join('');
+  $('#tokens').hidden = !tk.length; $('#clearB').hidden = !tk.length;
 }
 let raf = 0;
 function update() { saveF(); syncBar(); cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }
@@ -691,7 +881,6 @@ function render() {
   const us = focusShort();
   const prog = $('#prog'); if (prog) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
   const gen = new Date(DB.data.gerado);
-  $('#stamp').innerHTML = `Dados de <b>${gen.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})} ${gen.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</b>`;
   $('#srcInfo').innerHTML = `Fonte: <b>${esc(DB.data.app || 'Helios')}</b> · ClickBus · viagens de ${brY(DB.firstDay)} a ${brY(addD(DB.today, 14))}. Atualiza sozinho a cada ${CONFIG.refreshMin} min com a página aberta.`;
 
   $('#today').innerHTML = todayHtml();
@@ -724,44 +913,66 @@ function render() {
     kp('Oferta × procura', Number.isFinite(T.idx) ? NF1.format(T.idx * 100) + '<small>índice</small>' : '—', `oferta ${pct(T.fair)} das poltronas · ocupação ${pct(T.lfUs, 0)} × ${pct(T.lfThem, 0)} da concorrência`);
 
   // ---- módulos ----
+  const Wd = (h) => h.replace('<section class="mod">', '<section class="mod wide">');
   const mods = [];
-  if (real) mods.push(modWhere(T, P, cur, prev));
-  mods.push(modTime(R, cur, real));
+  if (real) mods.push(Wd(modWhere(T, P, cur, prev)));
+  mods.push(Wd(modTime(R, cur, real)));
+  mods.push(modRadar(cur, prev));
   mods.push(modRank(cur, prev, T));
-  mods.push(modRoutes(cur, prev));
+  mods.push(Wd(modRoutes(cur, prev)));
   mods.push(modWhen(cur));
   mods.push(modOcc(cur));
   if (real) mods.push(modAhead());
-  mods.push(modPace());
-  mods.push(modTable(cur, prev));
+  mods.push(real ? modPace() : Wd(modPace()));
+  mods.push(Wd(modTable(cur, prev)));
   $('#main').innerHTML = mods.join('');
   afterRender.forEach((f) => f()); afterRender.length = 0;
-  bindTable();
+  bindTable(); stampTick();
 }
 const afterRender = [];
 
-/* Hoje: compras detectadas hoje (todas as linhas), JCA × concorrência, contra a média dos 7 dias anteriores. */
+/* Hoje: compras detectadas hoje × média dos 7 dias anteriores — no total, por mercado (radar) e por linha. */
 function todayHtml() {
-  const t = DB.today, hh = DB.data.hojeHoras;
-  let tot = 0, us = 0;
-  if (hh) for (const h of hh) { tot += h[1]; us += h[2]; }
-  else for (const s of DB.sales) if (s.d === t) { tot += s.pax; if (s.j) us += s.pax; }
-  let pt = 0, pu = 0; const from = addD(t, -7);
-  for (const s of DB.sales) if (s.d >= from && s.d < t) { pt += s.pax; if (s.j) pu += s.pax; }
-  const sh = tot ? us / tot : NaN, avg = pt ? pu / pt : NaN, d = sh - avg;
-  const early = tot < 15;
-  const state = early ? 'Ainda cedo para dizer' : !Number.isFinite(avg) ? `JCA com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
-  const c = early || !Number.isFinite(avg) ? '' : d >= .01 ? 'up' : d <= -.01 ? 'down' : '';
+  const t = DB.today, hh = DB.data.hojeHoras, from = addD(t, -7), us = focusShort();
+  const z = () => ({t: 0, u: 0});
+  const day = new Map(), week = new Map(), D = z(), Wk = z();
+  for (const s of DB.sales) {
+    const isT = s.d === t; if (!isT && !(s.d >= from && s.d < t)) continue;
+    const m = isT ? day : week, o = m.get(s.r) || z(), g = isT ? D : Wk, u = isUs(s) ? s.pax : 0;
+    o.t += s.pax; o.u += u; m.set(s.r, o); g.t += s.pax; g.u += u;
+  }
+  if (!D.t && hh && F.focus === 'JCA') for (const h of hh) { D.t += h[1]; D.u += h[2]; }
+  const sh = D.t ? D.u / D.t : NaN, avg = Wk.t ? Wk.u / Wk.t : NaN, d = sh - avg;
+  const early = D.t < 15, has7 = Number.isFinite(avg);
+  const state = early ? 'Ainda cedo para dizer' : !has7 ? `${us} com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
+  const c = early || !has7 ? '' : d >= .01 ? 'up' : d <= -.01 ? 'down' : '';
   const last = DB.data.coleta?.ultimaLeitura;
   const when = last ? `${last.slice(11)} · ${ago(brtMs(last))}` : new Date(DB.data.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   const nowH = Number(new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23'}).format(new Date()));
-  const hrs = hh ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
+  const hrs = hh && F.focus === 'JCA' ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
+  // referência: média dos 7 dias; sem histórico ainda, o que já está vendido para os próximos 14 dias
+  const ref = new Map(); let refName = 'Média 7 dias';
+  if (Wk.t) for (const [r, o] of week) ref.set(r, o);
+  else { refName = 'Em venda · 14 dias'; for (const r of DB.rows) if (r.open) { const o = ref.get(r.r) || z(); o.t += r.pax; if (isUs(r)) o.u += r.pax; ref.set(r.r, o); } }
+  const byMkt = (map) => { const out = new Map(DB.markets.map((m) => [m, z()])); for (const [r, o] of map) { const x = out.get(DB.dims.rotas[r].m); if (x) { x.t += o.t; x.u += o.u; } } return out; };
+  const md = byMkt(day), mr = byMkt(ref), sv = (o) => o && o.t ? o.u / o.t : null;
+  const radar = radarSvg(DB.markets.map((m) => ({label: shortRoute(m)})), [
+    {kind: 's1', values: DB.markets.map((m) => sv(md.get(m)))}, {kind: 's2', values: DB.markets.map((m) => sv(mr.get(m)))}],
+    {tip: (i) => { const m = DB.markets[i], a = md.get(m), b = mr.get(m); return `${m}\n${us} hoje: ${pct(sv(a) ?? NaN)} · ${n0(a.u)} de ${n0(a.t)} compras\n${refName}: ${pct(sv(b) ?? NaN)}`; }});
+  const lines = DB.dims.rotas.map((r, i) => ({l: r.l, a: day.get(i) || z(), b: ref.get(i)})).filter((x) => x.a.t > 0).sort((x, y) => y.a.t - x.a.t);
+  const row = (x) => { const s = x.a.u / x.a.t, rv = sv(x.b), dd = has7 && rv != null ? s - rv : NaN;
+    return `<div class="tl${x.a.t < 5 ? ' low' : ''}"${tipAttr(`${x.l}\n${us}: ${n0(x.a.u)} de ${n0(x.a.t)} compras hoje (${pct(s)})${rv != null ? `\n${refName}: ${pct(rv)}` : ''}`)}>
+      <div class="nm">${esc(shortRoute(x.l))}</div><div class="bar2"><i style="width:${s * 100}%"></i>${rv != null ? `<b style="left:${rv * 100}%"></b>` : ''}</div>
+      <div class="v">${pct(s, 0)}</div><div class="p">${Number.isFinite(dd) ? deltaPill(dd) : `<span class="mut">${n0(x.a.t)} compras</span>`}</div></div>`; };
   return `<div class="today">
-    <div><p class="eyebrow now"><i></i>Hoje · atualizado ${esc(when)}</p><h2 class="${c}">${esc(state)}</h2>
-      <p class="sub">JCA com <b>${pct(sh)}</b> das compras de hoje${Number.isFinite(avg) ? ` · média 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p></div>
-    <div><div class="nums"><div><b>${n0(tot)}</b><span>compras hoje</span></div><div><b>${n0(us)}</b><span>JCA</span></div><div><b>${n0(tot - us)}</b><span>concorrência</span></div></div></div>
-    <div>${hrs.length ? columns(hrs, {h: 82, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
-      tip: (x) => `${x[0]}h–${x[0]}h59\nJCA ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`}) : '<p class="sub">Compras por hora aparecem com a API 3.1.1.</p>'}</div>
+    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura ${esc(when)}</p><h2 class="${c}">${esc(state)}</h2>
+      <p class="sub">${esc(us)} com <b>${pct(sh)}</b> das compras de hoje${has7 ? ` · média 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p>
+      <div class="nums"><div><b>${n0(D.t)}</b><span>compras hoje</span></div><div><b>${n0(D.u)}</b><span>${esc(us)}</span></div><div><b>${n0(D.t - D.u)}</b><span>concorrência</span></div></div>
+      ${hrs.length ? `<p class="h4">Compras por hora</p>${columns(hrs, {h: 72, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
+        tip: (x) => `${x[0]}h–${x[0]}h59\n${us} ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`})}` : ''}</div>
+    <div class="t-radar"><div class="thead"><p class="h4" style="margin:0">Por mercado</p><div class="lg2"><span><i></i>${esc(us)} hoje</span><span><i class="d"></i>${refName}</span></div></div>${radar}</div>
+    <div class="t-lines"><div class="thead"><p class="h4" style="margin:0">Por linha · compras de hoje</p><div class="lg2"><span><i class="bx"></i>${esc(us)}</span><span><i class="bm"></i>${refName}</span></div></div>
+      ${lines.length ? `<div class="tl-grid">${lines.map(row).join('')}</div>` : '<p class="sub">Nenhuma compra detectada hoje ainda.</p>'}</div>
   </div>`;
 }
 const mod = (title, text, body) => `<section class="mod"><div class="mod-head"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}</div><div class="mod-body">${body}</div></section>`;
@@ -812,6 +1023,23 @@ function modTime(R, cur, real) {
     <div><p class="h4">Passageiros por ${weekly ? 'semana' : 'dia'} · ${esc(us)} × concorrência</p>
     ${columns(xs.map((x, i) => ({x, t: pts[i]})), {label: (o) => xs.length > 14 ? (xs.indexOf(o.x) % Math.ceil(xs.length / 10) === 0 ? br(o.x) : '') : br(o.x), us: (o) => o.t.upax, them: (o) => o.t.them,
       tip: (o) => `${lbl(o.x)}\n${us}: ${n0(o.t.upax)} · concorrência: ${n0(o.t.them)}\nParcela ${pct(o.t.share)}`, top: xs.length <= 16 ? (o) => o.t.pax ? pct(o.t.share, 0) : '' : null})}</div>`);
+}
+
+/* 3a · radar das linhas */
+function modRadar(cur, prev) {
+  const us = focusShort();
+  const byM = new Set(cur.map((r) => DB.dims.rotas[r.r].m)).size >= 3;
+  const keyOf = byM ? (r) => DB.dims.rotas[r.r].m : (r) => DB.dims.rotas[r.r].l;
+  const a = groupBy(cur, keyOf), b = groupBy(prev, keyOf);
+  const keys = (byM ? DB.markets : DB.dims.rotas.map((r) => r.l)).filter((k) => a.has(k));
+  const T = keys.map((k) => tot(a.get(k))), P = keys.map((k) => b.has(k) ? tot(b.get(k)) : null);
+  const ser = [{kind: 's1', values: T.map((x) => x.pax ? x.share : null)}, {kind: 's2', values: T.map((x) => x.cap ? x.fair : null)}];
+  if (prev.length) ser.push({kind: 's3', values: P.map((x) => x && x.pax ? x.share : null)});
+  const svg = radarSvg(keys.map((k) => ({label: shortRoute(k)})), ser, {tip: (i) => `${keys[i]}\nParcela ${us}: ${pct(T[i].share)} · ${n0(T[i].upax)} de ${n0(T[i].pax)}\nOferta ${us}: ${pct(T[i].fair)} das poltronas${P[i]?.pax ? `\nPeríodo anterior: ${pct(P[i].share)}` : ''}`});
+  const gaps = keys.map((k, i) => ({k, g: T[i].share - T[i].fair})).filter((x) => Number.isFinite(x.g)).sort((x, y) => y.g - x.g);
+  const ins = gaps.length >= 2 ? `Acima da oferta em <em>${esc(shortRoute(gaps[0].k))} (${pp(gaps[0].g)})</em> · mais abaixo em <em>${esc(shortRoute(gaps[gaps.length - 1].k))} (${pp(gaps[gaps.length - 1].g)})</em>` : '';
+  return mod('Radar das linhas', `Parcela de ${esc(us)} em cada ${byM ? 'mercado' : 'sentido'}. Fora do tracejado = enche mais do que a frota sugere.`,
+    `<div class="lg2"><span><i></i>Parcela ${esc(us)}</span><span><i class="d"></i>Parcela de oferta</span>${prev.length ? '<span><i class="o"></i>Período anterior</span>' : ''}</div>${svg}${ins ? `<p class="insight" style="font-size:14px">${ins}</p>` : ''}`);
 }
 
 /* 3 · ranking */
@@ -959,7 +1187,7 @@ function bindTable() {
 }
 
 /* ---------- ajuda: coleta e leitura ---------- */
-function closeHelp() { const h = $('#help'); if (h) h.hidden = true; document.body.style.overflow = ''; }
+function closeHelp() { const h = $('#help'); if (h) h.hidden = true; document.body.style.overflow = ''; setTimeout(flush, 50); }
 function openHelp() { $('#helpP').innerHTML = helpHtml(); $('#help').hidden = false; document.body.style.overflow = 'hidden'; }
 const brtMs = (s) => s ? Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10), +s.slice(11, 13) + 3, +s.slice(14, 16)) : NaN; // horário de Brasília → UTC
 const ago = (ms) => { const m = (Date.now() - ms) / 6e4; return !Number.isFinite(m) ? '—' : m < 1 ? 'agora' : m < 60 ? `há ${Math.round(m)} min` : m < 48 * 60 ? `há ${NF1.format(m / 60)} h` : `há ${Math.round(m / 1440)} dias`; };
@@ -1009,25 +1237,49 @@ function helpHtml() {
   return `<header><div><p class="eyebrow">Helios · Mercado</p><h2>Sobre os dados</h2></div><button class="btn ico" data-close title="Fechar (Esc)">×</button></header>${coleta}${panel}${gl}`;
 }
 
-/* ---------- partida ---------- */
-let timer = 0;
-async function boot(force) {
-  readHash();
-  if (!DB || force) {
-    if (!DB) $('#app').innerHTML = '<div class="load"><div>Helios · carregando mercado<i></i></div></div>';
-    else $('#reload').textContent = 'Buscando…';
-    try { RAW = await fetchData(); }
-    catch (e) { console.error(e); if (!DB) return startScreen(`Não consegui ler a API: ${e.message} Confira o link (menu Helios → Painel web).`); $('#reload').textContent = 'Falhou · tentar'; return; }
-    if (!RAW) return startScreen();
-    const keep = !!DB; DB = model(RAW);
-    if (!keep) { loadF(); shell(); }
-    if (!DB.hasClosed) F.view = 'venda'; // nenhuma viagem fechada ainda: só existe o que está à venda
-  }
-  syncBar(); render();
-  clearInterval(timer);
-  if (!DB.data.demo && !$('#helios-gz').textContent.trim()) timer = setInterval(() => { if (document.visibilityState === 'visible') boot(true); }, CONFIG.refreshMin * 60000);
-  const r = $('#reload'); if (r) r.textContent = 'Atualizar';
+/* ---------- partida e atualização em segundo plano ---------- */
+let lastFetch = 0, sig = '', pending = false, busy = false, failed = false;
+const signature = (d) => JSON.stringify([d.coleta?.ultimaLeitura, d.hojeHoras, d.viagens?.rows, d.vendas?.rows]);
+const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
+function stampTick() {
+  const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
+  b.classList.toggle('busy', busy); b.classList.toggle('bad', failed && !busy);
+  const last = DB.data.coleta?.ultimaLeitura, ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
+  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : 'Ao vivo'} · leitura <b>${ago(ref)}</b>`;
+  b.title = isStatic() ? 'Dados fixos' : `Última leitura do Helios: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
+// só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
+const canRender = () => !$$('details.dd[open]').length && $('#help')?.hidden !== false && !document.activeElement?.matches?.('input');
+function flush() { if (!pending || !DB || !canRender()) return; pending = false; const y = scrollY; syncBar(); render(); scrollTo(0, y); }
+async function refresh(manual) {
+  if (busy || isStatic()) return;
+  busy = true; stampTick();
+  try {
+    const d = await fetchData(); busy = false; failed = false; lastFetch = Date.now();
+    if (!d) return stampTick();
+    const s2 = signature(d);
+    if (s2 !== sig || manual) {
+      const dimsChanged = JSON.stringify(d.dims) !== JSON.stringify(DB.dims);
+      sig = s2; RAW = d; DB = model(d); if (!DB.hasClosed) F.view = 'venda';
+      if (dimsChanged) buildBar();
+      pending = true; flush();
+    }
+  } catch (e) { console.warn(e); busy = false; failed = true; }
+  stampTick();
+}
+async function boot() {
+  readHash();
+  $('#app').innerHTML = '<div class="load"><div>Helios · carregando mercado<i></i></div></div>';
+  try { RAW = await fetchData(); }
+  catch (e) { console.error(e); return startScreen(`Não consegui ler a API: ${e.message} Confira o link (menu Helios → Painel web).`); }
+  if (!RAW) return startScreen();
+  lastFetch = Date.now(); sig = signature(RAW); busy = failed = false;
+  DB = model(RAW); loadF(); if (!DB.hasClosed) F.view = 'venda'; // nenhuma viagem fechada ainda: só existe o que está à venda
+  shell(); syncBar(); render();
+}
+setInterval(() => { stampTick(); flush(); if (document.visibilityState === 'visible' && Date.now() - lastFetch >= CONFIG.refreshMin * 6e4) refresh(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - lastFetch >= 6e4) refresh(); });
+addEventListener('online', () => refresh());
 let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => DB && render(), 250); });
 document.documentElement.dataset.mode = store.get('mode') || 'dark';
 boot();
