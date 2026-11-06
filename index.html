@@ -19,7 +19,7 @@
   --red: #ec5a55; --teal: #4f9ea1; --red-dim: rgba(236,90,85,.18); --teal-dim: rgba(79,158,161,.18);
   --pos-text: var(--teal); --neg-text: var(--red);
   --us: var(--white); --them: #3a3a37; --them-2: #2a2a27; --them-hi: #6b6b66;
-  --bar-bg: rgba(0,0,0,.86);
+  --bar-bg: #0c0c0c; --page: #080808; --card: rgba(19,19,19,.94); --card-line: rgba(255,255,255,.08); --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   --font: Inter, ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --pad: clamp(16px, 4.4vw, 72px);
   --ease: cubic-bezier(.16,1,.3,1);
@@ -32,15 +32,13 @@
   --red-dim: rgba(236,90,85,.14); --teal-dim: rgba(79,158,161,.14);
   --pos-text: #377073; --neg-text: #c2443f;
   --them: #d5d5cf; --them-2: #e4e4de; --them-hi: #a9a9a3;
-  --bar-bg: rgba(247,247,243,.9);
+  --bar-bg: #f4f4f0; --page: #ecece7; --card: rgba(255,255,255,.95); --card-line: rgba(0,0,0,.08); --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-height: 100vh; background: var(--black); color: var(--white); font-family: var(--font); font-size: 15px; line-height: 1.5;
   -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; overflow-x: clip; }
-body::before { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .03;
-  background-image: repeating-radial-gradient(circle at 22% 18%, transparent 0, rgba(255,255,255,.42) .55px, transparent 1px, transparent 3px);
-  background-size: 6px 7px; mix-blend-mode: soft-light; }
+body { background-color: var(--page); background-image: var(--noise); background-size: 180px 180px; }
 ::selection { background: var(--white); color: var(--black); }
 a { color: inherit; }
 button, select, input { font: inherit; color: inherit; }
@@ -90,7 +88,7 @@ button { cursor: pointer; }
 .verdict.up i { background: var(--teal); } .verdict.down i { background: var(--red); }
 
 /* barra de filtros */
-.bar { position: sticky; top: 0; z-index: 40; background: var(--bar-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+.bar { position: sticky; top: 0; z-index: 40; background: var(--bar-bg); 
   border-block: 1px solid var(--line); display: grid; gap: 10px; padding-block: 12px; }
 .bar-row { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; min-width: 0; }
 .bar .sp { flex: 1; }
@@ -111,7 +109,7 @@ input.date { background: var(--black); border: 1px solid var(--line-strong); bor
 .dd > summary::-webkit-details-marker { display: none; }
 .dd[open] > summary:not([aria-pressed="true"]) { color: var(--white); border-color: var(--white); }
 .pop { position: absolute; left: 0; top: calc(100% + 8px); z-index: 45; width: min(340px, 88vw); max-height: min(440px, 70vh); overflow: auto; padding: 8px;
-  background: var(--panel); border: 1px solid var(--line-strong); border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.45); }
+  background: var(--panel); border: 1px solid var(--line-strong); border-radius: 14px; }
 .pop .grp { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); padding: 10px 8px 4px; display: flex; justify-content: space-between; }
 .pop .grp button { background: none; border: 0; color: var(--muted); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 0; }
 .pop .grp button:hover { color: var(--white); }
@@ -121,10 +119,10 @@ input.date { background: var(--black); border: 1px solid var(--line-strong); bor
 .pop input[type=checkbox]:checked { background: var(--white); border-color: var(--white); }
 .pop input[type=checkbox]:checked::after { content: ""; width: 6px; height: 3px; border: 2px solid var(--black); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
 .pop label small { margin-left: auto; color: var(--faint); font-size: 11px; }
-#prog { position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--white); transform-origin: left; transform: scaleX(0); }
+#prog { display: none; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--white); transform-origin: left; transform: scaleX(0); }
 
 /* KPIs */
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; padding-inline: 24px; margin-top: 20px; }
 .kpi { padding: 28px 22px 28px 0; display: grid; gap: 6px; align-content: start; min-width: 0; }
 .kpi + .kpi { border-left: 1px solid var(--line); padding-left: 22px; }
 .kpi .v { font-size: clamp(28px, 3.6vw, 48px); font-weight: 600; letter-spacing: -.04em; line-height: 1.04; }
@@ -136,11 +134,11 @@ input.date { background: var(--black); border: 1px solid var(--line-strong); bor
 
 /* módulos */
 main { display: grid; padding-bottom: 40px; }
-.mod { border-bottom: 1px solid var(--line); padding-block: clamp(36px, 5vw, 64px); display: grid; grid-template-columns: minmax(0, 270px) minmax(0, 1fr); gap: clamp(20px, 4vw, 64px); }
+.mod { border-bottom: 0; padding-block: clamp(36px, 5vw, 64px); display: grid; grid-template-columns: minmax(0, 270px) minmax(0, 1fr); gap: clamp(20px, 4vw, 64px); }
 .mod-head { display: grid; gap: 12px; align-content: start; position: sticky; top: 128px; align-self: start; }
 .mod-head h2 { font-size: clamp(22px, 2.4vw, 30px); line-height: 1.12; letter-spacing: -.03em; font-weight: 600; margin: 0; text-wrap: balance; }
 .mod-head p { margin: 0; color: var(--muted); font-size: 14px; max-width: 40ch; }
-.mod-body { display: grid; gap: 22px; min-width: 0; }
+.mod-body { display: grid; gap: 22px; min-width: 0; background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; padding: clamp(18px, 2.4vw, 30px); }
 .insight { font-size: 18px; font-weight: 600; letter-spacing: -.015em; margin: 0; text-wrap: balance; line-height: 1.3; }
 .insight em { font-style: normal; color: var(--muted); font-weight: 500; }
 .note { font-size: 11px; color: var(--faint); margin: 0; }
@@ -173,7 +171,7 @@ main { display: grid; padding-bottom: 40px; }
 .stack { display: flex; height: 22px; border-radius: 3px; overflow: hidden; gap: 2px; }
 .stack i { display: block; height: 100%; background: var(--them); transition: filter .2s, opacity .2s; min-width: 1px; }
 .stack i.us { background: var(--us); }
-.stack i:nth-child(even):not(.us) { background: var(--them-2); }
+.stack i:nth-child(even):not(.us):not(.cl) { background: var(--them-2); }
 .stack:hover i:not(:hover) { opacity: .55; }
 .routes { display: grid; gap: 0; }
 .rt { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 2.2fr) 74px 80px 64px; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); font-size: 13px; }
@@ -238,11 +236,85 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 8
 footer b { color: var(--white); font-weight: 500; }
 
 #tip { position: fixed; z-index: 80; pointer-events: none; background: var(--panel); color: var(--white); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 11px;
-  font-size: 12px; line-height: 1.45; box-shadow: 0 14px 40px rgba(0,0,0,.45); max-width: 300px; opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; white-space: pre-line; }
+  font-size: 12px; line-height: 1.45; max-width: 300px; opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; white-space: pre-line; }
 #tip.on { opacity: 1; transform: none; }
 #tip b { font-weight: 600; }
 
+/* cores por empresa: sutis em repouso, cheias no foco ou no hover */
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; flex: none; background: var(--c, var(--muted)); box-shadow: 0 0 0 2px color-mix(in oklab, var(--c, var(--muted)) 22%, transparent); }
+.hrow.cl .b { background: color-mix(in oklab, var(--c) 52%, var(--black)); transition: background .25s; }
+.hrow.cl:hover .b, .hrow.cl.us .b { background: var(--c); }
+.stack i.cl { background: color-mix(in oklab, var(--c) 48%, var(--black)); }
+.stack i.cl.us { background: var(--c); }
+.stack i.cl:hover { background: var(--c); opacity: 1; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); }
+.keys span { display: inline-flex; align-items: center; white-space: nowrap; }
+td .dot { margin-right: 7px; }
+/* lista de foco */
+.pop.wide { width: min(360px, 90vw); }
+.pop .find { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 12px; margin: 2px 2px 6px; }
+.pop .find input { background: transparent; border: 0; outline: 0; width: 100%; font-size: 12px; }
+.pop .it { display: flex; align-items: center; width: 100%; text-align: left; background: none; border: 0; padding: 7px 8px; border-radius: 8px; font-size: 13px; color: var(--white); }
+.pop .it:hover { background: var(--panel-2); }
+.pop .it small { margin-left: auto; color: var(--faint); font-size: 11px; padding-left: 10px; }
+.pop .it[aria-current="true"] { background: var(--panel-2); font-weight: 600; }
+.pop .it[aria-current="true"]::after { content: "✓"; margin-left: 10px; color: var(--muted); font-weight: 400; }
+.pop .it[aria-current="true"] small { margin-left: auto; }
+.chip.fsum { display: inline-flex; align-items: center; color: var(--white); }
+.chip.fsum::after { content: ""; width: 6px; height: 6px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg) translateY(-2px); margin-left: 10px; }
+/* ajuda */
+.btn.ico { width: 34px; height: 34px; padding: 0; justify-content: center; font-size: 14px; letter-spacing: 0; font-weight: 600; }
+.drawer { position: fixed; inset: 0; z-index: 90; }
+.drawer-bg { position: absolute; inset: 0; background: rgba(0,0,0,.6); }
+.drawer-p { position: absolute; top: 0; right: 0; bottom: 0; width: min(500px, 100vw); background: var(--panel); border-left: 1px solid var(--line-strong); overflow: auto; overflow-x: hidden; padding: 26px 26px 40px; animation: slidein .45s var(--ease); }
+.drawer-p > * + * { margin-top: 26px; }
+.drawer-p > section > * + * { margin-top: 0; }
+@keyframes slidein { from { transform: translateX(40px); opacity: 0; } }
+@keyframes fade { from { opacity: 0; } }
+.drawer-p header { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.drawer-p h2 { margin: 6px 0 0; font-size: 26px; letter-spacing: -.03em; font-weight: 600; line-height: 1.1; }
+.drawer-p h3 { margin: 0 0 10px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.live { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.live i { width: 9px; height: 9px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 4px var(--teal-dim); }
+.live.warn i { background: #d9a12b; box-shadow: 0 0 0 4px rgba(217,161,43,.2); }
+.live.bad i { background: var(--red); box-shadow: 0 0 0 4px var(--red-dim); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.stats div { padding: 12px 14px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+.stats div:nth-child(3n) { border-right: 0; }
+.stats b { display: block; font-size: 22px; font-weight: 600; letter-spacing: -.03em; }
+.stats span { font-size: 11px; color: var(--muted); }
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 56px; }
+.spark i { flex: 1; background: var(--them-hi); border-radius: 2px 2px 0 0; min-height: 2px; transition: background .2s; }
+.spark i.err { background: var(--red); }
+.spark i:hover { background: var(--white); }
+.covg { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 3px; }
+.covg i { display: grid; place-items: center; height: 34px; border-radius: 4px; font-size: 10px; font-style: normal; color: var(--black); background: var(--teal); }
+.covg i.mid { background: color-mix(in oklab, var(--teal) 50%, var(--panel-2)); color: var(--white); }
+.covg i.none { background: var(--panel-2); color: var(--faint); }
+.covg small { display: block; font-size: 9px; color: var(--faint); text-align: center; margin-top: 3px; }
+.drawer-p table { font-size: 12px; }
+.drawer-p th, .drawer-p td { padding: 7px 8px; }
+.drawer-p th { cursor: default; position: static; }
+dl.gl { margin: 0; display: grid; gap: 10px; font-size: 13px; }
+dl.gl dt { font-weight: 600; }
+dl.gl dd { margin: 2px 0 0; color: var(--muted); }
+/* hoje */
+.today { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) minmax(0, 1.2fr); gap: 0; background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; margin-top: 4px; }
+.today > div { padding: 22px 24px; min-width: 0; }
+.today > div + div { border-left: 1px solid var(--card-line); }
+.today .now { display: flex; align-items: center; gap: 8px; }
+.today .now i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); }
+.today h2 { margin: 10px 0 6px; font-size: clamp(26px, 3vw, 38px); letter-spacing: -.04em; font-weight: 600; line-height: 1.05; }
+.today h2.up { color: var(--pos-text); } .today h2.down { color: var(--neg-text); }
+.today .sub { margin: 0; color: var(--muted); font-size: 13.5px; }
+.today .sub b { color: var(--white); font-weight: 600; }
+.today .nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-content: center; height: 100%; }
+.today .nums b { display: block; font-size: 24px; font-weight: 600; letter-spacing: -.03em; }
+.today .nums span { font-size: 11px; color: var(--muted); }
+.today .cols { height: 112px; }
+.today .cols .pct { display: none; }
 @media (max-width: 980px) {
+  .today { grid-template-columns: minmax(0, 1fr); } .today > div + div { border-left: 0; border-top: 1px solid var(--card-line); }
   .hero { grid-template-columns: minmax(0, 1fr); align-items: start; }
   .mod, footer { grid-template-columns: minmax(0, 1fr); }
   .mod-head { position: static; }
@@ -259,6 +331,9 @@ footer b { color: var(--white); font-weight: 500; }
   .cols { height: 160px; gap: 2px; } .cols .pct { display: none; }
   .bar { gap: 8px; position: static; } .bar .k { display: none; } .mod-head { top: 0; }
 }
+/* sem efeitos de entrada: só o hover muda */
+.track .b, .cols .seg2, .drawer-p { animation: none; }
+.chart .draw { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -387,27 +462,48 @@ function companyKey(r) { return F.group && r.j && F.focus === 'JCA' ? 'JCA' : St
 function companyName(k) { return k === 'JCA' ? 'Grupo JCA' : DB.dims.viacoes[Number(k)].n; }
 function companyIsUs(k) { return k === 'JCA' ? true : F.focus === 'JCA' ? DB.jca[Number(k)] : Number(k) === Number(F.focus); }
 
+/* ---------- cores por empresa ---------- */
+// Tom fixo por viação (inspirado na marca quando é conhecida); quem não está na lista ganha um tom estável pelo nome.
+const BRAND = [[/aguiaflex/, '#8fd17a'], [/aguia branca/, '#3fae6a'], [/cometa/, '#4a86e8'], [/\b1001\b/, '#e8613c'], [/catarinense/, '#2fb5c4'],
+  [/expresso do sul/, '#d64f7a'], [/wemobi/, '#9b7cf0'], [/ribeirao/, '#6cc070'], [/macaense/, '#58b39b'], [/penha/, '#e9c046'],
+  [/itapemirim/, '#f08a3c'], [/gontijo/, '#6272dc'], [/solimoes/, '#c9785b'], [/itamarati/, '#47a0e0'], [/brasil sul/, '#d1a24a'],
+  [/santa maria/, '#b58ce0'], [/ouro e prata/, '#c8b27a'], [/nordeste/, '#e07fa8'], [/andorinha/, '#6fa8dc'], [/real expresso/, '#e05a56'],
+  [/adamantina/, '#7fbf9f'], [/catedral/, '#a3b84a'], [/rio doce/, '#4fb3a9'], [/diamante/, '#9fb7d6'], [/buser/, '#e0457b'], [/flixbus/, '#97d700']];
+const PALETTE = ['#5aa9e6', '#e4875a', '#62c39b', '#c792ea', '#e6c35c', '#e76f8f', '#7aa6ff', '#9ccf6a', '#d7a07a', '#6fd0d6'];
+const nrm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function hueOf(name) {
+  const n = nrm(name); const hit = BRAND.find(([re]) => re.test(n)); if (hit) return hit[1];
+  let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return PALETTE[h % PALETTE.length];
+}
+function shade(hex) { // no tema claro, um pouco mais escuro para ler sobre o branco
+  if (document.documentElement.dataset.mode !== 'light') return hex;
+  const v = parseInt(hex.slice(1), 16), f = .78; const c = (x) => Math.round(x * f).toString(16).padStart(2, '0');
+  return '#' + c(v >> 16) + c((v >> 8) & 255) + c(v & 255);
+}
+function colorOf(k) { return k === 'JCA' ? 'var(--white)' : shade(hueOf(DB.dims.viacoes[Number(k)]?.n)); }
+const dot = (k) => `<i class="dot" style="--c:${colorOf(k)}"></i>`;
+
 /* ---------- peças visuais ---------- */
 const tipAttr = (t) => ` data-tip="${esc(t)}"`;
-function hbars(items, {max, val, right, tip, us}) {
+function hbars(items, {max, val, right, tip, us, color}) {
   if (!items.length) return '<div class="empty">Sem dados para os filtros escolhidos.</div>';
   const mx = max ?? Math.max(...items.map(val), 0);
-  return `<div class="hb">${items.map((it, i) => { const v = val(it); const w = mx > 0 ? Math.max(.4, v / mx * 100) : 0;
-    return `<div class="hrow${us(it) ? ' us' : ''}"${tipAttr(tip(it))}><div class="nm">${esc(it.name)}</div><div class="track"><div class="b" style="width:${w}%;--i:${i}"></div></div><div class="val">${right(it)}</div></div>`; }).join('')}</div>`;
+  return `<div class="hb">${items.map((it, i) => { const v = val(it); const w = mx > 0 ? Math.max(.4, v / mx * 100) : 0; const c = color ? color(it) : '';
+    return `<div class="hrow${us(it) ? ' us' : ''}${c ? ' cl' : ''}"${c ? ` style="--c:${c}"` : ''}${tipAttr(tip(it))}><div class="nm">${c ? '<i class="dot"></i>' : ''}${esc(it.name)}</div><div class="track"><div class="b" style="width:${w}%;--i:${i}"></div></div><div class="val">${right(it)}</div></div>`; }).join('')}</div>`;
 }
-function divbars(items, {val, right, tip, us}) {
+function divbars(items, {val, right, tip, us, color}) {
   if (!items.length) return '<div class="empty">Sem dados para comparar.</div>';
   const mx = Math.max(...items.map((x) => Math.abs(val(x))), 1e-9);
   const neg = items.some((x) => val(x) < 0), pos = items.some((x) => val(x) > 0);
   const z = neg && pos ? 50 : neg ? 100 : 0; const span = neg && pos ? 50 : 100;
   return `<div class="hb">${items.map((it, i) => { const v = val(it); const w = Math.abs(v) / mx * span;
     const st = v >= 0 ? `left:${z}%;width:${w}%` : `left:${z - w}%;width:${w}%`;
-    return `<div class="hrow${us && us(it) ? ' us' : ''}"${tipAttr(tip(it))}><div class="nm">${esc(it.name)}</div><div class="track"><div class="zero" style="left:${z}%"></div><div class="b ${v >= 0 ? 'pos' : 'neg'}" style="${st};--i:${i}"></div></div><div class="val">${right(it)}</div></div>`; }).join('')}</div>`;
+    return `<div class="hrow${us && us(it) ? ' us' : ''}"${color ? ` style="--c:${color(it)}"` : ''}${tipAttr(tip(it))}><div class="nm">${color ? '<i class="dot"></i>' : ''}${esc(it.name)}</div><div class="track"><div class="zero" style="left:${z}%"></div><div class="b ${v >= 0 ? 'pos' : 'neg'}" style="${st};--i:${i}"></div></div><div class="val">${right(it)}</div></div>`; }).join('')}</div>`;
 }
-function columns(items, {label, us, them, tip, top}) {
+function columns(items, {label, us, them, tip, top, h}) {
   if (!items.length) return '<div class="empty">Sem dados.</div>';
   const mx = Math.max(...items.map((x) => us(x) + them(x)), 1e-9);
-  return `<div class="cols">${items.map((it, i) => { const a = us(it), b = them(it); const H = 150;
+  return `<div class="cols">${items.map((it, i) => { const a = us(it), b = them(it); const H = h || 150;
     return `<div class="c"${tipAttr(tip(it))}><div class="pct">${top ? top(it) : ''}</div><div class="seg2" style="--i:${i}"><i class="us" style="height:${a / mx * H}px"></i><i style="height:${b / mx * H}px"></i></div><div class="lbl">${esc(label(it))}</div></div>`; }).join('')}</div>`;
 }
 /** Linhas (uma escala só). series: [{name, color, dash, values:[n|null]}]; tip(i) → texto. */
@@ -436,7 +532,7 @@ function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
   svg.addEventListener('mouseleave', () => { xh.setAttribute('visibility', 'hidden'); dots.innerHTML = ''; hideTip(); });
 }
 function stack100(parts, total) {
-  return `<div class="stack">${parts.map((p) => `<i class="${p.us ? 'us' : ''}" style="width:${p.v / total * 100}%"${tipAttr(`${p.name}\n${n0(p.v)} passageiros · ${pct(p.v / total)}`)}></i>`).join('')}</div>`;
+  return `<div class="stack">${parts.map((p) => `<i class="cl${p.us ? ' us' : ''}" style="width:${p.v / total * 100}%;--c:${colorOf(p.k)}"${tipAttr(`${p.name}\n${n0(p.v)} passageiros · ${pct(p.v / total)}`)}></i>`).join('')}</div>`;
 }
 const deltaPill = (v, f = pp) => Number.isFinite(v) ? `<span class="pill ${cls(v, 5e-4)}">${f(v)}</span>` : '';
 
@@ -469,7 +565,9 @@ function shell() {
   const demo = DB.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><span class="stamp" id="stamp"></span><button class="btn" id="reload" title="Buscar dados novos">Atualizar</button><button class="btn" id="mode">Tema</button></div></header>
+    <div class="acts"><span class="stamp" id="stamp"></span><button class="btn" id="reload" title="Buscar dados novos">Atualizar</button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" title="Sobre os dados, a coleta e como ler">?</button></div></header>
+  <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
+  <section class="wrap" id="today"></section>
   <section class="wrap hero" id="hero"></section>
   <nav class="wrap bar" id="bar"></nav>
   <section class="wrap kpis" id="kpis"></section>
@@ -482,6 +580,9 @@ function shell() {
     <li id="srcInfo"></li></ul></footer>`;
   bindMode();
   $('#reload').onclick = () => boot(true);
+  $('#helpB').onclick = openHelp;
+  $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') closeHelp(); });
   if ($('#leaveDemo')) $('#leaveDemo').onclick = () => { store.set('demo', null); history.replaceState(null, '', location.pathname); RAW = DB = null; boot(); };
   buildBar();
 }
@@ -501,7 +602,12 @@ function buildBar() {
     <button class="chip" id="cmpB">Comparar com período anterior</button>
   </div>
   <div class="bar-row">
-    <select class="sel" id="focusS" title="Quem é o “nós” das contas">${opt('JCA', 'Grupo JCA')}<optgroup label="Marcas JCA">${viac.filter((v) => v.g === 'JCA').map((v) => opt(v.i, v.n)).join('')}</optgroup><optgroup label="Concorrência">${viac.filter((v) => v.g !== 'JCA').map((v) => opt(v.i, v.n)).join('')}</optgroup></select>
+    <details class="dd" id="ddF" title="Quem é o “nós” das contas"><summary class="chip fsum" id="sumF"></summary><div class="pop wide" id="focusL">
+      <label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="fq" placeholder="Buscar viação" autocomplete="off"></label>
+      <div class="grp"><span>Nós</span></div><button class="it" data-f="JCA"><i class="dot" style="--c:var(--white)"></i>Grupo JCA<small>todas as marcas</small></button>
+      <div class="grp"><span>Marcas JCA</span></div>${viac.filter((v) => v.g === 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
+      <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
+    </div></details>
     <details class="dd" id="ddR"><summary class="chip" id="sumR"></summary><div class="pop">${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span>${esc(m)}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
       <div class="grp"><button id="allR">todas as linhas</button></div></div></details>
     <details class="dd" id="ddC"><summary class="chip" id="sumC"></summary><div class="pop">${dims.classes.map((c, i) => `<label><input type="checkbox" data-c="${i}">${esc(c)}</label>`).join('')}<div class="grp"><button id="allC">todas as classes</button></div></div></details>
@@ -512,7 +618,8 @@ function buildBar() {
   const bar = $('#bar');
   bar.addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
-    if (b.closest('#viewS')) F.view = b.dataset.v;
+    if (b.dataset.f !== undefined) { F.focus = b.dataset.f; $('#ddF').open = false; }
+    else if (b.closest('#viewS')) F.view = b.dataset.v;
     else if (b.closest('#perS')) F.per = b.dataset.v;
     else if (b.id === 'cmpB') F.cmp = !F.cmp;
     else if (b.id === 'allH') F.hours.clear();
@@ -532,12 +639,13 @@ function buildBar() {
     else if (t.dataset.c !== undefined) { if (!F.classes.size) dims.classes.forEach((_, i) => F.classes.add(i)); toggle(F.classes, Number(t.dataset.c)); if (F.classes.size === dims.classes.length) F.classes.clear(); }
     else if (t.dataset.h !== undefined) toggle(F.hours, t.dataset.h);
     else if (t.dataset.w !== undefined) toggle(F.wds, Number(t.dataset.w));
-    else if (t.id === 'focusS') F.focus = t.value;
     else if (t.id === 'fromI' || t.id === 'toI') { F.from = $('#fromI').value; F.to = $('#toI').value; F.per = 'custom'; }
     else return;
     update();
   });
   document.addEventListener('click', (e) => { for (const d of $$('details.dd[open]')) if (!d.contains(e.target)) d.open = false; });
+  $('#fq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#focusL .it').forEach((b) => b.hidden = !!q && !nrm(b.textContent).includes(q)); });
+  $('#ddF').addEventListener('toggle', () => { if ($('#ddF').open) { $('#fq').value = ''; $$('#focusL .it').forEach((b) => b.hidden = false); setTimeout(() => $('#fq').focus(), 30); } });
 }
 const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
 function syncBar() {
@@ -559,7 +667,8 @@ function syncBar() {
   $('#custom').style.display = real && F.per === 'custom' ? '' : 'none';
   $('#bar .k').style.display = real ? '' : 'none';
   const {a, b} = ranges(); $('#fromI').value = F.from || a; $('#toI').value = F.to || b; $('#fromI').max = $('#toI').max = DB.lastClosed; $('#fromI').min = $('#toI').min = DB.firstDay;
-  $('#focusS').value = F.focus;
+  $('#sumF').innerHTML = `${F.focus === 'JCA' ? '<i class="dot" style="--c:var(--white)"></i>' : dot(F.focus)}${esc(focusName())}`;
+  $$('#focusL .it').forEach((b) => b.setAttribute('aria-current', String(b.dataset.f === String(F.focus))));
   $$('#ddR input').forEach((i) => i.checked = !F.routes.size || F.routes.has(Number(i.dataset.r)));
   $$('#ddC input').forEach((i) => i.checked = !F.classes.size || F.classes.has(Number(i.dataset.c)));
   const nR = F.routes.size, nC = F.classes.size;
@@ -585,6 +694,7 @@ function render() {
   $('#stamp').innerHTML = `Dados de <b>${gen.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})} ${gen.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</b>`;
   $('#srcInfo').innerHTML = `Fonte: <b>${esc(DB.data.app || 'Helios')}</b> · ClickBus · viagens de ${brY(DB.firstDay)} a ${brY(addD(DB.today, 14))}. Atualiza sozinho a cada ${CONFIG.refreshMin} min com a página aberta.`;
 
+  $('#today').innerHTML = todayHtml();
   // ---- abertura ----
   const dM = P ? T.pax / P.pax - 1 : NaN, dU = P ? T.upax / P.upax - 1 : NaN, dS = P ? T.share - P.share : NaN;
   const effMkt = P ? (T.pax - P.pax) * P.share : NaN, effShr = P ? T.pax * (T.share - P.share) : NaN;
@@ -629,6 +739,31 @@ function render() {
   bindTable();
 }
 const afterRender = [];
+
+/* Hoje: compras detectadas hoje (todas as linhas), JCA × concorrência, contra a média dos 7 dias anteriores. */
+function todayHtml() {
+  const t = DB.today, hh = DB.data.hojeHoras;
+  let tot = 0, us = 0;
+  if (hh) for (const h of hh) { tot += h[1]; us += h[2]; }
+  else for (const s of DB.sales) if (s.d === t) { tot += s.pax; if (s.j) us += s.pax; }
+  let pt = 0, pu = 0; const from = addD(t, -7);
+  for (const s of DB.sales) if (s.d >= from && s.d < t) { pt += s.pax; if (s.j) pu += s.pax; }
+  const sh = tot ? us / tot : NaN, avg = pt ? pu / pt : NaN, d = sh - avg;
+  const early = tot < 15;
+  const state = early ? 'Ainda cedo para dizer' : !Number.isFinite(avg) ? `JCA com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
+  const c = early || !Number.isFinite(avg) ? '' : d >= .01 ? 'up' : d <= -.01 ? 'down' : '';
+  const last = DB.data.coleta?.ultimaLeitura;
+  const when = last ? `${last.slice(11)} · ${ago(brtMs(last))}` : new Date(DB.data.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  const nowH = Number(new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23'}).format(new Date()));
+  const hrs = hh ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
+  return `<div class="today">
+    <div><p class="eyebrow now"><i></i>Hoje · atualizado ${esc(when)}</p><h2 class="${c}">${esc(state)}</h2>
+      <p class="sub">JCA com <b>${pct(sh)}</b> das compras de hoje${Number.isFinite(avg) ? ` · média 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p></div>
+    <div><div class="nums"><div><b>${n0(tot)}</b><span>compras hoje</span></div><div><b>${n0(us)}</b><span>JCA</span></div><div><b>${n0(tot - us)}</b><span>concorrência</span></div></div></div>
+    <div>${hrs.length ? columns(hrs, {h: 82, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
+      tip: (x) => `${x[0]}h–${x[0]}h59\nJCA ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`}) : '<p class="sub">Compras por hora aparecem com a API 3.1.1.</p>'}</div>
+  </div>`;
+}
 const mod = (title, text, body) => `<section class="mod"><div class="mod-head"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}</div><div class="mod-body">${body}</div></section>`;
 
 /* 1 · para onde foram */
@@ -653,7 +788,7 @@ function modWhere(T, P, cur, prev) {
     `<p class="insight">${main}</p>
     ${divbars(parts, {val: (x) => x.v, right: (x) => `<b>${sgn(x.v)}</b>`, tip: (x) => `${x.name}\n${x.t}`, us: (x) => x.us})}
     <div><p class="h4">Concorrentes · quem ganhou e quem perdeu passageiros</p>
-    ${divbars(top, {val: (x) => x.v, us: (x) => companyIsUs(x.k), right: (x) => `${sgn(x.v)} ${deltaPill(x.s - x.sp)}`, tip: (x) => `${x.name}\n${n0(x.y)} → ${n0(x.x)} passageiros (${sgn(x.v)})\nParcela ${pct(x.sp)} → ${pct(x.s)} (${pp(x.s - x.sp)})`})}</div>`);
+    ${divbars(top, {val: (x) => x.v, us: (x) => companyIsUs(x.k), color: (x) => colorOf(x.k), right: (x) => `${sgn(x.v)} ${deltaPill(x.s - x.sp)}`, tip: (x) => `${x.name}\n${n0(x.y)} → ${n0(x.x)} passageiros (${sgn(x.v)})\nParcela ${pct(x.sp)} → ${pct(x.s)} (${pp(x.s - x.sp)})`})}</div>`);
 }
 
 /* 2 · ao longo do tempo */
@@ -690,7 +825,7 @@ function modRank(cur, prev, T) {
   const pos = items.findIndex((x) => companyIsUs(x.k)) + 1;
   return mod('Quem leva os passageiros', `Parcela de cada viação no recorte. ${F.group && F.focus === 'JCA' ? 'Marcas JCA somadas (desligue “Marcas JCA juntas” para abrir).' : ''}`,
     `${usItems.length ? `<p class="insight">${esc(usItems[0].name)} é a <em>${pos}ª</em> de ${items.length} viações em passageiros.</p>` : ''}
-    ${hbars(items.slice(0, 20), {val: (x) => x.s, us: (x) => companyIsUs(x.k), right: (x) => `<b>${pct(x.s)}</b>${prev.length ? deltaPill(x.s - x.sp) : ''}`,
+    ${hbars(items.slice(0, 20), {val: (x) => x.s, us: (x) => companyIsUs(x.k), color: (x) => colorOf(x.k), right: (x) => `<b>${pct(x.s)}</b>${prev.length ? deltaPill(x.s - x.sp) : ''}`,
       tip: (x) => `${x.name}\n${n0(x.pax)} passageiros · parcela ${pct(x.s)}${prev.length ? ` (${pp(x.s - x.sp)})` : ''}\nOferta ${pct(x.fair)} das poltronas · ${n0(x.n)} ônibus\nOcupação ${pct(x.lf, 0)} · tíquete médio ${money(x.tk)}`})}
     ${items.length > 20 ? `<p class="note">+ ${items.length - 20} viações menores na tabela abaixo.</p>` : ''}`);
 }
@@ -703,16 +838,19 @@ function modRoutes(cur, prev) {
   const rows = [...a.entries()].map(([k, l]) => { const t = tot(l); const p = b.has(k) ? tot(b.get(k)) : null;
     const comp = [...groupBy(l, companyKey).entries()].map(([ck, cl]) => ({k: ck, name: companyName(ck), v: cl.reduce((n, r) => n + r.pax, 0), us: companyIsUs(ck)})).sort((x, y) => y.us - x.us || y.v - x.v);
     return {k, t, p, comp, ds: p && p.pax ? t.share - p.share : NaN}; }).filter((x) => x.t.pax > 0).sort((x, y) => y.t.pax - x.t.pax);
+  const keyTot = new Map(); for (const x of rows) for (const c of x.comp) keyTot.set(c.k, (keyTot.get(c.k) || 0) + c.v);
+  const keys = [...keyTot.entries()].sort((p, q) => companyIsUs(q[0]) - companyIsUs(p[0]) || q[1] - p[1]).slice(0, 12);
   const worst = rows.filter((r) => Number.isFinite(r.ds)).sort((x, y) => x.ds - y.ds)[0];
   const best = rows.filter((r) => Number.isFinite(r.ds)).sort((x, y) => y.ds - x.ds)[0];
-  return mod('Linha a linha', `Composição dos passageiros em cada ${F.mode === 'mkt' ? 'mercado' : 'sentido'}: branco = ${esc(us)}, cinza = cada concorrente. Passe o mouse nas fatias.`,
+  return mod('Linha a linha', `Composição dos passageiros em cada ${F.mode === 'mkt' ? 'mercado' : 'sentido'}: fatia cheia = ${esc(us)}, tons apagados = cada concorrente na cor dele. Passe o mouse nas fatias.`,
     `<div class="tools"><div class="seg" id="modeS"><button data-m="dir" aria-pressed="${F.mode === 'dir'}">Por sentido</button><button data-m="mkt" aria-pressed="${F.mode === 'mkt'}">Por mercado</button></div></div>
     ${worst && best && worst !== best ? `<p class="insight">Maior perda de parcela: <em>${esc(shortRoute(worst.k))} (${pp(worst.ds)})</em>. Maior ganho: <em>${esc(shortRoute(best.k))} (${pp(best.ds)})</em>.</p>` : ''}
     <div class="routes"><div class="rt h"><span>Linha</span><span class="stk">Composição</span><span class="n">Parcela</span><span class="n p3">Variação</span><span class="n">Ocupação</span></div>
     ${rows.map((x) => `<div class="rt"${tipAttr(`${x.k}\nMercado: ${n0(x.t.pax)} passageiros · ${us}: ${n0(x.t.upax)}\nParcela ${pct(x.t.share)} · oferta ${pct(x.t.fair)}${x.p ? `\nAntes: parcela ${pct(x.p.share)} · mercado ${n0(x.p.pax)}` : ''}\nOcupação ${us} ${pct(x.t.lfUs, 0)} × concorrência ${pct(x.t.lfThem, 0)}`)}>
       <div class="nm"><b>${esc(shortRoute(x.k))}</b><small>${n0(x.t.pax)} passageiros</small></div><div class="stk">${stack100(x.comp, x.t.pax)}</div>
       <div class="n"><b>${pct(x.t.share)}</b><small>oferta ${pct(x.t.fair, 0)}</small></div><div class="n p3">${deltaPill(x.ds) || '<span class="mut">—</span>'}</div>
-      <div class="n">${pct(x.t.lfUs, 0)}<small>conc. ${pct(x.t.lfThem, 0)}</small></div></div>`).join('') || '<div class="empty">Sem dados.</div>'}</div>`);
+      <div class="n">${pct(x.t.lfUs, 0)}<small>conc. ${pct(x.t.lfThem, 0)}</small></div></div>`).join('') || '<div class="empty">Sem dados.</div>'}</div>
+    <div class="keys">${keys.map(([k]) => `<span>${dot(k)}${esc(companyName(k))}</span>`).join('')}</div>`);
 }
 
 /* 5 · horário e dia da semana */
@@ -793,7 +931,7 @@ function tableRows(cur, prev) {
   for (const r of prev) mktP.set(r.r, (mktP.get(r.r) || 0) + r.pax);
   return [...a.entries()].map(([k, l]) => { const [ri, ck] = k.split('|'); const t = tot(l); const y = (b.get(k) || []).reduce((n, r) => n + r.pax, 0);
     const s = t.pax / (mkt.get(Number(ri)) || 1), sp = mktP.get(Number(ri)) ? y / mktP.get(Number(ri)) : NaN;
-    return {route: shortRoute(DB.dims.rotas[ri].l), co: companyName(ck), us: companyIsUs(ck), pax: t.pax, s, ds: s - sp, cap: t.cap, n: t.n, lf: t.cap ? t.pax / t.cap : NaN, rec: t.rec, tk: t.pax ? t.rec / t.pax : NaN}; });
+    return {route: shortRoute(DB.dims.rotas[ri].l), co: companyName(ck), ck, us: companyIsUs(ck), pax: t.pax, s, ds: s - sp, cap: t.cap, n: t.n, lf: t.cap ? t.pax / t.cap : NaN, rec: t.rec, tk: t.pax ? t.rec / t.pax : NaN}; });
 }
 const TCOLS = [['route', 'Linha'], ['co', 'Viação'], ['pax', 'Passageiros'], ['s', 'Parcela na linha'], ['ds', 'Variação'], ['n', 'Ônibus'], ['cap', 'Poltronas'], ['lf', 'Ocupação'], ['tk', 'Tíquete médio'], ['rec', 'Receita est.']];
 function modTable(cur, prev) {
@@ -802,7 +940,7 @@ function modTable(cur, prev) {
   rows.sort((x, y) => { const a = x[tSort.k], b = y[tSort.k]; return (typeof a === 'string' ? a.localeCompare(b, 'pt-BR') : (Number.isFinite(a) ? a : -Infinity) - (Number.isFinite(b) ? b : -Infinity)) * tSort.d; });
   window.__rows = rows;
   const fmt = {pax: (r) => n0(r.pax), s: (r) => `<span class="minibar"><i style="width:${Math.min(100, r.s * 100)}%"></i></span>${pct(r.s)}`, ds: (r) => prev.length && Number.isFinite(r.ds) ? deltaPill(r.ds) : '—',
-    n: (r) => n0(r.n), cap: (r) => n0(r.cap), lf: (r) => pct(r.lf, 0), tk: (r) => money(r.tk), rec: (r) => money(r.rec), route: (r) => esc(r.route), co: (r) => esc(r.co)};
+    n: (r) => n0(r.n), cap: (r) => n0(r.cap), lf: (r) => pct(r.lf, 0), tk: (r) => money(r.tk), rec: (r) => money(r.rec), route: (r) => esc(r.route), co: (r) => dot(r.ck) + esc(r.co)};
   return mod('Tudo em tabela', 'Linha × viação no recorte. Clique no título da coluna para ordenar.',
     `<div class="tools"><label class="search"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="tq" placeholder="Buscar linha ou viação" value="${esc(tQ)}"></label><span class="sp" style="flex:1"></span><button class="btn" id="csvB">Exportar CSV</button></div>
     <div class="tbl-wrap"><table><thead><tr>${TCOLS.map(([k, l]) => `<th data-k="${k}"${tSort.k === k ? ` aria-sort="${tSort.d > 0 ? 'ascending' : 'descending'}"` : ''}>${l}</th>`).join('')}</tr></thead>
@@ -818,6 +956,57 @@ function bindTable() {
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8'}));
     const {a: d0, b: d1} = ranges(); a.download = `helios_mercado_${d0}_${d1}.csv`; a.click(); URL.revokeObjectURL(a.href); };
   const m = $('#modeS'); if (m) m.onclick = (e) => { const b = e.target.closest('button'); if (b) { F.mode = b.dataset.m; saveF(); render(); } };
+}
+
+/* ---------- ajuda: coleta e leitura ---------- */
+function closeHelp() { const h = $('#help'); if (h) h.hidden = true; document.body.style.overflow = ''; }
+function openHelp() { $('#helpP').innerHTML = helpHtml(); $('#help').hidden = false; document.body.style.overflow = 'hidden'; }
+const brtMs = (s) => s ? Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10), +s.slice(11, 13) + 3, +s.slice(14, 16)) : NaN; // horário de Brasília → UTC
+const ago = (ms) => { const m = (Date.now() - ms) / 6e4; return !Number.isFinite(m) ? '—' : m < 1 ? 'agora' : m < 60 ? `há ${Math.round(m)} min` : m < 48 * 60 ? `há ${NF1.format(m / 60)} h` : `há ${Math.round(m / 1440)} dias`; };
+function helpHtml() {
+  const d = DB.data, C = d.coleta;
+  const closed = [...new Set(DB.rows.filter((r) => !r.open).map((r) => r.d))].sort();
+  const open = [...new Set(DB.rows.filter((r) => r.open).map((r) => r.d))].sort();
+  const jcaN = DB.dims.viacoes.filter((v) => v.g === 'JCA').length;
+  const sec = (t, body) => `<section><h3>${t}</h3>${body}</section>`;
+  let coleta = '';
+  if (C) {
+    const last = brtMs(C.ultimaLeitura), mins = (Date.now() - last) / 6e4;
+    const st = mins <= 20 ? '' : mins <= 90 ? 'warn' : 'bad';
+    const msg = mins <= 20 ? 'Coleta rodando normalmente' : mins <= 90 ? 'Coleta mais lenta que o normal' : 'Coleta parada: confira o Controle da planilha';
+    const capTxt = C.tetoClickBus ? `${n0(C.hoje.clickbus)} de ${n0(C.tetoClickBus)}` : n0(C.hoje.clickbus);
+    const errs = C.fontes.reduce((n, f) => n + f.erro, 0);
+    const pd = C.porDia || [], mx = Math.max(1, ...pd.map((x) => x[1]));
+    coleta = sec('Coleta do Helios', `<div class="live ${st}"><i></i><div><b>${msg}</b><br><span class="mut">Última leitura ${esc(C.ultimaLeitura.slice(8, 10) + '/' + C.ultimaLeitura.slice(5, 7) + ' ' + C.ultimaLeitura.slice(11))} · ${ago(last)}</span></div></div>`) +
+      `<div class="stats">
+        <div><b>${n0(C.dias)}</b><span>dias coletados · desde ${br(C.primeiroDia)}</span></div>
+        <div><b>${compact(C.leituras)}</b><span>consultas (rota × data lidas)</span></div>
+        <div><b>${compact(C.requisicoes)}</b><span>requisições aos sites</span></div>
+        <div><b>${n0(C.hoje.leituras)}</b><span>consultas hoje</span></div>
+        <div><b>${capTxt}</b><span>requisições ClickBus hoje${C.tetoClickBus ? ' (teto diário)' : ''}</span></div>
+        <div><b class="${errs ? 'down' : ''}">${n0(errs)}</b><span>consultas com erro</span></div></div>` +
+      (pd.length ? sec('Consultas por dia', `<div class="spark">${pd.map((x) => `<i class="${x[3] ? 'err' : ''}" style="height:${x[1] / mx * 100}%"${tipAttr(`${WDL[wdOf(x[0])]} ${br(x[0])}\n${n0(x[1])} consultas · ${n0(x[2])} requisições${x[3] ? `\n${x[3]} com erro` : ''}`)}></i>`).join('')}</div>`) : '') +
+      (C.cobertura?.length ? sec(`Cobertura das próximas ${C.cobertura.length} datas · ${C.rotasAtivas} sentidos`, `<div class="covg">${C.cobertura.map(([dt, ok, tot], i) => `<div><i class="${ok >= tot ? '' : ok ? 'mid' : 'none'}"${tipAttr(`${WDL[wdOf(dt)]} ${br(dt)} · ${i ? 'D+' + i : 'hoje'}\n${ok} de ${tot} sentidos já lidos na ClickBus`)}>${ok}</i><small>${i ? '+' + i : 'hoje'}</small></div>`).join('')}</div><p class="note" style="margin-top:8px">Hoje é lido a cada 1–2 h, amanhã 2× ao dia e as demais datas 1× ao dia. Número = sentidos já lidos.</p>`) : '') +
+      sec('Por fonte', `<div class="tbl-wrap"><table><thead><tr><th>Fonte</th><th>Consultas</th><th>OK</th><th title="Sem partidas ou já encerrado">Vazias</th><th>Erro</th><th>Última</th></tr></thead><tbody>${C.fontes.map((f) => `<tr><td>${esc(f.f)}</td><td>${n0(f.n)}</td><td>${n0(f.ok)}</td><td>${n0(f.vazio)}</td><td class="${f.erro ? 'down' : ''}">${n0(f.erro)}</td><td>${esc(f.ultima.slice(11))}</td></tr>`).join('')}</tbody></table></div>`);
+  } else {
+    coleta = sec('Coleta do Helios', `<p class="mut" style="margin:0">${d.demo ? 'Demonstração: dados fictícios, sem coleta real.' : 'Esta versão da API não manda o resumo da coleta.'}</p>`);
+  }
+  const panel = sec('Neste painel', `<div class="stats">
+      <div><b>${n0(closed.length)}</b><span>dias de viagens fechadas${closed.length ? ` · ${br(closed[0])}–${br(closed[closed.length - 1])}` : ''}</span></div>
+      <div><b>${n0(open.length)}</b><span>datas à venda${open.length ? ` · até ${br(open[open.length - 1])}` : ''}</span></div>
+      <div><b>${n0(DB.dims.rotas.length)}</b><span>sentidos · ${n0(DB.markets.length)} mercados</span></div>
+      <div><b>${n0(DB.dims.viacoes.length)}</b><span>viações · ${jcaN} JCA</span></div>
+      <div><b>${compact(DB.rows.length)}</b><span>registros recebidos</span></div>
+      <div><b>${new Date(d.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</b><span>dados gerados · ${esc(d.app || 'Helios')}</span></div></div>`);
+  const gl = sec('Como ler', `<dl class="gl">
+      <div><dt>Passageiros</dt><dd>Poltronas ocupadas do ônibus na ClickBus (capacidade − livres). Inclui guichê, site da viação e outros apps, porque o estoque é o do ônibus.</dd></div>
+      <div><dt>Parcela</dt><dd>Passageiros da viação ÷ passageiros de todas as viações no recorte filtrado.</dd></div>
+      <div><dt>Parcela de oferta</dt><dd>Mesma conta com as poltronas oferecidas. Parcela acima da oferta = enche mais que a média.</dd></div>
+      <div><dt>Índice oferta × procura</dt><dd>Parcela ÷ parcela de oferta × 100. Acima de 100 = leva mais passageiros do que o tamanho da frota sugere.</dd></div>
+      <div><dt>Realizado × Em venda</dt><dd>Realizado = viagens que já partiram (números finais). Em venda = hoje até D+14, com o que já foi comprado.</dd></div>
+      <div><dt>Ritmo de compra</dt><dd>Poltronas que o Helios viu sair do estoque em cada dia de coleta, pelo dia da compra.</dd></div>
+      <div><dt>Cores</dt><dd>Cada viação tem um tom fixo (inspirado na marca quando conhecida). Cheio = foco ou passando o mouse; apagado = contexto.</dd></div></dl>`);
+  return `<header><div><p class="eyebrow">Helios · Mercado</p><h2>Sobre os dados</h2></div><button class="btn ico" data-close title="Fechar (Esc)">×</button></header>${coleta}${panel}${gl}`;
 }
 
 /* ---------- partida ---------- */
