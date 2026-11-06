@@ -273,7 +273,7 @@ footer b { color: var(--white); font-weight: 500; }
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: '',          // endereço /exec do App da Web do Helios (o link do menu também traz)
+  api: 'https://script.google.com/macros/s/AKfycbxAYXsmAEpQfmPZ_QixFPbKSvrUS1Wp83hVb8kvwqsdOy31AhpvaV2MSURjfGNpzJHOtg/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 10,
 };
@@ -346,14 +346,14 @@ function model(data) {
   const lastClosed = closed.length ? closed.reduce((a, b) => a > b ? a : b) : addD(data.hoje, -1);
   const firstDay = rows.length ? rows.reduce((a, r) => a < r.d ? a : r.d, '9999') : lastClosed;
   const markets = [...new Set(dims.rotas.map((r) => r.m))];
-  return {data, dims, jca, rows, sales, lastClosed, firstDay, today: data.hoje, markets};
+  return {data, dims, jca, rows, sales, lastClosed, firstDay, today: data.hoje, markets, hasClosed: closed.length > 0};
 }
 
 /* ---------- filtros ---------- */
 const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set(), classes: new Set(), hours: new Set(), wds: new Set(), focus: 'JCA', group: true, mode: 'dir'};
 function loadF() {
   try { const s = JSON.parse(store.get('f') || '{}');
-    for (const k of ['per', 'from', 'to', 'cmp', 'view', 'focus', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
+    for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
     for (const k of ['routes', 'classes', 'hours', 'wds']) if (Array.isArray(s[k])) F[k] = new Set(s[k]);
   } catch {}
 }
@@ -543,6 +543,8 @@ const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
 function syncBar() {
   const press = (sel, on) => $$(sel).forEach((b) => b.setAttribute('aria-pressed', String(on(b))));
   press('#viewS button', (b) => b.dataset.v === F.view);
+  const rb = $('#viewS [data-v=real]'); rb.disabled = !DB.hasClosed; rb.style.opacity = DB.hasClosed ? '' : '.4';
+  rb.title = DB.hasClosed ? '' : 'Ainda não há viagem fechada: o primeiro dia fecha na virada da meia-noite.';
   press('#perS button', (b) => b.dataset.v === F.per);
   $$('#hrs input').forEach((i) => i.checked = F.hours.has(i.dataset.h));
   $$('#wds input').forEach((i) => i.checked = F.wds.has(Number(i.dataset.w)));
@@ -830,6 +832,7 @@ async function boot(force) {
     if (!RAW) return startScreen();
     const keep = !!DB; DB = model(RAW);
     if (!keep) { loadF(); shell(); }
+    if (!DB.hasClosed) F.view = 'venda'; // nenhuma viagem fechada ainda: só existe o que está à venda
   }
   syncBar(); render();
   clearInterval(timer);
