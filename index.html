@@ -24,16 +24,6 @@
   --pad: clamp(16px, 4.4vw, 72px);
   --ease: cubic-bezier(.16,1,.3,1);
 }
-:root[data-mode="light"] {
-  color-scheme: light;
-  --black: #f7f7f3; --panel: #fff; --panel-2: #efefea;
-  --white: #151514; --muted: #6a6a65; --faint: #9c9c96;
-  --line: rgba(0,0,0,.09); --line-strong: rgba(0,0,0,.2);
-  --red-dim: rgba(236,90,85,.14); --teal-dim: rgba(79,158,161,.14);
-  --pos-text: #377073; --neg-text: #c2443f;
-  --them: #d5d5cf; --them-2: #e4e4de; --them-hi: #a9a9a3;
-  --bar-bg: #f4f4f0; --page: #ecece7; --card: rgba(255,255,255,.95); --card-line: rgba(0,0,0,.08); --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-height: 100vh; background: var(--black); color: var(--white); font-family: var(--font); font-size: 15px; line-height: 1.5;
@@ -331,7 +321,6 @@ dl.gl dd { margin: 2px 0 0; color: var(--muted); }
 
 /* ===== v4: coluna estreita, cartões arredondados ===== */
 :root { --maxw: 1160px; --pad: clamp(14px, 3vw, 28px); --r: 22px; --card-solid: #131313; }
-:root[data-mode="light"] { --card-solid: #fff; }
 .wrap { width: min(var(--maxw), calc(100% - 2 * var(--pad))); margin-inline: auto; padding-inline: 0; }
 .top { padding-block: 18px 14px; }
 .live-st { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); border: 1px solid var(--card-line); background: var(--card-solid); border-radius: 999px; padding: 7px 14px 7px 12px; }
@@ -477,6 +466,245 @@ footer ul { margin-top: 10px; }
   .tl { grid-template-columns: minmax(68px, 100px) minmax(0, 1fr) 34px 88px; gap: 8px; }
   .kpi { padding: 18px 14px; } .kpi + .kpi { padding-left: 14px; }
 }
+/* Leitura executiva */
+:root {
+  --maxw: 100%;
+  --pad: clamp(12px, 2vw, 38px);
+  --r: 18px;
+  --page: #050505;
+  --black: #050505;
+  --panel: #121213;
+  --panel-2: #19191b;
+  --card: rgba(14, 14, 15, .82);
+  --card-solid: #121213;
+  --white: #f1f1f2;
+  --muted: #afafb4;
+  --faint: #95959c;
+  --line: rgba(220, 220, 228, .13);
+  --line-strong: rgba(220, 220, 228, .24);
+  --card-line: rgba(220, 220, 228, .15);
+  --us: #d6dee8;
+  --them: #363638;
+  --them-2: #28282b;
+  --them-hi: #77777d;
+  --pos-text: #a1cfbc;
+  --neg-text: #eca6a8;
+  --teal: #95bfae;
+  --red: #e08c90;
+  --teal-dim: rgba(149, 191, 174, .10);
+  --red-dim: rgba(224, 140, 144, .10);
+  --halo: rgba(146, 151, 165, .15);
+  --glass: rgba(13, 13, 14, .74);
+  --scroll-thumb: #505054;
+}
+html, .tbl-wrap, .pop, .drawer-p { scrollbar-color: var(--scroll-thumb) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border: 2px solid var(--page); border-radius: 99px; }
+::-webkit-scrollbar-track { background: var(--page); }
+body {
+  background-color: var(--page);
+  background-image: radial-gradient(ellipse 76rem 34rem at 83% -12rem, var(--halo), transparent 82%);
+  background-size: auto;
+  background-repeat: no-repeat;
+}
+.wrap { width: calc(100% - 2 * var(--pad)); }
+.top { min-height: 70px; padding: 13px 0; }
+.top .brand { letter-spacing: .21em; }
+.top .brand svg { height: 20px; }
+.top .brand path:not(:first-child) { fill: var(--them-hi); }
+.top .acts { gap: 6px; }
+.top .btn, .top .live-st { background: var(--card); }
+.top .btn:hover { background: var(--white); color: var(--black); }
+.bar {
+  position: sticky; top: 8px; z-index: 40;
+  background: var(--glass); backdrop-filter: blur(20px) saturate(125%);
+  border-radius: 14px; margin-top: 0; padding: 9px 12px;
+}
+.filters-toggle { display: none; }
+.filters-panel { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; min-width: 0; }
+.filters-panel .bar-row { gap: 5px 8px; }
+.filters-panel > .tokens { flex: 1 0 100%; }
+#viewS button, #perS button { padding-inline: 9px; }
+.pop { background: var(--card-solid); box-shadow: 0 14px 40px rgba(0,0,0,.18); }
+.briefing { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 14px; margin-block: 14px; align-items: start; }
+#today, #planning, .radar-grid > * { min-width: 0; }
+#today .today { display: block; overflow: visible; margin: 0; background: var(--card); }
+#today .t-main { padding: clamp(18px, 2.2vw, 32px); }
+.headline-share { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 9px; }
+.headline-share strong { font-size: clamp(46px, 5.5vw, 76px); line-height: 1; font-weight: 600; letter-spacing: -.08em; }
+.headline-share > span:not(.pill) { color: var(--muted); font-size: 13px; }
+#today .t-main h2 { font-size: clamp(19px, 2.1vw, 27px); margin-block: 9px 8px; }
+#today .trend-icon-box { width: 29px; height: 29px; border-radius: 8px; }
+#today .trend-icon-box .trend-icon { width: 18px; height: 18px; }
+#today .trend-counts { margin-top: 16px; }
+#today .trend-kpi { background: var(--panel-2); color: var(--muted); }
+#today .trend-kpi b { color: var(--white); }
+#today .trend-kpi.up .trend-icon { color: var(--pos-text); }
+#today .trend-kpi.down .trend-icon { color: var(--neg-text); }
+#today .nums { margin: 14px 0 0; }
+#today .nums > div { padding: 8px 10px; background: transparent; border: 1px solid var(--line); border-radius: 9px; }
+#today .nums b { font-size: 19px; }
+.today-detail { border-top: 1px solid var(--card-line); }
+.today-detail > summary { padding: 12px clamp(18px, 2.2vw, 32px); }
+.today-detail-content { display: grid; min-width: 0; padding: 4px clamp(18px, 2.2vw, 32px) 20px; gap: 15px; }
+.today-detail-content .tl-grid { grid-template-columns: minmax(0, 1fr); }
+.today-detail-content .radar svg { max-height: 225px; }
+.today-detail-content .t-lines { border-top: 1px solid var(--line); padding-top: 10px; }
+.today-detail-content .cols { height: 92px; }
+.today-detail-content .h4 { margin-bottom: 8px; }
+.disclosure { margin-block: 14px; }
+.disclosure > summary, .today-detail > summary, .footer-method > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  list-style: none; cursor: pointer; font-size: 13px; font-weight: 600;
+}
+:is(.disclosure, .today-detail, .footer-method) > summary::-webkit-details-marker { display: none; }
+:is(.disclosure, .today-detail, .footer-method) > summary::after {
+  content: ""; width: 8px; height: 8px; margin: 0 3px 4px 4px; flex: none;
+  border: solid var(--muted); border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg); transition: transform .2s var(--ease);
+}
+:is(.disclosure, .today-detail, .footer-method)[open] > summary::after { transform: translateY(4px) rotate(225deg); }
+.disclosure > summary {
+  min-height: 48px; padding: 9px 14px; border-radius: 12px;
+  border: 1px solid var(--card-line); background: var(--glass);
+}
+.disclosure > summary small { color: var(--muted); font-weight: 400; margin-inline-start: auto; text-align: right; }
+.radar-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 10px; }
+.radar-grid .mod { padding: 16px 20px; }
+.radar-grid .radar svg { max-height: 245px; }
+.analysis > .hero { padding: 20px 2px 12px; }
+.analysis > .hero h1 { font-size: clamp(29px, 4vw, 50px); }
+.analysis .kpis { margin-block: 5px 0; }
+.analysis > main { padding-bottom: 2px; }
+.footer-brand { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-block: 16px; }
+.footer-brand > svg { flex: none; width: 38px; height: 38px; }
+.footer-brand strong { display: block; font-size: 13px; color: var(--white); }
+.footer-brand small { font-size: 11px; }
+.footer-method > summary { justify-content: flex-start; color: var(--muted); }
+.footer-method ul { margin: 9px 0 0; }
+.footer-method { padding-bottom: 12px; }
+footer.wrap { margin-top: 20px; padding-block: 0 22px; }
+button, summary { transition: background-color .16s ease, color .16s ease, border-color .16s ease, transform .16s var(--ease); }
+button:enabled:active, summary:active { transform: translateY(1px); }
+button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color: var(--us); }
+.disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content { animation: reveal .21s var(--ease) both; }
+@keyframes reveal { from { opacity: .4; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.status-card { background: var(--card); }
+@media (max-width: 920px) {
+  .briefing { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .top { gap: 6px; min-height: 48px; }
+  .stamp-age { display: none; }
+  #today .t-main { padding: 14px 16px; }
+  .headline-share { margin-top: 6px; gap: 2px 8px; }
+  .headline-share strong { font-size: 44px; }
+  .headline-share > span:not(.pill) { font-size: 12px; }
+  #today .t-main h2 { margin: 6px 0 4px; font-size: 18px; }
+  #today .trend-counts { margin-top: 10px; margin-bottom: 4px; }
+  #today .trend-kpi { padding: 6px 8px; }
+  #today .trend-kpi b { font-size: 16px; }
+  .trend-scope { font-size: 10px; }
+  .trend-highlights { margin-top: 6px; gap: 4px 8px; font-size: 11px; }
+  #today .nums { margin-top: 10px; }
+  #today .nums > div { padding: 6px 8px; }
+  .today-detail > summary { padding: 9px 16px; }
+  .top .brand { gap: 8px; letter-spacing: .12em; font-size: 10px; }
+  .top .brand svg { height: 15px; }
+  .top .btn, .top .live-st { font-size: 10px; padding: 6px 8px; }
+  .top .btn.ico { width: 28px; height: 28px; }
+  .top .acts { gap: 4px; }
+  .bar { top: 5px; padding: 5px 8px; }
+  .filters-toggle {
+    display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 35px;
+    color: var(--white); background: transparent; border: 0; padding: 0 5px;
+    font-size: 12px; font-weight: 600; text-align: left;
+  }
+  .filters-toggle > small { color: var(--muted); font-size: 11px; font-weight: 400; margin-inline-start: 8px; }
+  #bar:not(.expanded) .filters-panel { display: none; }
+  .filters-panel { display: grid; gap: 7px; padding: 2px 4px 5px; }
+  .filters-panel .bar-row { gap: 5px; }
+  .filters-panel .chip, .filters-panel .seg button { min-height: 34px; }
+  .briefing { gap: 10px; margin-block: 9px; }
+  .radar-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .disclosure { margin-block: 10px; }
+  .disclosure > summary small { font-size: 10px; }
+  .tl { grid-template-columns: minmax(62px, .9fr) minmax(18px, 1fr) 33px 82px; gap: 6px; }
+  .tl .p { font-size: 11px; }
+  .today-detail-content { gap: 10px; }
+  .today-detail-content .t-lines .thead { flex-wrap: wrap; }
+}
+@media (max-width: 380px) {
+  .top .live-st { padding-inline: 6px; }
+  .top .brand { font-size: 9px; letter-spacing: .08em; }
+  .disclosure > summary small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  button:enabled:active, summary:active { transform: none; }
+}
+
+#planning { min-width: 0; align-self: start; }
+.plan-card { display: flex; flex-direction: column; gap: 9px; padding: clamp(16px, 1.8vw, 25px); border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--card); backdrop-filter: blur(18px); }
+.plan-card h2, .plan-card h3, .plan-card p { margin: 0; }
+.plan-top, .plan-elasticity-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 9px; }
+.plan-card h2 { margin-top: 3px; font-size: clamp(17px, 1.4vw, 22px); font-weight: 600; letter-spacing: -.035em; }
+.plan-card h3 { margin-top: 3px; font-size: 15px; font-weight: 600; letter-spacing: -.02em; }
+.plan-switch { display: flex; flex-wrap: wrap; gap: 2px; align-self: flex-start; min-width: 0; padding: 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel-2); }
+.plan-switch button { min-height: 29px; padding: 4px 8px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: inherit; font-size: 11px; white-space: nowrap; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
+.plan-switch button:hover { color: var(--white); }
+.plan-switch button:active { transform: scale(.96); }
+.plan-switch button:focus-visible { outline: 1px solid var(--white); outline-offset: -2px; }
+.plan-switch button[aria-pressed="true"] { background: var(--white); color: var(--black); }
+.plan-base, .plan-note, .plan-method { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.plan-result { display: grid; gap: 3px; min-width: 0; padding: 4px 0 1px; font-size: 12px; color: var(--muted); }
+.plan-result p:first-child { color: var(--white); }
+.plan-result [data-plan-seats]:is(strong) { display: block; overflow-wrap: anywhere; margin: 2px 0; color: var(--white); font-size: clamp(25px, 2.8vw, 40px); font-weight: 600; line-height: 1.06; letter-spacing: -.055em; }
+.plan-result [data-plan-price] strong { color: var(--white); font-size: 15px; font-weight: 600; }
+.plan-elasticity { display: grid; gap: 6px; margin-top: auto; padding-top: 11px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.plan-elasticity h3, .plan-elasticity-head > strong { color: var(--white); }
+.plan-elasticity-head > strong { padding: 2px 0; font-size: 21px; font-weight: 600; line-height: 1; }
+.plan-scale { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; font-variant-numeric: tabular-nums; }
+.plan-scale > div { grid-column: 1 / -1; height: 4px; overflow: hidden; border-radius: 999px; background: var(--line-strong); }
+.plan-scale span { display: block; width: var(--level); height: 100%; border-radius: inherit; background: var(--us); }
+.plan-scale small:last-child { text-align: right; }
+.plan-method > summary { width: fit-content; cursor: pointer; }
+.plan-method[open] p { margin: 6px 0 0; }
+@media (max-width: 440px) { .plan-switch button { min-height: 31px; } .plan-top { flex-wrap: wrap; } .plan-card { gap: 7px; } }
+@media (prefers-reduced-motion: reduce) { .plan-switch button { transition: none; } }
+
+/* Estado de sincronização */
+#main:has(.loading-layout) { display: block; padding-block: 12px; }
+.loading-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 14px; }
+.loading-card {
+  position: relative; min-width: 0; overflow: hidden; min-height: 260px; padding: clamp(19px, 3vw, 34px);
+  border-radius: var(--r); border: 1px solid var(--card-line);
+  background: linear-gradient(150deg, var(--glass), var(--card)); backdrop-filter: blur(22px);
+}
+.loading-card .eyebrow { margin-bottom: 9px; }
+.loading-card h1 { margin: 0 0 7px; font-size: clamp(23px, 3vw, 36px); font-weight: 600; letter-spacing: -.045em; }
+.loading-card p:not(.eyebrow) { margin: 0; color: var(--muted); max-width: 45ch; font-size: 13px; }
+.loading-card .skeleton { display: block; border-radius: 6px; background: var(--panel-2); }
+.loading-card .skeleton-figure { width: min(62%, 280px); height: 40px; margin: 25px 0 12px; }
+.loading-card .skeleton-row { display: flex; gap: 8px; }
+.loading-card .skeleton-row i { width: min(26%, 112px); height: 28px; }
+.loading-chart { display: grid; align-content: center; }
+.loading-chart svg { display: block; width: 100%; height: auto; max-height: 173px; }
+.loading-chart svg .loading-line { fill: none; stroke: var(--us); stroke-width: 1.8; stroke-dasharray: 10 6; }
+.loading-chart svg .loading-grid { fill: none; stroke: var(--line-strong); stroke-width: 1; }
+.loading-progress { position: absolute; inset: auto 0 0; height: 2px; background: var(--line); overflow: hidden; }
+.loading-progress::after {
+  content: ""; position: absolute; height: 100%; width: 28%;
+  background: linear-gradient(90deg, transparent, var(--us), transparent);
+  animation: helios-sync 2s ease-in-out infinite;
+}
+@keyframes helios-sync { from { transform: translateX(-100%); } to { transform: translateX(460%); } }
+@media (max-width: 700px) {
+  .loading-layout { grid-template-columns: minmax(0, 1fr); }
+  .loading-card { min-height: 220px; }
+  .loading-chart { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -490,7 +718,7 @@ footer ul { margin-top: 10px; }
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbxHuQXPB9Fc-a2ngAwClNyI4Hqq5UgdcO__XkXk2aum6Smx9MYWMiG9vf3BK_5Sp4jc6Q/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbyn3oK5JBD4ierMmc50jpJQ10qFlgaVb9hoFW_FntIRrjvfU-XHac-NbAmIeUtGeL8MkQ/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -614,24 +842,13 @@ function companyName(k) { return k === 'JCA' ? 'Grupo JCA' : shortCompany(DB.dim
 function companyIsUs(k) { return k === 'JCA' ? true : F.focus === 'JCA' ? DB.jca[Number(k)] : Number(k) === Number(F.focus); }
 
 /* ---------- cores por empresa ---------- */
-// Tom fixo por viação (inspirado na marca quando é conhecida); quem não está na lista ganha um tom estável pelo nome.
-const BRAND = [[/aguiaflex/, '#8fd17a'], [/aguia branca/, '#3fae6a'], [/cometa/, '#4a86e8'], [/\b1001\b/, '#e8613c'], [/catarinense/, '#2fb5c4'],
-  [/expresso do sul/, '#d64f7a'], [/wemobi/, '#9b7cf0'], [/ribeirao/, '#6cc070'], [/macaense/, '#58b39b'], [/penha/, '#e9c046'],
-  [/itapemirim/, '#f08a3c'], [/gontijo/, '#6272dc'], [/solimoes/, '#c9785b'], [/itamarati/, '#47a0e0'], [/brasil sul/, '#d1a24a'],
-  [/santa maria/, '#b58ce0'], [/ouro e prata/, '#c8b27a'], [/nordeste/, '#e07fa8'], [/andorinha/, '#6fa8dc'], [/real expresso/, '#e05a56'],
-  [/adamantina/, '#7fbf9f'], [/catedral/, '#a3b84a'], [/rio doce/, '#4fb3a9'], [/diamante/, '#9fb7d6'], [/buser/, '#e0457b'], [/flixbus/, '#97d700']];
-const PALETTE = ['#5aa9e6', '#e4875a', '#62c39b', '#c792ea', '#e6c35c', '#e76f8f', '#7aa6ff', '#9ccf6a', '#d7a07a', '#6fd0d6'];
-const nrm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-function hueOf(name) {
-  const n = nrm(name); const hit = BRAND.find(([re]) => re.test(n)); if (hit) return hit[1];
-  let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return PALETTE[h % PALETTE.length];
+const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const companyTones = [28, 36, 47, 57, 68, 75];
+function colorOf(k) {
+  if (companyIsUs(k)) return 'var(--us)';
+  const tone = companyTones[Number(k) % companyTones.length];
+  return `color-mix(in srgb, var(--them-hi) ${tone}%, var(--white))`;
 }
-function shade(hex) { // no tema claro, um pouco mais escuro para ler sobre o branco
-  if (document.documentElement.dataset.mode !== 'light') return hex;
-  const v = parseInt(hex.slice(1), 16), f = .78; const c = (x) => Math.round(x * f).toString(16).padStart(2, '0');
-  return '#' + c(v >> 16) + c((v >> 8) & 255) + c(v & 255);
-}
-function colorOf(k) { return k === 'JCA' ? 'var(--white)' : shade(hueOf(DB.dims.viacoes[Number(k)]?.n)); }
 const dot = (k) => `<i class="dot" style="--c:${colorOf(k)}"></i>`;
 
 /* ---------- peças visuais ---------- */
@@ -753,27 +970,90 @@ document.addEventListener('scroll', hideTip, {passive: true});
 /* ====================================================================== */
 /* telas                                                                    */
 /* ====================================================================== */
-function bindMode() { const b = $('#mode'); if (b) b.onclick = () => { const r = document.documentElement; r.dataset.mode = r.dataset.mode === 'light' ? 'dark' : 'light'; store.set('mode', r.dataset.mode); if (DB) render(); }; }
 
 function shell() {
   const ready = !!DB;
   const demo = DB?.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
+    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
-  <section class="wrap" id="today"></section>
-  <section class="wrap hero" id="hero"></section>
-  <section class="wrap kpis" id="kpis"></section>
-  <main class="wrap" id="main"></main>
-  <footer class="wrap" ${ready ? '' : 'hidden'}><p class="eyebrow">Método</p><ul>
+  ${ready ? `<div class="wrap briefing" id="briefing">
+    <section id="today" aria-label="Resumo das compras"></section>
+    <section id="planning" aria-label="Meta e sensibilidade a preço"></section>
+  </div>
+  <details class="wrap disclosure" id="quickCharts" ${matchMedia('(min-width: 701px)').matches ? 'open' : ''}>
+    <summary>Mercados e empresas <small>Participação por recorte</small></summary><div class="radar-grid" id="radarGrid"></div>
+  </details>
+  <details class="wrap disclosure analysis" id="analysis">
+    <summary>Análise completa <small>Rotas, ocupação e ofertas</small></summary>
+    <section class="hero" id="hero"></section>
+    <section class="kpis" id="kpis"></section>
+    <main id="main"></main>
+  </details>` : '<main class="wrap" id="main"></main>'}
+  <footer class="wrap" ${ready ? '' : 'hidden'}>
+    <div class="footer-brand"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>Hélios</title>
+  <circle cx="100" cy="100" r="30" fill="none" stroke="#b68235" stroke-width="2"/>
+  <circle cx="100" cy="100" r="9" fill="#b68235"/>
+  <g stroke="#b68235" stroke-width="1.6" stroke-linecap="round">
+    <line x1="142" y1="100" x2="192" y2="100"/>
+    <line x1="141.641" y1="105.482" x2="188.366" y2="111.634"/>
+    <line x1="140.569" y1="110.87" x2="183.365" y2="122.338"/>
+    <line x1="138.803" y1="116.073" x2="177.219" y2="131.985"/>
+    <line x1="136.373" y1="121" x2="170.148" y2="140.5"/>
+    <line x1="133.321" y1="125.568" x2="162.363" y2="147.853"/>
+    <line x1="129.698" y1="129.698" x2="154.054" y2="154.054"/>
+    <line x1="125.568" y1="133.321" x2="145.381" y2="159.141"/>
+    <line x1="121" y1="136.373" x2="136.474" y2="163.174"/>
+    <line x1="116.073" y1="138.803" x2="127.429" y2="166.219"/>
+    <line x1="110.87" y1="140.569" x2="118.311" y2="168.339"/>
+    <line x1="105.482" y1="141.641" x2="109.161" y2="169.588"/>
+    <line x1="100" y1="142" x2="100" y2="170"/>
+    <line x1="94.518" y1="141.641" x2="90.839" y2="169.588"/>
+    <line x1="89.13" y1="140.569" x2="81.689" y2="168.339"/>
+    <line x1="83.927" y1="138.803" x2="72.571" y2="166.219"/>
+    <line x1="79" y1="136.373" x2="63.526" y2="163.174"/>
+    <line x1="74.432" y1="133.321" x2="54.619" y2="159.141"/>
+    <line x1="70.302" y1="129.698" x2="45.946" y2="154.054"/>
+    <line x1="66.679" y1="125.568" x2="37.637" y2="147.853"/>
+    <line x1="63.627" y1="121" x2="29.852" y2="140.5"/>
+    <line x1="61.197" y1="116.073" x2="22.781" y2="131.985"/>
+    <line x1="59.431" y1="110.87" x2="16.635" y2="122.338"/>
+    <line x1="58.359" y1="105.482" x2="11.634" y2="111.634"/>
+    <line x1="58" y1="100" x2="8" y2="100"/>
+    <line x1="58.359" y1="94.518" x2="11.634" y2="88.366"/>
+    <line x1="59.431" y1="89.13" x2="16.635" y2="77.662"/>
+    <line x1="61.197" y1="83.927" x2="22.781" y2="68.015"/>
+    <line x1="63.627" y1="79" x2="29.852" y2="59.5"/>
+    <line x1="66.679" y1="74.432" x2="37.637" y2="52.147"/>
+    <line x1="70.302" y1="70.302" x2="45.946" y2="45.946"/>
+    <line x1="74.432" y1="66.679" x2="54.619" y2="40.859"/>
+    <line x1="79" y1="63.627" x2="63.526" y2="36.826"/>
+    <line x1="83.927" y1="61.197" x2="72.571" y2="33.781"/>
+    <line x1="89.13" y1="59.431" x2="81.689" y2="31.661"/>
+    <line x1="94.518" y1="58.359" x2="90.839" y2="30.412"/>
+    <line x1="100" y1="58" x2="100" y2="30"/>
+    <line x1="105.482" y1="58.359" x2="109.161" y2="30.412"/>
+    <line x1="110.87" y1="59.431" x2="118.311" y2="31.661"/>
+    <line x1="116.073" y1="61.197" x2="127.429" y2="33.781"/>
+    <line x1="121" y1="63.627" x2="136.474" y2="36.826"/>
+    <line x1="125.568" y1="66.679" x2="145.381" y2="40.859"/>
+    <line x1="129.698" y1="70.302" x2="154.054" y2="45.946"/>
+    <line x1="133.321" y1="74.432" x2="162.363" y2="52.147"/>
+    <line x1="136.373" y1="79" x2="170.148" y2="59.5"/>
+    <line x1="138.803" y1="83.927" x2="177.219" y2="68.015"/>
+    <line x1="140.569" y1="89.13" x2="183.365" y2="77.662"/>
+    <line x1="141.641" y1="94.518" x2="188.366" y2="88.366"/>
+  </g>
+</svg><div><strong>Dados coletados pelo Hélios</strong><small id="srcInfo"></small></div></div>
+    <details class="footer-method"><summary>Método e fontes</summary><ul>
     <li><b>Passageiros</b> = poltronas ocupadas do ônibus na última leitura da ClickBus antes da partida (capacidade − livres). O estoque é o do ônibus inteiro: entra guichê, site da viação e outros apps.</li>
     <li><b>Parcela</b> = passageiros da viação ÷ passageiros de todas as viações nas linhas, datas, classes e horários filtrados. <b>Parcela de oferta</b> = mesma conta com as poltronas oferecidas.</li>
     <li>Ônibus que aparece em dois anúncios (terminais ou marcas diferentes) conta uma vez, dividido entre as marcas. Viações sem capacidade no anúncio ficam fora.</li>
     <li>Comparação = mesmo número de dias imediatamente antes. <b>Em venda</b> = viagens de hoje a D+14 com o que já foi vendido até agora.</li>
-    <li id="srcInfo"></li></ul></footer>`;
-  bindMode();
+    </ul></details></footer>`;
   $('#reload').onclick = () => refresh(true);
   $('#helpB').onclick = openHelp;
   $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
@@ -787,8 +1067,11 @@ function buildBar() {
   const byMkt = groupBy(routeIdx, (r) => r.m);
   const viac = dims.viacoes.map((v, i) => ({...v, i})).sort((a, b) => (b.g === 'JCA') - (a.g === 'JCA') || a.n.localeCompare(b.n, 'pt-BR'));
   const opt = (v, l) => `<option value="${esc(v)}">${esc(l)}</option>`;
-  $('#bar').innerHTML = `<div id="prog"></div>
-  <div class="bar-row">
+  const expanded = $('#bar').classList.contains('expanded');
+  $('#bar').innerHTML = `<button class="filters-toggle" id="filtersToggle" aria-controls="filtersPanel" aria-expanded="${expanded}">
+    Filtros <small id="filtersSummary"></small>
+  </button><div class="filters-panel" id="filtersPanel">
+  <div id="prog"></div><div class="bar-row">
     <div class="seg" id="viewS"><button data-v="real">Realizado</button><button data-v="venda">Em venda · próx. 14 dias</button></div>
     <span class="k">Período</span>
     <div class="seg" id="perS">${[['7', '7d'], ['14', '14d'], ['30', '30d'], ['60', '60d'], ['90', '90d'], ['mes', 'Mês'], ['custom', 'De–até']].map(([v, l]) => `<button data-v="${v}">${l}</button>`).join('')}</div>
@@ -809,7 +1092,7 @@ function buildBar() {
     <details class="dd" id="ddW"><summary class="chip fsum" id="sumW"></summary><div class="pop" id="wds">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-w="${d}">${WDL[d]}</label>`).join('')}<div class="grp"><button data-wset="1,2,3,4">seg–qui</button><button data-wset="5,6,0">sex–dom</button><button id="allW">todos</button></div></div></details>
     <span class="sp"></span><button class="chip" id="groupB" title="Somar as marcas do grupo no ranking">Marcas JCA juntas</button><button class="chip" id="clearB">Limpar filtros</button>
   </div>
-  <div class="tokens" id="tokens" hidden></div>`;
+  <div class="tokens" id="tokens" hidden></div></div>`;
   const bar = $('#bar');
   bar.querySelectorAll('details.dd').forEach((details) => {
     details.addEventListener('toggle', () => {
@@ -819,6 +1102,11 @@ function buildBar() {
   if (!bar.dataset.b) { bar.dataset.b = '1'; // ouvintes uma vez só (a barra é refeita quando chegam viações novas)
   bar.addEventListener('click', (e) => {
     const dims = DB.dims; const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'filtersToggle') {
+      const expanded = bar.classList.toggle('expanded');
+      b.setAttribute('aria-expanded', String(expanded));
+      return;
+    }
     if (b.dataset.tok) dropTok(b.dataset.tok);
     else if (b.dataset.f !== undefined) { F.focus = b.dataset.f; $('#ddF').open = false; }
     else if (b.closest('#viewS')) F.view = b.dataset.v;
@@ -896,6 +1184,7 @@ function syncBar() {
   if (F.wds.size) (F.wds.size <= 3 ? [...F.wds].map((d) => ['w:' + d, WDL[d]]) : [['wds', `${F.wds.size} dias da semana`]]).forEach((x) => tk.push(x));
   $('#tokens').innerHTML = tk.map(([k, l]) => `<button class="tok" data-tok="${esc(k)}" title="Tirar este filtro">${esc(l)}<b>×</b></button>`).join('');
   $('#tokens').hidden = !tk.length; $('#clearB').hidden = !tk.length;
+  $('#filtersSummary').textContent = tk.length ? `${tk.length} ativos` : 'Todas as linhas';
 }
 let raf = 0;
 function update() { saveF(); syncBar(); cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }
@@ -910,10 +1199,14 @@ function render() {
   const T = tot(cur), P = prev.length ? tot(prev) : null;
   const us = focusShort();
   const prog = $('#prog'); if (prog) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
-  const gen = new Date(DB.data.gerado);
-  $('#srcInfo').innerHTML = `Fonte: <b>${esc(DB.data.app || 'Helios')}</b> · ClickBus · viagens de ${brY(DB.firstDay)} a ${brY(addD(DB.today, 14))}. Atualiza sozinho a cada ${CONFIG.refreshMin} min com a página aberta.`;
+  $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' e Quero Passagem (ofertas)' : ''} · Atualização a cada ${CONFIG.refreshMin} min`;
 
+  const todayDetailOpen = $('#today .today-detail')?.open;
   $('#today').innerHTML = todayHtml();
+  if (todayDetailOpen) $('#today .today-detail').open = true;
+  $('#radarGrid').innerHTML = modRadar(cur, prev) + modCompanyRadar(cur, prev, T);
+  $('#planning').innerHTML = modMarketPlan(cur, R, real);
+  bindMarketPlan(cur, R, real);
   // ---- abertura ----
   const dM = P ? T.pax / P.pax - 1 : NaN, dU = P ? T.upax / P.upax - 1 : NaN, dS = P ? T.share - P.share : NaN;
   const effMkt = P ? (T.pax - P.pax) * P.share : NaN, effShr = P ? T.pax * (T.share - P.share) : NaN;
@@ -947,8 +1240,6 @@ function render() {
   const mods = [];
   if (real) mods.push(Wd(modWhere(T, P, cur, prev)));
   mods.push(Wd(modTime(R, cur, real)));
-  mods.push(modRadar(cur, prev));
-  mods.push(modCompanyRadar(cur, prev, T));
   mods.push(Wd(modRank(cur, prev, T)));
   mods.push(Wd(modRoutes(cur, prev)));
   mods.push(Wd(modWhen(cur)));
@@ -1039,15 +1330,20 @@ function todayHtml() {
       <div class="nm">${esc(shortRoute(x.l))}</div><div class="bar2"><i style="width:${s * 100}%"></i>${rv != null ? `<b style="left:${rv * 100}%"></b>` : ''}</div>
       <div class="v">${pct(s, 0)}</div><div class="p">${badge}</div></div>`; };
   return `<div class="today">
-    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura <span id="todayStamp">${esc(when)}</span></p><h2 class="${c}"><span class="trend-icon-box ${c}">${trendIcon(c)}</span>${esc(state)}</h2>
-      <p class="sub">${esc(us)} com <b>${pct(sh)}</b> das compras de hoje${has7 ? ` · média dos últimos 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p>
+    <div class="t-main"><p class="eyebrow now"><i></i>Mercado hoje · <span id="todayStamp">${esc(when)}</span></p>
+      <div class="headline-share"><strong>${pct(sh)}</strong><span>das compras · ${esc(us)}</span>${has7 ? deltaPill(d) : ''}</div>
+      <h2 class="${c}"><span class="trend-icon-box ${c}">${trendIcon(c)}</span>${esc(state)}</h2>
+      ${has7 ? `<p class="sub">Referência de 7 dias · ${pct(avg)}</p>` : ''}
       ${lineTrendSummary(lines, scope)}
       <div class="nums"><div><b>${n0(D.t)}</b><span>compras hoje</span></div><div><b>${n0(D.u)}</b><span>${esc(us)}</span></div><div><b>${n0(D.t - D.u)}</b><span>concorrência</span></div></div>
+    </div>
+    <details class="today-detail"><summary>Ver compras por linha</summary><div class="today-detail-content">
       ${hrs.length ? `<p class="h4">Compras por hora</p>${columns(hrs, {h: 72, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
-        tip: (x) => `${x[0]}h–${x[0]}h59\n${us} ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`})}` : ''}</div>
+        tip: (x) => `${x[0]}h–${x[0]}h59\n${us} ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`})}` : ''}
     <div class="t-radar"><div class="thead"><p class="h4" style="margin:0">Por mercado</p><div class="lg2"><span><i></i>${esc(us)} hoje</span><span><i class="d"></i>${refName}</span></div></div>${radar}</div>
     <div class="t-lines"><div class="thead"><p class="h4" style="margin:0">Por linha · compras de hoje</p><div class="lg2"><span><i class="bx"></i>${esc(us)}</span><span><i class="bm"></i>${refName}</span></div></div>
       ${lines.length ? `<div class="tl-grid">${lines.map(row).join('')}</div>` : '<p class="sub">Nenhuma compra detectada hoje ainda.</p>'}</div>
+    </div></details>
   </div>`;
 }
 const mod = (title, text, body) => `<section class="mod"><div class="mod-head"><h2>${title}</h2>${text ? `<p>${text}</p>` : ''}</div><div class="mod-body">${body}</div></section>`;
@@ -1352,8 +1648,134 @@ function helpHtml() {
       <div><dt>Índice oferta × procura</dt><dd>Parcela ÷ parcela de oferta × 100. Acima de 100 = leva mais passageiros do que o tamanho da frota sugere.</dd></div>
       <div><dt>Realizado × Em venda</dt><dd>Realizado = viagens que já partiram (números finais). Em venda = hoje até D+14, com o que já foi comprado.</dd></div>
       <div><dt>Ritmo de compra</dt><dd>Poltronas que o Helios viu sair do estoque em cada dia de coleta, pelo dia da compra.</dd></div>
-      <div><dt>Cores</dt><dd>Cada viação tem um tom fixo (inspirado na marca quando conhecida). Cheio = foco ou passando o mouse; apagado = contexto.</dd></div></dl>`);
+      <div><dt>Cores</dt><dd>O tom mais claro destaca o foco. Tons neutros e os nomes identificam as demais viações.</dd></div></dl>`);
   return `<header><div><p class="eyebrow">Helios · Mercado</p><h2>Sobre os dados</h2></div><button class="btn ico" data-close title="Fechar (Esc)">×</button></header>${coleta}${panel}${gl}`;
+}
+
+const marketPlan = {period: 'week', gain: 1};
+const planPeriods = [['day', 'Dia'], ['week', 'Semana'], ['range', 'Período']];
+const planGains = [1, 2, 5];
+
+function planWindow(rows, range, realized, period) {
+  const observed = rows.reduce((edge, row) => {
+    if (!edge) return row.d;
+    return (realized ? row.d > edge : row.d < edge) ? row.d : edge;
+  }, null);
+  if (!observed) return null;
+  if (period === 'range') return {a: range.a, b: range.b};
+  if (period === 'day') return {a: observed, b: observed};
+  const a = realized ? addD(observed, -6) : observed;
+  const b = realized ? observed : addD(observed, 6);
+  return {a: a < range.a ? range.a : a, b: b > range.b ? range.b : b};
+}
+
+function planSeatScenario(total, own, gain) {
+  if (!Number.isFinite(total) || !Number.isFinite(own) || !(total > 0) || own < 0 || own > total) return null;
+  const share = own / total;
+  const target = share + gain / 100;
+  // Só as vendas do foco crescem. As demais ficam constantes.
+  const incremental = (target * total - own) / (1 - target);
+  const seats = target < 1 ? Math.max(1, Math.ceil(incremental - 1e-9)) : null;
+  return {share, target, seats};
+}
+
+function planSensitivity(rows, cutoff, own) {
+  if (!cutoff) return {pairs: 0, value: null};
+  const start = addD(cutoff, -29);
+  const observations = new Map();
+  for (const row of rows) {
+    if (row.open || row.d < start || row.d > cutoff || !own(row) || !(row.cap > 0)) continue;
+    const weekend = row.wd === 0 || row.wd === 6;
+    const key = [row.r, row.v, row.c, row.h, weekend].join('|');
+    if (!observations.has(key)) observations.set(key, new Map());
+    const days = observations.get(key);
+    const day = days.get(row.d) || {cap: 0, pax: 0, revenue: 0, complete: true};
+    day.cap += row.cap;
+    day.pax += row.pax;
+    day.revenue += row.rec;
+    if (!Number.isFinite(row.pax) || row.pax < 0 || (row.pax > 0 && !(row.rec > 0))) day.complete = false;
+    days.set(row.d, day);
+  }
+  const midpoint = (a, b) => 2 * (b - a) / (b + a);
+  const matches = [];
+  for (const days of observations.values()) {
+    const ordered = [...days.entries()].sort(([a], [b]) => a.localeCompare(b));
+    for (let i = 1; i < ordered.length; i++) {
+      const [priorDate, prior] = ordered[i - 1], [date, day] = ordered[i];
+      if (diffD(date, priorDate) > 14 || !prior.complete || !day.complete || prior.pax < 5 || day.pax < 5) continue;
+      const priorLoad = prior.pax / prior.cap, load = day.pax / day.cap;
+      // Lotação perto do teto pode esconder demanda que não conseguiu comprar.
+      if (priorLoad >= .95 || load >= .95) continue;
+      const priceMove = midpoint(prior.revenue / prior.pax, day.revenue / day.pax);
+      if (!(Math.abs(priceMove) >= .05)) continue;
+      matches.push({value: midpoint(priorLoad, load) / priceMove, weight: Math.min(prior.cap, day.cap)});
+    }
+  }
+  if (matches.length < 8) return {pairs: matches.length, value: null};
+  matches.sort((a, b) => a.value - b.value);
+  let remaining = matches.reduce((sum, match) => sum + match.weight, 0) / 2;
+  const typical = matches.find((match) => (remaining -= match.weight) <= 0);
+  return {pairs: matches.length, value: typical.value};
+}
+
+function modMarketPlan(rows, range, realized) {
+  const period = planWindow(rows, range, realized, marketPlan.period);
+  const selected = period ? rows.filter((row) => row.d >= period.a && row.d <= period.b) : [];
+  const sample = tot(selected);
+  const scenario = planSeatScenario(sample.pax, sample.upax, marketPlan.gain);
+  const ticket = selected.reduce((price, row) => {
+    if (!isUs(row) || !(row.pax > 0) || !(row.rec > 0)) return price;
+    price.passengers += row.pax;
+    price.revenue += row.rec;
+    return price;
+  }, {passengers: 0, revenue: 0});
+  const reference = ticket.passengers ? ticket.revenue / ticket.passengers : null;
+  const spare = Math.max(0, Math.floor(sample.ucap - sample.upax + 1e-9));
+  const dateText = period ? (period.a === period.b ? brY(period.a) : `${br(period.a)} a ${br(period.b)}`) : 'Sem datas no filtro';
+  const observedDays = new Set(selected.map((row) => row.d)).size;
+  const coverage = period && observedDays < diffD(period.b, period.a) + 1 ? ` · ${observedDays} ${observedDays === 1 ? 'dia observado' : 'dias observados'}` : '';
+  const dateTitle = `${realized ? 'Realizado' : 'Em venda'} · ${dateText}${coverage}`;
+  const matchRows = DB.rows.filter((row) => !row.open && dimOk(row) && hourOk(row.h));
+  const cutoff = realized && period && period.b < DB.lastClosed ? period.b : DB.lastClosed;
+  const sensitivity = planSensitivity(matchRows, cutoff, isUs);
+  const showSensitivity = sensitivity.value !== null;
+  const elastic = showSensitivity ? Math.abs(sensitivity.value) : null;
+  const elasticityReading = !showSensitivity ? 'Histórico insuficiente' : elastic < .05 ? 'Ocupação praticamente estável' : sensitivity.value < 0 ? 'Preço e ocupação em sentidos opostos' : 'Preço e ocupação no mesmo sentido';
+  const rate = showSensitivity ? NF1.format(sensitivity.value) : '—';
+  const meter = showSensitivity ? `<div class="plan-scale" aria-hidden="true"><div><span style="--level:${Math.min(100, 100 * elastic / 3)}%"></span></div><small>Menor sensibilidade</small><small>Maior sensibilidade</small></div>` : '';
+  const group = esc(focusShort());
+  const seats = scenario?.seats ?? null;
+  const goal = scenario ? `${pct(scenario.share)} → ${pct(scenario.target)} de parcela` : '';
+  const price = reference !== null ? offerPrice.format(reference) : '';
+  const volume = seats !== null ? `~${n0(seats)} poltronas` : '';
+  const pricing = price ? `a <strong>${price}</strong> por poltrona na simulação` : 'Tarifa de referência indisponível';
+  const revenue = seats && reference ? ` · ${money(seats * reference)} de receita bruta estimada` : '';
+  const spareLabel = realized ? 'lugares ficaram livres na base' : 'lugares livres na base em venda';
+  return `<div class="plan-card">
+    <div class="plan-top"><div><p class="eyebrow">Parcela de mercado</p><h2>Meta de ganho</h2></div>
+      <div class="plan-switch" role="group" aria-label="Janela da meta">${planPeriods.map(([key, label]) => `<button type="button" data-plan-period="${key}" aria-pressed="${marketPlan.period === key}">${label}</button>`).join('')}</div></div>
+    <div class="plan-base" data-plan-window>${dateTitle} · ${group}</div>
+    <div class="plan-switch plan-target" role="group" aria-label="Ganho desejado em pontos percentuais">${planGains.map((gain) => `<button type="button" data-plan-gain="${gain}" aria-pressed="${marketPlan.gain === gain}">+${gain} p.p.</button>`).join('')}</div>
+    <div class="plan-result" aria-live="polite">${volume ? `<p>Precisamos vender <strong data-plan-seats>${volume}</strong></p><p data-plan-price>${pricing}</p><p class="plan-note">${goal}${revenue}</p><p class="plan-note">${n0(spare)} ${spareLabel}${seats > spare ? ' · meta acima da folga observada' : ''}</p>` : `<p data-plan-seats>${scenario ? 'Ganho acima do limite de parcela.' : 'Ainda sem base para a meta neste recorte.'}</p>`}</div>
+    <section class="plan-elasticity" data-plan-elasticity><div class="plan-elasticity-head"><div><p class="eyebrow">Preço × ocupação</p><h3>Elasticidade observada</h3></div><strong aria-label="Elasticidade observada ${rate}">${rate}</strong></div>
+      ${meter}<p>${elasticityReading}${showSensitivity ? ` · ${n0(sensitivity.pairs)} pares` : ` · ${n0(sensitivity.pairs)} de 8 pares mínimos`}</p>
+      <details class="plan-method"><summary>Como ler</summary><p>A meta supõe vendas constantes das outras viações. A referência é a tarifa média estimada, ponderada pelas poltronas ocupadas nas observações com preço.</p><p>A elasticidade mostra a variação percentual da ocupação associada a 1% de variação na tarifa estimada. Usa a mediana ponderada pela oferta de até 30 dias fechados, com a mesma linha, viação, classe, faixa de partida e tipo de dia. Cada par tem ao menos 5% de variação no preço. É uma associação histórica, sem previsão de demanda.</p></details>
+    </section>
+  </div>`;
+}
+
+function bindMarketPlan(rows, range, realized) {
+  const panel = $('#planning');
+  if (!panel) return;
+  panel.onclick = (event) => {
+    const button = event.target.closest('button[data-plan-period], button[data-plan-gain]');
+    if (!button || button.getAttribute('aria-pressed') === 'true') return;
+    if (button.dataset.planPeriod) marketPlan.period = button.dataset.planPeriod;
+    else marketPlan.gain = Number(button.dataset.planGain);
+    const attribute = button.dataset.planPeriod ? 'data-plan-period' : 'data-plan-gain';
+    panel.innerHTML = modMarketPlan(rows, range, realized);
+    panel.querySelector(`[${attribute}="${button.getAttribute(attribute)}"]`)?.focus({preventScroll: true});
+  };
 }
 
 /* ---------- partida e atualização em segundo plano ---------- */
@@ -1375,7 +1797,7 @@ function stampTick() {
     todayStamp.textContent = last.slice(11) + ' · ' + ago(ref);
     todayStamp.parentElement.classList.toggle('stale', stale && !DB.data.demo);
   }
-  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : !last ? 'Dados disponíveis' : stale ? 'Coleta atrasada' : 'Ao vivo'} · leitura <b>${ago(ref)}</b>`;
+  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : !last ? 'Dados disponíveis' : stale ? 'Coleta atrasada' : 'Ao vivo'}<span class="stamp-age"> · leitura <b>${ago(ref)}</b></span>`;
   b.title = isStatic() ? 'Dados fixos' : `Última leitura da ClickBus: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
@@ -1397,7 +1819,23 @@ async function refresh(manual) {
   } catch (e) { console.warn(e); busy = false; failed = true; }
   stampTick();
 }
+function panelLoading() {
+  $('#main').setAttribute('aria-busy', 'true');
+  $('#main').innerHTML = `<div class="loading-layout" role="status">
+    <section class="loading-card">
+      <p class="eyebrow">Hélios · Sincronização</p><h1>Carregando dados</h1>
+      <p>Consultando a última leitura e preparando o resumo do mercado.</p>
+      <div aria-hidden="true"><span class="skeleton skeleton-figure"></span><div class="skeleton-row"><i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i></div></div>
+      <span class="loading-progress" aria-hidden="true"></span>
+    </section>
+    <div class="loading-card loading-chart" aria-hidden="true">
+      <svg viewBox="0 0 480 155"><path class="loading-grid" d="M0 34H480M0 67H480M0 100H480M0 133H480"/>
+        <path class="loading-line" d="M0 125C40 121 53 91 83 98S122 126 153 104 188 62 220 74 256 108 286 78 335 28 363 46 400 70 429 47 459 32 480 17"/></svg>
+    </div>
+  </div>`;
+}
 function panelStatus(title, message, retry = false) {
+  $('#main').removeAttribute('aria-busy');
   $('#main').innerHTML = `<section class="mod wide status-card" role="status"><h1>${esc(title)}</h1><p>${esc(message)}</p>
     ${retry ? '<button class="btn" id="retry">Tentar novamente</button>' : ''}</section>`;
   if (retry) $('#retry').onclick = boot;
@@ -1413,7 +1851,7 @@ async function boot() {
   }
   busy = true;
   lastFetch = Date.now();
-  panelStatus('Carregando dados', 'Consultando a última atualização do Hélios.');
+  panelLoading();
   try {
     RAW = await fetchData();
     DB = model(RAW);
@@ -1438,7 +1876,6 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 addEventListener('online', checkData);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
 let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => DB && render(), 250); });
-document.documentElement.dataset.mode = store.get('mode') || 'dark';
 boot();
 </script>
 </body>
