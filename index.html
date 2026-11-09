@@ -497,6 +497,34 @@ footer ul { margin-top: 10px; }
   --glass: rgba(13, 13, 14, .74);
   --scroll-thumb: #505054;
 }
+:root[data-mode="light"] {
+  color-scheme: light;
+  --page: #f1f1f2;
+  --black: #f8f8f9;
+  --panel: #fafafa;
+  --panel-2: #e9e9ec;
+  --card: rgba(255, 255, 255, .77);
+  --card-solid: #fcfcfd;
+  --white: #1c1c21;
+  --muted: #52525d;
+  --faint: #63636e;
+  --line: rgba(36, 36, 46, .13);
+  --line-strong: rgba(36, 36, 46, .25);
+  --card-line: rgba(36, 36, 46, .17);
+  --us: #37475c;
+  --them: #c7c7ce;
+  --them-2: #dfdfe3;
+  --them-hi: #777782;
+  --pos-text: #2b6652;
+  --neg-text: #9c434d;
+  --teal: #3d7765;
+  --red: #b6545d;
+  --teal-dim: rgba(61, 119, 101, .10);
+  --red-dim: rgba(182, 84, 93, .10);
+  --halo: rgba(137, 142, 156, .22);
+  --glass: rgba(250, 250, 251, .79);
+  --scroll-thumb: #a0a0aa;
+}
 html, .tbl-wrap, .pop, .drawer-p { scrollbar-color: var(--scroll-thumb) transparent; scrollbar-width: thin; }
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border: 2px solid var(--page); border-radius: 99px; }
@@ -971,12 +999,28 @@ document.addEventListener('scroll', hideTip, {passive: true});
 /* telas                                                                    */
 /* ====================================================================== */
 
+function bindMode() {
+  const button = $('#mode');
+  const apply = (mode) => {
+    document.documentElement.dataset.mode = mode;
+    const label = mode === 'light' ? 'Ativar tema escuro' : 'Ativar tema claro';
+    button.setAttribute('aria-label', label);
+    button.title = label;
+  };
+  apply(document.documentElement.dataset.mode);
+  button.onclick = () => {
+    const mode = document.documentElement.dataset.mode === 'light' ? 'dark' : 'light';
+    store.set('mode', mode);
+    apply(mode);
+  };
+}
+
 function shell() {
   const ready = !!DB;
   const demo = DB?.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
+    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
   ${ready ? `<div class="wrap briefing" id="briefing">
@@ -1054,6 +1098,7 @@ function shell() {
     <li>Ônibus que aparece em dois anúncios (terminais ou marcas diferentes) conta uma vez, dividido entre as marcas. Viações sem capacidade no anúncio ficam fora.</li>
     <li>Comparação = mesmo número de dias imediatamente antes. <b>Em venda</b> = viagens de hoje a D+14 com o que já foi vendido até agora.</li>
     </ul></details></footer>`;
+  bindMode();
   $('#reload').onclick = () => refresh(true);
   $('#helpB').onclick = openHelp;
   $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
@@ -1740,8 +1785,8 @@ function modMarketPlan(rows, range, realized) {
   const sensitivity = planSensitivity(matchRows, cutoff, isUs);
   const showSensitivity = sensitivity.value !== null;
   const elastic = showSensitivity ? Math.abs(sensitivity.value) : null;
-  const elasticityReading = !showSensitivity ? 'Histórico insuficiente' : elastic < .05 ? 'Ocupação praticamente estável' : sensitivity.value < 0 ? 'Preço e ocupação em sentidos opostos' : 'Preço e ocupação no mesmo sentido';
   const rate = showSensitivity ? NF1.format(sensitivity.value) : '—';
+  const rateText = showSensitivity ? `+1% na tarifa ↔ ${sensitivity.value > 0 ? '+' : ''}${rate}% na ocupação · ${n0(sensitivity.pairs)} pares` : 'Histórico insuficiente';
   const meter = showSensitivity ? `<div class="plan-scale" aria-hidden="true"><div><span style="--level:${Math.min(100, 100 * elastic / 3)}%"></span></div><small>Menor sensibilidade</small><small>Maior sensibilidade</small></div>` : '';
   const group = esc(focusShort());
   const seats = scenario?.seats ?? null;
@@ -1758,7 +1803,7 @@ function modMarketPlan(rows, range, realized) {
     <div class="plan-switch plan-target" role="group" aria-label="Ganho desejado em pontos percentuais">${planGains.map((gain) => `<button type="button" data-plan-gain="${gain}" aria-pressed="${marketPlan.gain === gain}">+${gain} p.p.</button>`).join('')}</div>
     <div class="plan-result" aria-live="polite">${volume ? `<p>Precisamos vender <strong data-plan-seats>${volume}</strong></p><p data-plan-price>${pricing}</p><p class="plan-note">${goal}${revenue}</p><p class="plan-note">${n0(spare)} ${spareLabel}${seats > spare ? ' · meta acima da folga observada' : ''}</p>` : `<p data-plan-seats>${scenario ? 'Ganho acima do limite de parcela.' : 'Ainda sem base para a meta neste recorte.'}</p>`}</div>
     <section class="plan-elasticity" data-plan-elasticity><div class="plan-elasticity-head"><div><p class="eyebrow">Preço × ocupação</p><h3>Elasticidade observada</h3></div><strong aria-label="Elasticidade observada ${rate}">${rate}</strong></div>
-      ${meter}<p>${elasticityReading}${showSensitivity ? ` · ${n0(sensitivity.pairs)} pares` : ` · ${n0(sensitivity.pairs)} de 8 pares mínimos`}</p>
+      ${meter}<p>${rateText}${showSensitivity ? '' : ` · ${n0(sensitivity.pairs)} de 8 pares mínimos`}</p>
       <details class="plan-method"><summary>Como ler</summary><p>A meta supõe vendas constantes das outras viações. A referência é a tarifa média estimada, ponderada pelas poltronas ocupadas nas observações com preço.</p><p>A elasticidade mostra a variação percentual da ocupação associada a 1% de variação na tarifa estimada. Usa a mediana ponderada pela oferta de até 30 dias fechados, com a mesma linha, viação, classe, faixa de partida e tipo de dia. Cada par tem ao menos 5% de variação no preço. É uma associação histórica, sem previsão de demanda.</p></details>
     </section>
   </div>`;
@@ -1876,6 +1921,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 addEventListener('online', checkData);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
 let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => DB && render(), 250); });
+document.documentElement.dataset.mode = store.get('mode') === 'light' ? 'light' : 'dark';
 boot();
 </script>
 </body>
