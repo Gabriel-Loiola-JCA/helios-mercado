@@ -48,7 +48,6 @@ button { cursor: pointer; }
 .btn svg { width: 14px; height: 14px; }
 
 /* estado inicial do painel */
-.load { min-height: 150px; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
 .status-card { padding: 20px 24px; border: 1px solid var(--card-line); border-radius: var(--r); background: var(--card-solid); }
 .status-card h1 { margin: 0 0 6px; font-size: 19px; }
 .status-card p { margin: 0; color: var(--muted); font-size: 14px; }
@@ -701,38 +700,21 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 @media (max-width: 440px) { .plan-switch button { min-height: 31px; } .plan-top { flex-wrap: wrap; } .plan-card { gap: 7px; } }
 @media (prefers-reduced-motion: reduce) { .plan-switch button { transition: none; } }
 
-/* Estado de sincronização */
-#main:has(.loading-layout) { display: block; padding-block: 12px; }
-.loading-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 14px; }
-.loading-card {
-  position: relative; min-width: 0; overflow: hidden; min-height: 260px; padding: clamp(19px, 3vw, 34px);
-  border-radius: var(--r); border: 1px solid var(--card-line);
-  background: linear-gradient(150deg, var(--glass), var(--card)); backdrop-filter: blur(22px);
+/* Carregamento */
+#main[aria-busy="true"], .loading-ring-wrap {
+  display: grid; place-items: center; position: fixed; inset: 0;
+  width: auto; margin: 0; padding: 0; background: var(--page); z-index: 60;
 }
-.loading-card .eyebrow { margin-bottom: 9px; }
-.loading-card h1 { margin: 0 0 7px; font-size: clamp(23px, 3vw, 36px); font-weight: 600; letter-spacing: -.045em; }
-.loading-card p:not(.eyebrow) { margin: 0; color: var(--muted); max-width: 45ch; font-size: 13px; }
-.loading-card .skeleton { display: block; border-radius: 6px; background: var(--panel-2); }
-.loading-card .skeleton-figure { width: min(62%, 280px); height: 40px; margin: 25px 0 12px; }
-.loading-card .skeleton-row { display: flex; gap: 8px; }
-.loading-card .skeleton-row i { width: min(26%, 112px); height: 28px; }
-.loading-chart { display: grid; align-content: center; }
-.loading-chart svg { display: block; width: 100%; height: auto; max-height: 173px; }
-.loading-chart svg .loading-line { fill: none; stroke: var(--us); stroke-width: 1.8; stroke-dasharray: 10 6; }
-.loading-chart svg .loading-grid { fill: none; stroke: var(--line-strong); stroke-width: 1; }
-.loading-progress { position: absolute; inset: auto 0 0; height: 2px; background: var(--line); overflow: hidden; }
-.loading-progress::after {
-  content: ""; position: absolute; height: 100%; width: 28%;
-  background: linear-gradient(90deg, transparent, var(--us), transparent);
-  animation: helios-sync 2s ease-in-out infinite;
+.loading-ring-wrap { align-content: center; }
+.loading-ring { display: block; width: 64px; height: 64px; fill: none; stroke-width: 3; }
+.loading-ring .track { stroke: var(--line-strong); }
+.loading-ring .arc {
+  stroke: var(--market-accent); stroke-linecap: round; stroke-dasharray: 48 116;
+  transform-origin: 50% 50%; animation: helios-orbit .95s linear infinite;
 }
-@keyframes helios-sync { from { transform: translateX(-100%); } to { transform: translateX(460%); } }
-@media (max-width: 700px) {
-  .loading-layout { grid-template-columns: minmax(0, 1fr); }
-  .loading-card { min-height: 220px; }
-  .loading-chart { display: none; }
-}
-
+.loading-ring-label { position: absolute; top: calc(50% + 46px); margin: 0; color: var(--muted); font-size: 12px; }
+@keyframes helios-orbit { from { transform: rotate(-90deg); } to { transform: rotate(270deg); } }
+@media (prefers-reduced-motion: reduce) { .loading-ring .arc { animation: none; } }
 /* Sentinela e área de análise */
 :root {
   --dashboard-gap: clamp(14px, 1.5vw, 24px);
@@ -780,8 +762,16 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-controls button:hover { border-color: var(--market-accent); }
 .sentinel-controls svg { width: 14px; height: 14px; }
 .sentinel-plot { min-width: 0; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
+.sentinel-controls .sentinel-chart-toggle { display: none; }
+.reveal-await { opacity: .3; filter: blur(3px); transform: translateY(7px); }
+.reveal-await:focus-within { opacity: 1; filter: none; transform: none; }
+.dd[open] > .pop { animation: reveal .2s var(--ease) both; }
 .sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
+.sentinel-plot .chart { min-height: 288px; }
 .sentinel-plot .chart .path { stroke-width: 2.5; }
+.sentinel-plot .chart-series { animation: sentinel-plot-in .56s var(--ease) both; }
+.sentinel-plot .chart .empty { padding-block: 12px; }
+@keyframes sentinel-plot-in { from { clip-path: inset(0 100% 0 0); opacity: .35; } to { clip-path: inset(0); opacity: 1; } }
 @keyframes sentinel-in { from { opacity: .1; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .briefing { gap: var(--dashboard-gap); align-items: stretch; margin-block: var(--dashboard-gap); padding-block: var(--dashboard-gap); border-block: 1px solid var(--line); }
 #today .today, #planning .plan-card { border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
@@ -819,19 +809,30 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
   .sentinel-frame { min-height: 94px; }
   .sentinel-reading strong { font-size: 45px; }
   .sentinel-plot { border-inline-start: 0; border-top: 1px solid var(--line); padding: 10px 0 0; }
+  .sentinel-plot .chart { min-height: 186px; }
+  .sentinel-controls .sentinel-chart-toggle { display: inline-flex; align-items: center; justify-content: center; min-height: 33px; margin-inline-start: auto; }
+  .sentinel-board:not(.plot-open) .sentinel-plot { display: none; }
+  .sentinel-controls .sentinel-chart-toggle { padding-inline: 9px; font-size: 11px; }
+  #today .trend-scope { display: none; }
   #quickCharts .radar-grid .mod + .mod { border-inline-start: 0; border-top: 1px solid var(--line); padding: var(--dashboard-gap) 0 0; }
   #quickCharts .radar svg { max-height: none; }
   #today .t-main { padding-inline: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sentinel-reading { animation: none; }
+  .reveal-await { opacity: 1; filter: none; transform: none; }
 }
 
 </style>
 </head>
 <body>
 <script id="helios-gz" type="text/plain"></script>
-<div id="app"><div class="load"><div>Helios · carregando mercado<i></i></div></div></div>
+<div id="app"><div class="loading-ring-wrap" role="status">
+    <svg class="loading-ring" viewBox="0 0 60 60" aria-hidden="true">
+      <circle class="track" cx="30" cy="30" r="26"/><circle class="arc" cx="30" cy="30" r="26"/>
+    </svg>
+    <p class="loading-ring-label">Carregando Hélios</p>
+  </div></div>
 <div id="tip" role="tooltip"></div>
 <script>
 'use strict';
@@ -840,7 +841,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbxN1ebRSuKrAOtpjCAEZZGdiDDeoaZkEPKcOHhxW86u_2ObcKcT_IlRImeLxTkS6mbKoA/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbxfGh_gfdzJi7US9ZScKbESSp4zZDc-wySrQ4S_ewv5nt48mkzVP51soJwKPX7ZVaXsbQ/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -1048,7 +1049,7 @@ function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
   return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${g}</svg></div>`;
 }
 /** Linhas (uma escala só). series: [{name, color, dash, values:[n|null]}]; tip(i) → texto. */
-function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1, height}) {
+function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1, height, label, points = false}) {
   const el = document.getElementById(id); if (!el) return;
   const W = Math.max(320, el.clientWidth || 640), H = height || (W < 620 ? 240 : 328), L = 46, R = 22, T = 12, B = 28;
   const vals = series.flatMap((s) => s.values).filter(Number.isFinite);
@@ -1064,8 +1065,10 @@ function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1, height}) {
     const d = runs.map(smoothOpen).join('');
     const area = !s.dash && si === 0 ? runs.filter((r) => r.length > 1).map((r) => `${smoothOpen(r)}L${r[r.length - 1][0].toFixed(1)},${H - B}L${r[0][0].toFixed(1)},${H - B}Z`).join('') : '';
     return (area ? `<path d="${area}" fill="url(#${id}g)" stroke="none"/>` : '') + `<path class="path" d="${d}" stroke="${s.color}" ${s.dash ? 'stroke-dasharray="5 5" opacity=".8"' : ''}/>`; }).join('');
-  const lastPts = series.filter((s) => !s.dash).map((s) => { const i = s.values.length - 1; return Number.isFinite(s.values[i]) ? `<circle cx="${X(i)}" cy="${Y(s.values[i])}" r="4" fill="${s.color}" stroke="var(--black)" stroke-width="2"/>` : ''; }).join('');
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${series[0].color};stop-opacity:.19"/><stop offset="1" style="stop-color:var(--white);stop-opacity:0"/></linearGradient></defs>${g}${paths}${lastPts}<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
+  const markers = series.filter((s) => !s.dash).map((s) => s.values.map((value, index) =>
+    Number.isFinite(value) && (points || index === s.values.length - 1)
+      ? `<circle cx="${X(index)}" cy="${Y(value)}" r="${points ? 3 : 4}" fill="${s.color}" stroke="var(--black)" stroke-width="1.5"/>` : '').join('')).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"${label ? ` aria-label="${esc(label)}"` : ''}><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${series[0].color};stop-opacity:.19"/><stop offset="1" style="stop-color:var(--white);stop-opacity:0"/></linearGradient></defs>${g}<g class="chart-series">${paths}${markers}</g><line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
   const svg = el.querySelector('svg'), xh = svg.querySelector('.xh'), dots = svg.querySelector('.dots');
   svg.addEventListener('mousemove', (e) => { const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width;
     const i = Math.max(0, Math.min(xs.length - 1, Math.round((x - L) / (W - L - R) * (xs.length - 1))));
@@ -1121,17 +1124,17 @@ function shell() {
       <div class="sentinel-frame" id="sentinelFrame"></div>
       <div class="sentinel-controls" id="sentinelControls" role="group" aria-label="Controles do modo sentinela"></div>
     </div>
-    <div class="sentinel-plot"><h2 id="sentinelPlotTitle"></h2><div class="chart" id="sentinelChart"></div></div>
+    <div class="sentinel-plot" id="sentinelPlot"><h2 id="sentinelPlotTitle"></h2><div class="chart" id="sentinelChart"></div></div>
   </section>
   <div class="wrap briefing" id="briefing">
     <section id="today" aria-label="Resumo das compras"></section>
     <section id="planning" aria-label="Meta e sensibilidade a preço"></section>
   </div>
   <details class="wrap disclosure" id="quickCharts" ${matchMedia('(min-width: 701px)').matches ? 'open' : ''}>
-    <summary>Mercados e empresas <small>Participação por recorte</small></summary><div class="radar-grid" id="radarGrid"></div>
+    <summary>Mercados e empresas</summary><div class="radar-grid" id="radarGrid"></div>
   </details>
   <details class="wrap disclosure analysis" id="analysis">
-    <summary>Análise completa <small>Rotas, ocupação e ofertas</small></summary>
+    <summary>Análise completa</summary>
     <section class="hero" id="hero"></section>
     <section class="kpis" id="kpis"></section>
     <main id="main"></main>
@@ -1338,7 +1341,7 @@ function update() { saveF(); syncBar(); cancelAnimationFrame(raf); raf = request
 /* render                                                                   */
 /* ====================================================================== */
 const sentinel = {
-  slides: [], active: 0, timer: 0,
+  slides: [], days: [], active: 0, timer: 0,
   playing: !matchMedia('(prefers-reduced-motion: reduce)').matches,
 };
 const sentinelMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -1370,6 +1373,7 @@ function paintSentinel() {
     <h1>${esc(slide.label)}</h1><strong>${esc(slide.value)}</strong><p>${esc(slide.detail)}</p>
   </div>`;
   $$('#sentinelControls [data-slide]').forEach((button, index) => button.setAttribute('aria-current', String(index === sentinel.active)));
+  drawSentinelPlot(slide.plot);
 }
 
 function scheduleSentinel() {
@@ -1385,25 +1389,81 @@ function scheduleSentinel() {
   }, 8000);
 }
 
+function drawSentinelPlot(plot) {
+  const {title, color, values, format, percentage} = plot;
+  $('#sentinelPlotTitle').textContent = title;
+  const valid = values.filter(Number.isFinite);
+  if (valid.length < 2) {
+    $('#sentinelChart').innerHTML = '<p class="empty">Sem série no recorte.</p>';
+    return;
+  }
+  const days = sentinel.days;
+  const bounds = percentage ? {
+    y0: Math.max(0, Math.min(...valid) - .045),
+    y1: Math.min(1, Math.max(...valid) + .045),
+  } : {y0: 0, y1: Math.ceil(Math.max(...valid) * 1.08 / 4) * 4 || 4};
+  lineSvg('sentinelChart', days, [{name: title, color, values}], {
+    ...bounds, label: title, points: true, yFmt: format, xFmt: br,
+    height: matchMedia('(max-width: 700px)').matches ? 186 : 288,
+    tip: (index) => `${br(days[index])} · ${format(values[index])}`,
+  });
+}
+
 function renderSentinel(rows, total, previous, realized, range) {
   const scope = focusShort();
-  const market = realized ? 'no período' : 'em venda';
-  const change = previous?.pax > 0 && total.pax > 0 ? ` · ${pp(total.share - previous.share)} vs. anterior` : '';
-  const slides = [{tone: 'share', label: 'Parcela de mercado', value: pct(total.share), detail: `${scope} ${market}${change}`}];
+  const groups = groupBy(rows, (row) => row.d);
+  const dates = [...groups.keys()].sort();
+  const edge = realized ? dates.at(-1) : dates[0];
+  const a = realized && edge ? [range.a, addD(edge, -13)].sort().at(-1) : edge;
+  const b = realized ? edge : edge ? [range.b, addD(edge, 13)].sort()[0] : null;
+  const days = a && b ? Array.from({length: diffD(b, a) + 1}, (_, index) => addD(a, index)) : [];
+  sentinel.days = days;
+  const daily = days.map((day) => groups.has(day) ? tot(groups.get(day)) : null);
+  const formatShare = (value) => pct(value, 0);
+  const change = previous?.pax > 0 && total.pax > 0 ? ` · ${pp(total.share - previous.share)}` : '';
+  const slides = [{
+    tone: 'share', label: 'Parcela de mercado', value: pct(total.share), detail: scope + change,
+    plot: {title: realized ? 'Parcela por dia' : 'Parcela por data de viagem', color: 'var(--market-accent)',
+      values: daily.map((day) => day?.share), format: formatShare, percentage: true},
+  }];
   if (total.pax > 0) {
-    slides.push({tone: 'volume', label: realized ? 'Passageiros estimados' : 'Poltronas ocupadas', value: n0(total.upax), detail: `${scope} de ${n0(total.pax)} no mercado`});
+    const volume = realized ? 'Passageiros' : 'Poltronas ocupadas';
+    slides.push({
+      tone: 'volume', label: realized ? 'Passageiros estimados' : volume, value: n0(total.upax),
+      detail: `${scope} · ${n0(total.pax)} no mercado`,
+      plot: {title: `${volume} por dia`, color: 'var(--volume-accent)', values: daily.map((day) => day?.upax), format: n0},
+    });
     const routes = [...groupBy(rows, (row) => row.r)].map(([key, items]) => ({key, ...tot(items)}));
     const leader = routes.sort((a, b) => b.upax - a.upax)[0];
-    if (leader?.upax > 0) slides.push({tone: 'route', label: 'Linha com maior volume', value: shortRoute(DB.dims.rotas[leader.key].l), detail: `${n0(leader.upax)} ${realized ? 'passageiros' : 'ocupadas'} · ${pct(leader.share)} de parcela`});
+    if (leader?.upax > 0) {
+      const route = shortRoute(DB.dims.rotas[leader.key].l);
+      const routeDays = groupBy(rows.filter((row) => row.r === leader.key), (row) => row.d);
+      slides.push({
+        tone: 'route', label: 'Linha com maior volume', value: route,
+        detail: `${n0(leader.upax)} ${volume.toLowerCase()} · ${pct(leader.share)} de parcela`,
+        plot: {title: `${route} · parcela por dia`, color: 'var(--route-accent)',
+          values: days.map((day) => routeDays.has(day) ? tot(routeDays.get(day)).share : NaN), format: formatShare, percentage: true},
+      });
+    }
   }
   const lastTone = sentinel.slides[sentinel.active]?.tone;
   sentinel.slides = slides;
   sentinel.active = Math.max(0, slides.findIndex((slide) => slide.tone === lastTone));
   const controls = $('#sentinelControls');
-  controls.innerHTML = slides.length > 1 ? slides.map((slide, index) => `<button type="button" data-slide="${index}" aria-label="Mostrar ${esc(slide.label.toLowerCase())}" aria-controls="sentinelFrame">${index + 1}</button>`).join('') + '<button type="button" id="sentinelToggle"></button>' : '';
+  const board = $('#sentinel');
+  const plotOpen = board.classList.contains('plot-open');
+  const player = slides.length > 1 ? slides.map((slide, index) => `<button type="button" data-slide="${index}" aria-label="Mostrar ${esc(slide.label.toLowerCase())}" aria-controls="sentinelFrame sentinelChart">${index + 1}</button>`).join('') + '<button type="button" id="sentinelToggle"></button>' : '';
+  controls.innerHTML = player + `<button type="button" class="sentinel-chart-toggle" id="sentinelPlotToggle" aria-controls="sentinelPlot" aria-expanded="${plotOpen}">${plotOpen ? 'Ocultar gráfico' : 'Ver gráfico'}</button>`;
   controls.onclick = (event) => {
     const button = event.target.closest('button');
     if (!button) return;
+    if (button.id === 'sentinelPlotToggle') {
+      const open = board.classList.toggle('plot-open');
+      button.setAttribute('aria-expanded', String(open));
+      button.textContent = open ? 'Ocultar gráfico' : 'Ver gráfico';
+      if (open) drawSentinelPlot(sentinel.slides[sentinel.active].plot);
+      return;
+    }
     if (button.id === 'sentinelToggle') {
       sentinel.playing = !sentinel.playing;
       paintSentinelControls();
@@ -1416,25 +1476,6 @@ function renderSentinel(rows, total, previous, realized, range) {
   paintSentinel();
   paintSentinelControls();
   scheduleSentinel();
-
-  const groups = groupBy(rows, (row) => row.d);
-  const dates = [...groups.keys()].sort();
-  const edge = realized ? dates.at(-1) : dates[0];
-  const a = realized && edge ? [range.a, addD(edge, -13)].sort().at(-1) : edge;
-  const b = realized ? edge : edge ? [range.b, addD(edge, 13)].sort()[0] : null;
-  const days = a && b ? Array.from({length: diffD(b, a) + 1}, (_, index) => addD(a, index)) : [];
-  const values = days.map((day) => groups.has(day) ? tot(groups.get(day)).share : NaN);
-  const valid = values.filter(Number.isFinite);
-  $('#sentinelPlotTitle').textContent = realized ? 'Parcela por dia' : 'Parcela por data de viagem';
-  if (valid.length < 2) {
-    $('#sentinelChart').innerHTML = '<p class="empty">Poucas datas para mostrar a evolução.</p>';
-    return;
-  }
-  lineSvg('sentinelChart', days, [{name: scope, color: 'var(--volume-accent)', values}], {
-    yFmt: (value) => pct(value, 0), xFmt: br, y0: Math.max(0, Math.min(...valid) - .045),
-    y1: Math.min(1, Math.max(...valid) + .045), height: matchMedia('(max-width: 700px)').matches ? 186 : 288,
-    tip: (index) => `${br(days[index])} · ${scope} ${pct(values[index])}`,
-  });
 }
 
 
@@ -1499,6 +1540,7 @@ function render() {
   $('#main').innerHTML = mods.join('');
   afterRender.forEach((f) => f()); afterRender.length = 0;
   bindTable(); stampTick();
+  observeDashboardMotion(true);
 }
 const afterRender = [];
 
@@ -2019,9 +2061,54 @@ function bindMarketPlan(rows, range, realized) {
     else marketPlan.gain = Number(button.dataset.planGain);
     const attribute = button.dataset.planPeriod ? 'data-plan-period' : 'data-plan-gain';
     panel.innerHTML = modMarketPlan(rows, range, realized);
+    animateDashboard(panel);
     panel.querySelector(`[${attribute}="${button.getAttribute(attribute)}"]`)?.focus({preventScroll: true});
   };
 }
+
+/* Movimento do painel */
+const movingDashboard = '#briefing > section, #quickCharts, #radarGrid > .mod, #analysis, #hero, #kpis, #analysis #main > .mod, footer';
+const dashboardReveal = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    dashboardReveal.unobserve(entry.target);
+    entry.target.classList.remove('reveal-await');
+    animateDashboard(entry.target, true);
+  }
+}, {threshold: 0, rootMargin: '0px 0px -16px'});
+
+function animateDashboard(element, revealed = false) {
+  if (sentinelMotion.matches) return;
+  element.animate([
+    {opacity: revealed ? .3 : .64, filter: 'blur(2px)', transform: 'translateY(5px)'},
+    {opacity: 1, filter: 'blur(0)', transform: 'translateY(0)'},
+  ], {duration: revealed ? 430 : 315, easing: 'cubic-bezier(.16,1,.3,1)'});
+  const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v');
+  numbers.forEach((number, index) => number.animate([
+    {opacity: .4, transform: 'translateY(5px)'},
+    {opacity: 1, transform: 'translateY(0)'},
+  ], {duration: 350, delay: Math.min(index * 25, 100), easing: 'cubic-bezier(.16,1,.3,1)'}));
+}
+
+function observeDashboardMotion(animateVisible = false) {
+  dashboardReveal.disconnect();
+  for (const element of $$(movingDashboard)) {
+    element.classList.remove('reveal-await');
+    if (sentinelMotion.matches || !element.getClientRects().length) continue;
+    const rect = element.getBoundingClientRect();
+    if (rect.top >= innerHeight - 16) {
+      element.classList.add('reveal-await');
+      dashboardReveal.observe(element);
+    } else if (animateVisible && rect.bottom > 0) {
+      animateDashboard(element);
+    }
+  }
+}
+
+sentinelMotion.addEventListener('change', () => observeDashboardMotion());
+document.addEventListener('toggle', (event) => {
+  if (event.target.matches('#quickCharts, #analysis, .today-detail, .footer-method')) observeDashboardMotion(event.target.open);
+}, true);
 
 /* ---------- partida e atualização em segundo plano ---------- */
 let lastFetch = 0, sig = '', pending = false, busy = false, failed = false;
@@ -2066,17 +2153,11 @@ async function refresh(manual) {
 }
 function panelLoading() {
   $('#main').setAttribute('aria-busy', 'true');
-  $('#main').innerHTML = `<div class="loading-layout" role="status">
-    <section class="loading-card">
-      <p class="eyebrow">Hélios · Sincronização</p><h1>Carregando dados</h1>
-      <p>Consultando a última leitura e preparando o resumo do mercado.</p>
-      <div aria-hidden="true"><span class="skeleton skeleton-figure"></span><div class="skeleton-row"><i class="skeleton"></i><i class="skeleton"></i><i class="skeleton"></i></div></div>
-      <span class="loading-progress" aria-hidden="true"></span>
-    </section>
-    <div class="loading-card loading-chart" aria-hidden="true">
-      <svg viewBox="0 0 480 155"><path class="loading-grid" d="M0 34H480M0 67H480M0 100H480M0 133H480"/>
-        <path class="loading-line" d="M0 125C40 121 53 91 83 98S122 126 153 104 188 62 220 74 256 108 286 78 335 28 363 46 400 70 429 47 459 32 480 17"/></svg>
-    </div>
+  $('#main').innerHTML = `<div class="loading-ring-wrap" role="status">
+    <svg class="loading-ring" viewBox="0 0 60 60" aria-hidden="true">
+      <circle class="track" cx="30" cy="30" r="26"/><circle class="arc" cx="30" cy="30" r="26"/>
+    </svg>
+    <p class="loading-ring-label">Carregando Hélios</p>
   </div>`;
 }
 function panelStatus(title, message, retry = false) {
