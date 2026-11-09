@@ -482,7 +482,7 @@ footer ul { margin-top: 10px; }
   --line: rgba(220, 220, 228, .13);
   --line-strong: rgba(220, 220, 228, .24);
   --card-line: rgba(220, 220, 228, .15);
-  --us: #d6dee8;
+  --us: #dedbd4;
   --them: #363638;
   --them-2: #28282b;
   --them-hi: #77777d;
@@ -492,7 +492,7 @@ footer ul { margin-top: 10px; }
   --red: #e08c90;
   --teal-dim: rgba(149, 191, 174, .10);
   --red-dim: rgba(224, 140, 144, .10);
-  --halo: rgba(146, 151, 165, .15);
+  --halo: rgba(158, 153, 145, .13);
   --glass: rgba(13, 13, 14, .74);
   --scroll-thumb: #505054;
 }
@@ -510,7 +510,7 @@ footer ul { margin-top: 10px; }
   --line: rgba(36, 36, 46, .13);
   --line-strong: rgba(36, 36, 46, .25);
   --card-line: rgba(36, 36, 46, .17);
-  --us: #37475c;
+  --us: #44423e;
   --them: #c7c7ce;
   --them-2: #dfdfe3;
   --them-hi: #777782;
@@ -614,8 +614,8 @@ footer.wrap { margin-top: 20px; padding-block: 0 22px; }
 button, summary { transition: background-color .16s ease, color .16s ease, border-color .16s ease, transform .16s var(--ease); }
 button:enabled:active, summary:active { transform: translateY(1px); }
 button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color: var(--us); }
-.disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content { animation: reveal .21s var(--ease) both; }
-@keyframes reveal { from { opacity: .4; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content { animation: reveal .42s var(--ease) both; }
+@keyframes reveal { from { opacity: .78; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 .status-card { background: var(--card); }
 @media (max-width: 920px) {
   .briefing { grid-template-columns: minmax(0, 1fr); }
@@ -719,18 +719,18 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 :root {
   --dashboard-gap: clamp(14px, 1.5vw, 24px);
   --dashboard-pad: clamp(16px, 1.7vw, 28px);
-  --market-accent: #efc77f;
-  --volume-accent: #7cc6df;
-  --route-accent: #83c9aa;
+  --market-accent: #e5c58b;
+  --volume-accent: #c3ccc5;
+  --route-accent: #c9beac;
   --pos-text: #80caa5;
   --neg-text: #ef909a;
-  --series-1: #73bfd8; --series-2: #84c5a9; --series-3: #b6a1df; --series-4: #e49a85; --series-5: #93aadf;
+  --series-1: #b8c5bf; --series-2: #a4b3a3; --series-3: #b5a8bb; --series-4: #bca591; --series-5: #a3a9b0;
 }
 :root[data-mode="light"] {
   --market-accent: #80551f;
-  --volume-accent: #23677f;
-  --route-accent: #296b55;
-  --series-1: #2e718c; --series-2: #34765d; --series-3: #7255a0; --series-4: #9f554a; --series-5: #4e6599;
+  --volume-accent: #495d50;
+  --route-accent: #6e5d44;
+  --series-1: #536960; --series-2: #566c53; --series-3: #735d80; --series-4: #806449; --series-5: #526171;
 }
 .sentinel-board {
   display: grid; grid-template-columns: minmax(260px, .65fr) minmax(0, 1.35fr); gap: var(--dashboard-gap);
@@ -743,7 +743,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-kicker { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .15em; color: var(--muted); }
 .sentinel-kicker i { background: var(--market-accent); width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--market-accent) 14%, transparent); }
 .sentinel-frame { min-height: 127px; min-width: 0; }
-.sentinel-reading { min-width: 0; animation: sentinel-in .38s var(--ease) both; }
+.sentinel-reading { min-width: 0; animation: sentinel-in .64s var(--ease) both; }
 .sentinel-reading[data-tone="share"] { --reading: var(--market-accent); }
 .sentinel-reading[data-tone="volume"] { --reading: var(--volume-accent); }
 .sentinel-reading[data-tone="route"] { --reading: var(--route-accent); }
@@ -763,16 +763,16 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-controls svg { width: 14px; height: 14px; }
 .sentinel-plot { min-width: 0; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
 .sentinel-controls .sentinel-chart-toggle { display: none; }
-.reveal-await { opacity: .3; filter: blur(3px); transform: translateY(7px); }
+.reveal-await { opacity: .62; filter: blur(2px); transform: translateY(6px); }
 .reveal-await:focus-within { opacity: 1; filter: none; transform: none; }
 .dd[open] > .pop { animation: reveal .2s var(--ease) both; }
 .sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
 .sentinel-plot .chart { min-height: 288px; }
 .sentinel-plot .chart .path { stroke-width: 2.5; }
-.sentinel-plot .chart-series { animation: sentinel-plot-in .56s var(--ease) both; }
+.sentinel-plot .chart-series { animation: sentinel-plot-in .72s var(--ease) both; }
 .sentinel-plot .chart .empty { padding-block: 12px; }
-@keyframes sentinel-plot-in { from { clip-path: inset(0 100% 0 0); opacity: .35; } to { clip-path: inset(0); opacity: 1; } }
-@keyframes sentinel-in { from { opacity: .1; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes sentinel-plot-in { from { opacity: .48; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes sentinel-in { from { opacity: .58; filter: blur(1px); transform: translateY(4px); } to { opacity: 1; filter: blur(0); transform: none; } }
 .briefing { gap: var(--dashboard-gap); align-items: stretch; margin-block: var(--dashboard-gap); padding-block: var(--dashboard-gap); border-block: 1px solid var(--line); }
 #today .today, #planning .plan-card { border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 #today .t-main { padding: 0 var(--dashboard-pad) 12px 0; }
@@ -798,8 +798,65 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .radar .s1 { stroke: var(--volume-accent); }
 .radar .vx { fill: var(--volume-accent); }
 .radar-grid .lg2 i:not(.d):not(.o) { background: var(--volume-accent); }
-.analysis > main { gap: var(--dashboard-gap); }
+.analysis > main { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--dashboard-gap); }
 .analysis > main .mod { border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; padding-inline: 0; }
+.analysis > main .mod:not(.wide) { grid-column: span 6; }
+.analysis > main .mod.analysis-chart { grid-column: span 8; }
+.analysis > main .mod.analysis-card {
+  grid-column: span 4; border: 1px solid var(--card-line); border-radius: var(--r);
+  background: var(--glass); padding: var(--dashboard-pad); align-self: start;
+}
+.analysis-card .hrow { grid-template-columns: minmax(72px, 1fr) minmax(18px, 1fr) auto; gap: 8px; }
+.analysis-card .hrow .nm { text-align: left; }
+.coverage { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.coverage h3, .coverage p { margin: 0; }
+.coverage h3 { font-size: 14px; font-weight: 600; }
+.coverage-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.coverage-meta p, .coverage-empty { font-size: 12px; color: var(--muted); }
+.coverage ul { margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 162px), 1fr)); gap: 5px 14px; }
+.coverage li { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--line); }
+.coverage li b { color: var(--volume-accent); font-variant-numeric: tabular-nums; }
+.coverage a { width: fit-content; color: var(--white); font-size: 12px; text-underline-offset: 3px; }
+#qp-offers { scroll-margin-block-start: 145px; }
+.hourly {
+  display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(200px, 1fr); gap: var(--dashboard-gap);
+  border-bottom: 1px solid var(--line); padding-block: 4px var(--dashboard-gap); margin-bottom: var(--dashboard-gap);
+}
+.hourly h2, .hourly p { margin: 0; }
+.hourly h2 { font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
+.hourly .lg2 { margin-top: 9px; gap: 12px; }
+.hourly .lg2 i { background: var(--market-accent); }
+.hourly .lg2 i.d { background: var(--them-hi); border: 0; }
+.hour-plot { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 8px; margin-top: 14px; }
+.hourly [hidden] { display: none; }
+.hour-axis, .hour-bars { grid-row: 1; min-height: clamp(160px, 19vw, 240px); }
+.hour-axis { display: flex; flex-direction: column; justify-content: space-between; color: var(--faint); font-size: 10px; text-align: right; }
+.hour-bars, .hour-labels { display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); gap: clamp(2px, .42vw, 7px); grid-column: 2; }
+.hour-bars { align-items: stretch; border-block: 1px solid var(--line); background: linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
+.hour-bars button { display: flex; flex-direction: column-reverse; justify-content: flex-start; padding: 0; border: 0; background: transparent; cursor: pointer; border-radius: 5px 5px 0 0; }
+.hour-bars button:is(:hover, [aria-pressed="true"]) { background: var(--line); }
+.hour-bars button:focus-visible { outline: 1px solid var(--white); outline-offset: 1px; }
+.hour-bars button:enabled:active { transform: none; }
+.hour-bars i { display: block; background: var(--them-hi); height: var(--others, 0%); border-radius: 3px 3px 0 0; transition: height .65s var(--ease), background-color .3s ease; }
+.hour-bars i:first-child { background: var(--market-accent); height: var(--our, 0%); }
+.hour-labels { text-align: center; font-size: 10px; color: var(--faint); }
+.hour-stat { align-self: center; display: grid; gap: 10px; padding: var(--dashboard-pad); border: 1px solid var(--card-line); border-radius: var(--r); background: var(--glass); }
+.hour-stat small, .hour-stat p, .hour-note { color: var(--muted); font-size: 12px; }
+.hour-stat > strong { font-size: clamp(28px, 3.5vw, 50px); line-height: 1; font-weight: 600; letter-spacing: -.055em; color: var(--market-accent); }
+.hour-stat p { padding-top: 8px; border-top: 1px solid var(--line); }
+.hourly .hour-note { margin-top: 12px; }
+@media (max-width: 700px) {
+  .hourly { grid-template-columns: minmax(0, 1fr); }
+  .hour-axis, .hour-bars { min-height: 112px; }
+  .hour-stat { grid-template-columns: auto 1fr; align-items: center; gap: 4px 12px; padding: 10px 12px; }
+  .hour-stat > strong { grid-column: 1; grid-row: 1 / span 2; font-size: 25px; }
+  .hour-stat small { grid-column: 2; grid-row: 1; }
+  .hour-stat p { grid-column: 2; grid-row: 2; border: 0; padding: 0; }
+}
+@media (max-width: 1020px) {
+  .analysis > main { grid-template-columns: minmax(0, 1fr); }
+  .analysis > main .mod:not(.wide) { grid-column: 1 / -1; }
+}
 @media (max-width: 920px) {
   #planning { padding-inline-start: 0; padding-top: var(--dashboard-gap); border-inline-start: 0; border-top: 1px solid var(--line); }
 }
@@ -841,7 +898,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbxfGh_gfdzJi7US9ZScKbESSp4zZDc-wySrQ4S_ewv5nt48mkzVP51soJwKPX7ZVaXsbQ/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbyBks9SiXkfqUejJb4Idfb_IDZCfEYnDpLq7AlD1eAgAmXDFRjSrwL5qdnvrX5SK7QduQ/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -1130,6 +1187,7 @@ function shell() {
     <section id="today" aria-label="Resumo das compras"></section>
     <section id="planning" aria-label="Meta e sensibilidade a preço"></section>
   </div>
+  ${hourlyShell()}
   <details class="wrap disclosure" id="quickCharts" ${matchMedia('(min-width: 701px)').matches ? 'open' : ''}>
     <summary>Mercados e empresas</summary><div class="radar-grid" id="radarGrid"></div>
   </details>
@@ -1479,6 +1537,78 @@ function renderSentinel(rows, total, previous, realized, range) {
 }
 
 
+const hourSlots = Array.from({length: 24}, (_, hour) => hour);
+function hourlyShell() {
+  return `<section class="wrap hourly" id="hourly" aria-labelledby="hourly-title">
+    <div><h2 id="hourly-title">Passageiros por hora de partida</h2>
+      <div class="lg2"><span><i></i><span id="hour-focus"></span></span><span><i class="d"></i>Demais viações</span></div>
+      <div class="hour-plot" id="hour-plot"><div class="hour-axis" aria-hidden="true"><span></span><span></span><span>0</span></div>
+        <div class="hour-bars" role="group" aria-label="Passageiros por hora">${hourSlots.map((hour) => `<button type="button" data-hour="${hour}" tabindex="-1" aria-pressed="false"><i></i><i></i></button>`).join('')}</div>
+        <div class="hour-labels" aria-hidden="true">${hourSlots.map((hour) => `<span>${hour % 4 === 0 ? hour + 'h' : ''}</span>`).join('')}</div>
+      </div><p class="hour-note" id="hour-empty" hidden>Sem passageiros no recorte.</p>
+    </div>
+    <div class="hour-stat" id="hour-stat" aria-live="polite"><small id="hour-detail"></small><strong id="hour-value"></strong><p id="hour-total"></p></div>
+  </section>`;
+}
+
+function renderHourly(rows, total, real) {
+  const panel = $('#hourly'), plot = $('#hour-plot'), stat = $('#hour-stat');
+  const us = focusShort();
+  const title = real ? 'Passageiros por hora de partida' : 'Poltronas vendidas por hora de partida';
+  $('#hourly-title').textContent = title;
+  $('#hour-focus').textContent = us;
+  plot.hidden = stat.hidden = !total.pax;
+  $('#hour-empty').hidden = !!total.pax;
+  if (!total.pax) { delete panel.dataset.activeHour; return; }
+  const byHour = groupBy(rows, (r) => r.h);
+  const buckets = hourSlots.map((h) => tot(byHour.get(h) || []));
+  const peak = buckets.reduce((best, current, h) => current.pax > buckets[best].pax ? h : best, 0);
+  const unit = Math.pow(10, Math.floor(Math.log10(Math.max(1, buckets[peak].pax / 2))));
+  const half = Math.ceil(buckets[peak].pax / (2 * unit)) * unit;
+  const axis = plot.querySelectorAll('.hour-axis span');
+  axis[0].textContent = compact(half * 2);
+  axis[1].textContent = compact(half);
+  const bars = plot.querySelector('.hour-bars');
+  const buttons = [...bars.querySelectorAll('button')];
+  const hourName = (hour) => `${String(hour).padStart(2, '0')}h`;
+  const noun = real ? 'passageiros estimados' : 'poltronas vendidas';
+  buttons.forEach((button, hour) => {
+    const t = buckets[hour];
+    button.style.setProperty('--our', `${t.upax / (2 * half) * 100}%`);
+    button.style.setProperty('--others', `${t.them / (2 * half) * 100}%`);
+    button.dataset.tip = `${hourName(hour)} · ${n0(t.pax)} ${noun}\n${us}: ${n0(t.upax)} · Demais viações: ${n0(t.them)}`;
+    button.setAttribute('aria-label', button.dataset.tip.replace('\n', '. '));
+  });
+  const select = (hour, animate = false) => {
+    const previous = panel.dataset.activeHour;
+    panel.dataset.activeHour = hour;
+    buttons.forEach((button, h) => {
+      button.tabIndex = h === hour ? 0 : -1;
+      button.setAttribute('aria-pressed', String(h === hour));
+    });
+    $('#hour-detail').textContent = `${hour === peak ? 'Pico' : 'Partidas'} · ${hourName(hour)}`;
+    $('#hour-value').textContent = n0(buckets[hour].pax);
+    $('#hour-total').textContent = `${n0(total.pax)} ${noun} no recorte`;
+    if (animate && String(hour) !== previous) animateDashboard(stat);
+  };
+  const active = Number(panel.dataset.activeHour);
+  select(buckets[active]?.pax ? active : peak);
+  bars.onclick = (event) => {
+    const button = event.target.closest('button[data-hour]');
+    if (button) select(Number(button.dataset.hour), true);
+  };
+  bars.onkeydown = (event) => {
+    const button = event.target.closest('button[data-hour]');
+    if (!button) return;
+    const activeHour = Number(button.dataset.hour);
+    const next = {ArrowLeft: Math.max(0, activeHour - 1), ArrowRight: Math.min(23, activeHour + 1), Home: 0, End: 23}[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    select(next, true);
+    buttons[next].focus({preventScroll: true});
+  };
+}
+
 function render() {
   const R = ranges(); const real = F.view === 'real';
   const cur = pick(R.a, R.b, real ? 0 : 1);
@@ -1489,10 +1619,12 @@ function render() {
   $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' e Quero Passagem (ofertas)' : ''} · Atualização a cada ${CONFIG.refreshMin} min`;
 
   renderSentinel(cur, T, P, real, R);
+  renderHourly(cur, T, real);
   const todayDetailOpen = $('#today .today-detail')?.open;
   $('#today').innerHTML = todayHtml();
   if (todayDetailOpen) $('#today .today-detail').open = true;
-  $('#radarGrid').innerHTML = modRadar(cur, prev) + modCompanyRadar(cur, prev, T);
+  const quero = queroSelection();
+  $('#radarGrid').innerHTML = modRadar(cur, prev) + modCompanyRadar(cur, prev, T, quero);
   $('#planning').innerHTML = modMarketPlan(cur, R, real);
   bindMarketPlan(cur, R, real);
   // ---- abertura ----
@@ -1524,20 +1656,16 @@ function render() {
     kp('Oferta × procura', Number.isFinite(T.idx) ? NF1.format(T.idx * 100) + '<small>índice</small>' : '—', `oferta ${pct(T.fair)} das poltronas · ocupação ${pct(T.lfUs, 0)} × ${pct(T.lfThem, 0)} da concorrência`);
 
   // ---- módulos ----
-  const Wd = (h) => h.replace('<section class="mod">', '<section class="mod wide">');
+  const layout = (h, cls) => h.replace('<section class="mod"', `<section class="mod ${cls}"`);
+  const wide = (h) => layout(h, 'wide');
   const mods = [];
-  if (real) mods.push(Wd(modWhere(T, P, cur, prev)));
-  mods.push(Wd(modTime(R, cur, real)));
-  mods.push(Wd(modRank(cur, prev, T)));
-  mods.push(Wd(modRoutes(cur, prev)));
-  mods.push(Wd(modWhen(cur)));
-  mods.push(Wd(modOcc(cur)));
-  if (real) mods.push(modAhead());
-  mods.push(real ? modPace() : Wd(modPace()));
-  const quero = modQuero();
-  if (quero) mods.push(Wd(quero));
-  mods.push(Wd(modTable(cur, prev)));
+  mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T), 'analysis-card'));
+  if (real) mods.push(layout(modAhead(), 'analysis-chart'), layout(modWhere(T, P, cur, prev), 'analysis-card'));
+  mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
+  if (quero) mods.push(wide(modQuero(quero)));
+  mods.push(wide(modTable(cur, prev)));
   $('#main').innerHTML = mods.join('');
+  $('#qp-open')?.addEventListener('click', () => { $('#analysis').open = true; });
   afterRender.forEach((f) => f()); afterRender.length = 0;
   bindTable(); stampTick();
   observeDashboardMotion(true);
@@ -1695,11 +1823,15 @@ function modRadar(cur, prev) {
   const T = keys.map((k) => tot(a.get(k))), P = keys.map((k) => b.has(k) ? tot(b.get(k)) : null);
   const ser = [{kind: 's1', values: T.map((x) => x.pax ? x.share : null)}, {kind: 's2', values: T.map((x) => x.cap ? x.fair : null)}];
   if (prev.length) ser.push({kind: 's3', values: P.map((x) => x && x.pax ? x.share : null)});
-  const svg = radarSvg(keys.map((k) => ({label: shortRoute(k)})), ser, {tip: (i) => `${keys[i]}\nParcela ${us}: ${pct(T[i].share)} · ${n0(T[i].upax)} de ${n0(T[i].pax)}\nOferta ${us}: ${pct(T[i].fair)} das poltronas${P[i]?.pax ? `\nPeríodo anterior: ${pct(P[i].share)}` : ''}`});
+  const tip = (i) => `${keys[i]}\nParcela ${us}: ${pct(T[i].share)} · ${n0(T[i].upax)} de ${n0(T[i].pax)}\nOferta ${us}: ${pct(T[i].fair)} das poltronas${P[i]?.pax ? `\nPeríodo anterior: ${pct(P[i].share)}` : ''}`;
+  const radar = keys.length >= 3;
+  const chart = radar ? radarSvg(keys.map((k) => ({label: shortRoute(k)})), ser, {tip})
+    : hbars(keys.map((k, i) => ({name: shortRoute(k), i, share: T[i].share})).filter((x) => Number.isFinite(x.share)),
+      {max: 1, val: (x) => x.share, right: (x) => `<b>${pct(x.share)}</b>`, tip: (x) => tip(x.i), us: () => true});
   const gaps = keys.map((k, i) => ({k, g: T[i].share - T[i].fair})).filter((x) => Number.isFinite(x.g)).sort((x, y) => y.g - x.g);
   const ins = gaps.length >= 2 ? `Acima da oferta em <em>${esc(shortRoute(gaps[0].k))} (${pp(gaps[0].g)})</em> · mais abaixo em <em>${esc(shortRoute(gaps[gaps.length - 1].k))} (${pp(gaps[gaps.length - 1].g)})</em>` : '';
-  return mod('Radar das linhas', '',
-    `<div class="lg2"><span><i></i>Parcela ${esc(us)}</span><span><i class="d"></i>Parcela de oferta</span>${prev.length ? '<span><i class="o"></i>Período anterior</span>' : ''}</div>${svg}${ins ? `<p class="insight" style="font-size:14px">${ins}</p>` : ''}`);
+  return mod(radar ? 'Radar das linhas' : 'Parcela por linha', '',
+    `<div class="lg2"><span><i></i>Parcela ${esc(us)}</span>${radar ? `<span><i class="d"></i>Parcela de oferta</span>${prev.length ? '<span><i class="o"></i>Período anterior</span>' : ''}` : ''}</div>${chart}${ins ? `<p class="insight" style="font-size:14px">${ins}</p>` : ''}`);
 }
 
 /* 3 · ranking */
@@ -1718,7 +1850,7 @@ function modRank(cur, prev, T) {
     ${items.length > 20 ? `<p class="note">+ ${items.length - 20} viações menores na tabela abaixo.</p>` : ''}`);
 }
 
-function modCompanyRadar(cur, prev, total) {
+function modCompanyRadar(cur, prev, total, quero) {
   const previous = groupBy(prev, (r) => r.v);
   const oldTotal = prev.reduce((sum, r) => sum + r.pax, 0);
   const leaders = [...groupBy(cur, (r) => r.v)].map(([v, rows]) => {
@@ -1739,27 +1871,40 @@ function modCompanyRadar(cur, prev, total) {
     val: (entry) => entry.share, us: (entry) => companyIsUs(entry.v), color: (entry) => colorOf(entry.v),
     right: (entry) => '<b>' + n0(entry.pax) + '</b><em>' + pct(entry.share) + '</em>', tip,
   });
-  return mod('Por empresa', '', legend + chart +
-    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + ranking)
+  return mod('Por empresa', 'Passageiros estimados · ClickBus', legend + chart +
+    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + ranking + (quero ? companyOffers(quero) : ''))
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
-function modQuero() {
-  if (!DB.data.quero) return '';
+function queroSelection() {
+  if (!DB.data.quero) return null;
   const marketRoutes = DB.dims.rotas.filter((route, i) => ['SPO → SJR', 'SJR → SPO'].includes(shortRoute(route.l))
     && (!F.routes.size || F.routes.has(i)));
-  if (F.routes.size && !marketRoutes.length) return '';
+  if (F.routes.size && !marketRoutes.length) return null;
   const classes = new Set([...F.classes].map((i) => DB.dims.classes[i]));
   const routes = new Set(marketRoutes.map((route) => route.l));
   const offers = DB.data.quero.rows.filter((r) => (!F.routes.size || routes.has(r[1])) && (!classes.size || classes.has(r[3]))
     && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2))));
   const {status, ultimaTentativa} = DB.data.quero;
+  return {offers, status, ultimaTentativa, line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
+}
+
+function companyOffers({offers, line}) {
+  const companies = [...groupBy(offers, (r) => shortCompany(r[2]))]
+    .sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b, 'pt-BR'));
+  return `<div class="coverage"><div class="coverage-meta"><h3>Ofertas futuras · Quero Passagem</h3><p>${esc(line)} · ${n0(offers.length)} ofertas · ${n0(companies.length)} ${companies.length === 1 ? 'viação' : 'viações'}</p></div>` +
+    (companies.length ? `<ul aria-label="Ofertas por viação">${companies.map(([name, rows]) => `<li><span>${esc(name)}</span><b>${n0(rows.length)}</b></li>`).join('')}</ul><a id="qp-open" href="#qp-offers">Ver partidas e preços</a>`
+      : '<p class="coverage-empty">Sem ofertas para os filtros selecionados.</p>') + '</div>';
+}
+
+function modQuero({offers, status, ultimaTentativa, line}) {
   const statusText = status ? '<p class="note">Última tentativa ' + esc(ultimaTentativa) + ' · ' + esc(status) + '</p>' : '';
   const body = offers.length ? '<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Linha</th><th>Viação</th><th>Classe</th><th>Partida</th><th>Preço</th><th>Lugares anunciados</th></tr></thead><tbody>'
     + offers.map(([day, route, company, cls, time, price, seats]) => '<tr><td>' + br(day) + '</td><td>' + esc(shortRoute(route)) + '</td><td>' + esc(shortCompany(company))
       + '</td><td>' + esc(cls) + '</td><td>' + esc(time) + '</td><td>' + offerPrice.format(price) + '</td><td>' + (seats == null ? '—' : n0(seats)) + '</td></tr>').join('') + '</tbody></table></div>'
     : '<p class="empty">Sem ofertas válidas da Quero Passagem neste recorte.</p>';
-  return mod('Ofertas · Quero Passagem', 'Próximas partidas e preços publicados em SPO ↔ SJR. O ranking de passageiros usa as leituras de ocupação da ClickBus.', statusText + body);
+  return mod('Ofertas · Quero Passagem', `${line} · Próximas partidas e preços publicados`, statusText + body)
+    .replace('<section class="mod">', '<section class="mod" id="qp-offers">');
 }
 
 /* 4 · linha a linha */
@@ -1785,20 +1930,14 @@ function modRoutes(cur, prev) {
     <div class="keys">${keys.map(([k]) => `<span>${dot(k)}${esc(companyName(k))}</span>`).join('')}</div>`);
 }
 
-/* 5 · horário e dia da semana */
+/* 5 · dia da semana */
 function modWhen(cur) {
   const us = focusShort();
-  const byH = groupBy(cur, (r) => r.h), byW = groupBy(cur, (r) => r.wd);
-  const hrs = [...Array(24).keys()].map((h) => ({h, t: tot(byH.get(h) || [])}));
+  const byW = groupBy(cur, (r) => r.wd);
   const wds = [1, 2, 3, 4, 5, 6, 0].map((w) => ({w, t: tot(byW.get(w) || [])}));
-  const bestH = hrs.filter((x) => x.t.pax > 20).sort((a, b) => b.t.share - a.t.share);
-  const ins = bestH.length > 3 ? `Mais forte às <em>${bestH[0].h}h (${pct(bestH[0].t.share, 0)})</em>, mais fraca às <em>${bestH[bestH.length - 1].h}h (${pct(bestH[bestH.length - 1].t.share, 0)})</em>.` : '';
-  return mod('Horário e dia da semana', `Passageiros por hora de partida e por dia da viagem. Branco = ${esc(us)}. O número em cima é a parcela.`,
-    `${ins ? `<p class="insight">${ins}</p>` : ''}
-    ${columns(hrs, {hours: true, label: (x) => x.h % 3 === 0 ? x.h + 'h' : '', us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
-      tip: (x) => `Partidas das ${x.h}h\n${us}: ${n0(x.t.upax)} · concorrência: ${n0(x.t.them)}\nParcela ${pct(x.t.share)} · oferta ${pct(x.t.fair)}\nOcupação ${pct(x.t.lfUs, 0)} × ${pct(x.t.lfThem, 0)}`})}
-    <div><p class="h4">Dia da semana da viagem</p>${columns(wds, {label: (x) => WD[x.w], us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
-      tip: (x) => `${WDL[x.w]}\n${us}: ${n0(x.t.upax)} · concorrência: ${n0(x.t.them)}\nParcela ${pct(x.t.share)}`})}</div>`);
+  return mod('Passageiros por dia da semana', `Dia da viagem · ${esc(us)} × demais viações`,
+    columns(wds, {label: (x) => WD[x.w], us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
+      tip: (x) => `${WDL[x.w]}\n${us}: ${n0(x.t.upax)} · concorrência: ${n0(x.t.them)}\nParcela ${pct(x.t.share)}`}));
 }
 
 /* 6 · ocupação */
@@ -2067,27 +2206,33 @@ function bindMarketPlan(rows, range, realized) {
 }
 
 /* Movimento do painel */
-const movingDashboard = '#briefing > section, #quickCharts, #radarGrid > .mod, #analysis, #hero, #kpis, #analysis #main > .mod, footer';
+const movingDashboard = '#briefing > section, #hourly, #quickCharts, #radarGrid > .mod, #analysis, #hero, #kpis, #analysis #main > .mod, footer';
+const dashboardAnimations = new WeakMap();
+const revealedDashboard = new WeakSet();
 const dashboardReveal = new IntersectionObserver((entries) => {
   for (const entry of entries) {
     if (!entry.isIntersecting) continue;
     dashboardReveal.unobserve(entry.target);
     entry.target.classList.remove('reveal-await');
+    revealedDashboard.add(entry.target);
     animateDashboard(entry.target, true);
   }
 }, {threshold: 0, rootMargin: '0px 0px -16px'});
 
 function animateDashboard(element, revealed = false) {
   if (sentinelMotion.matches) return;
-  element.animate([
-    {opacity: revealed ? .3 : .64, filter: 'blur(2px)', transform: 'translateY(5px)'},
-    {opacity: 1, filter: 'blur(0)', transform: 'translateY(0)'},
-  ], {duration: revealed ? 430 : 315, easing: 'cubic-bezier(.16,1,.3,1)'});
-  const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v');
-  numbers.forEach((number, index) => number.animate([
-    {opacity: .4, transform: 'translateY(5px)'},
-    {opacity: 1, transform: 'translateY(0)'},
-  ], {duration: 350, delay: Math.min(index * 25, 100), easing: 'cubic-bezier(.16,1,.3,1)'}));
+  dashboardAnimations.get(element)?.forEach((animation) => animation.cancel());
+  const easing = 'cubic-bezier(.22,.68,.2,1)';
+  const animations = [element.animate([
+    {opacity: revealed ? .62 : .87, filter: revealed ? 'blur(2px)' : 'blur(.6px)', transform: `translateY(${revealed ? 6 : 2}px)`},
+    {opacity: 1, filter: 'none', transform: 'none'},
+  ], {duration: revealed ? 610 : 460, easing})];
+  const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v, #hour-value');
+  numbers.forEach((number, index) => animations.push(number.animate([
+    {opacity: .75, transform: 'translateY(3px)'},
+    {opacity: 1, transform: 'none'},
+  ], {duration: 470, delay: Math.min(index * 24, 96), fill: 'backwards', easing})));
+  dashboardAnimations.set(element, animations);
 }
 
 function observeDashboardMotion(animateVisible = false) {
@@ -2096,11 +2241,12 @@ function observeDashboardMotion(animateVisible = false) {
     element.classList.remove('reveal-await');
     if (sentinelMotion.matches || !element.getClientRects().length) continue;
     const rect = element.getBoundingClientRect();
-    if (rect.top >= innerHeight - 16) {
+    if (rect.top >= innerHeight - 16 && !revealedDashboard.has(element)) {
       element.classList.add('reveal-await');
       dashboardReveal.observe(element);
-    } else if (animateVisible && rect.bottom > 0) {
-      animateDashboard(element);
+    } else if (rect.top < innerHeight && rect.bottom > 0) {
+      revealedDashboard.add(element);
+      if (animateVisible && !element.matches('#quickCharts, #analysis')) animateDashboard(element);
     }
   }
 }
