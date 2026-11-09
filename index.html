@@ -733,6 +733,100 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
   .loading-chart { display: none; }
 }
 
+/* Sentinela e área de análise */
+:root {
+  --dashboard-gap: clamp(14px, 1.5vw, 24px);
+  --dashboard-pad: clamp(16px, 1.7vw, 28px);
+  --market-accent: #efc77f;
+  --volume-accent: #7cc6df;
+  --route-accent: #83c9aa;
+  --pos-text: #80caa5;
+  --neg-text: #ef909a;
+  --series-1: #73bfd8; --series-2: #84c5a9; --series-3: #b6a1df; --series-4: #e49a85; --series-5: #93aadf;
+}
+:root[data-mode="light"] {
+  --market-accent: #80551f;
+  --volume-accent: #23677f;
+  --route-accent: #296b55;
+  --series-1: #2e718c; --series-2: #34765d; --series-3: #7255a0; --series-4: #9f554a; --series-5: #4e6599;
+}
+.sentinel-board {
+  display: grid; grid-template-columns: minmax(260px, .65fr) minmax(0, 1.35fr); gap: var(--dashboard-gap);
+  margin-block: var(--dashboard-gap); padding: var(--dashboard-pad);
+  border: 1px solid var(--card-line); border-radius: var(--r);
+  background: linear-gradient(112deg, color-mix(in srgb, var(--market-accent) 7%, var(--glass)), var(--glass) 56%);
+  backdrop-filter: blur(18px);
+}
+.sentinel-copy { display: flex; flex-direction: column; min-width: 0; gap: 14px; align-self: center; }
+.sentinel-kicker { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .15em; color: var(--muted); }
+.sentinel-kicker i { background: var(--market-accent); width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--market-accent) 14%, transparent); }
+.sentinel-frame { min-height: 127px; min-width: 0; }
+.sentinel-reading { min-width: 0; animation: sentinel-in .38s var(--ease) both; }
+.sentinel-reading[data-tone="share"] { --reading: var(--market-accent); }
+.sentinel-reading[data-tone="volume"] { --reading: var(--volume-accent); }
+.sentinel-reading[data-tone="route"] { --reading: var(--route-accent); }
+.sentinel-reading h1, .sentinel-reading p { margin: 0; }
+.sentinel-reading h1 { font-size: 15px; font-weight: 600; }
+.sentinel-reading strong { display: block; margin-block: 4px; color: var(--reading); font-size: clamp(39px, 5vw, 78px); font-weight: 600; line-height: 1.07; letter-spacing: -.075em; }
+.sentinel-reading[data-tone="route"] strong { font-size: clamp(32px, 3.75vw, 59px); letter-spacing: -.04em; }
+.sentinel-reading p { color: var(--muted); font-size: 13px; }
+.sentinel-controls { display: flex; align-items: center; gap: 6px; }
+.sentinel-controls button {
+  display: grid; place-items: center; border: 1px solid var(--card-line);
+  background: var(--glass); color: var(--muted); border-radius: 8px; min-width: 34px; min-height: 33px;
+}
+.sentinel-controls button[aria-current="true"] { background: var(--market-accent); border-color: var(--market-accent); color: var(--page); font-weight: 600; }
+:root[data-mode="light"] .sentinel-controls button[aria-current="true"] { color: #fff; }
+.sentinel-controls button:hover { border-color: var(--market-accent); }
+.sentinel-controls svg { width: 14px; height: 14px; }
+.sentinel-plot { min-width: 0; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
+.sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
+.sentinel-plot .chart .path { stroke-width: 2.5; }
+@keyframes sentinel-in { from { opacity: .1; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.briefing { gap: var(--dashboard-gap); align-items: stretch; margin-block: var(--dashboard-gap); padding-block: var(--dashboard-gap); border-block: 1px solid var(--line); }
+#today .today, #planning .plan-card { border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
+#today .t-main { padding: 0 var(--dashboard-pad) 12px 0; }
+#planning { align-self: stretch; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
+#planning .plan-card { padding: 0; }
+#planning .plan-elasticity { margin-top: 8px; }
+#today .trend-kpi { border: 1px solid var(--line); }
+#today .trend-kpi.up { background: var(--teal-dim); }
+#today .trend-kpi.down { background: var(--red-dim); }
+#today .today-detail > summary { padding: 10px 0; }
+#today .today-detail-content { padding-inline: 0; }
+.plan-scale span { background: var(--volume-accent); }
+.plan-elasticity-head > strong { color: var(--volume-accent); }
+#planning .plan-result [data-plan-seats]:is(strong) { color: var(--market-accent); }
+#quickCharts .radar-grid { gap: var(--dashboard-gap); margin-block: var(--dashboard-gap); }
+#quickCharts .radar-grid .mod {
+  background: none; border: 0; border-radius: 0; padding: 0; gap: 10px;
+}
+#quickCharts .radar-grid .mod + .mod { padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
+#quickCharts .radar-grid .mod-body { gap: 12px; }
+#quickCharts .radar svg { max-height: clamp(355px, 34vw, 510px); }
+#quickCharts .radar .lab { font-size: 12px; }
+.radar .s1 { stroke: var(--volume-accent); }
+.radar .vx { fill: var(--volume-accent); }
+.radar-grid .lg2 i:not(.d):not(.o) { background: var(--volume-accent); }
+.analysis > main { gap: var(--dashboard-gap); }
+.analysis > main .mod { border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; padding-inline: 0; }
+@media (max-width: 920px) {
+  #planning { padding-inline-start: 0; padding-top: var(--dashboard-gap); border-inline-start: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 700px) {
+  .sentinel-board { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 15px; }
+  .sentinel-copy { gap: 7px; }
+  .sentinel-frame { min-height: 94px; }
+  .sentinel-reading strong { font-size: 45px; }
+  .sentinel-plot { border-inline-start: 0; border-top: 1px solid var(--line); padding: 10px 0 0; }
+  #quickCharts .radar-grid .mod + .mod { border-inline-start: 0; border-top: 1px solid var(--line); padding: var(--dashboard-gap) 0 0; }
+  #quickCharts .radar svg { max-height: none; }
+  #today .t-main { padding-inline: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-reading { animation: none; }
+}
+
 </style>
 </head>
 <body>
@@ -746,7 +840,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbyn3oK5JBD4ierMmc50jpJQ10qFlgaVb9hoFW_FntIRrjvfU-XHac-NbAmIeUtGeL8MkQ/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbxN1ebRSuKrAOtpjCAEZZGdiDDeoaZkEPKcOHhxW86u_2ObcKcT_IlRImeLxTkS6mbKoA/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -871,11 +965,9 @@ function companyIsUs(k) { return k === 'JCA' ? true : F.focus === 'JCA' ? DB.jca
 
 /* ---------- cores por empresa ---------- */
 const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-const companyTones = [28, 36, 47, 57, 68, 75];
+const companyTones = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)', 'var(--series-4)', 'var(--series-5)'];
 function colorOf(k) {
-  if (companyIsUs(k)) return 'var(--us)';
-  const tone = companyTones[Number(k) % companyTones.length];
-  return `color-mix(in srgb, var(--them-hi) ${tone}%, var(--white))`;
+  return companyIsUs(k) ? 'var(--market-accent)' : companyTones[Number(k) % companyTones.length];
 }
 const dot = (k) => `<i class="dot" style="--c:${colorOf(k)}"></i>`;
 
@@ -928,14 +1020,14 @@ function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
   const vals = series.flatMap((x) => x.values).filter(Number.isFinite);
   if (!vals.length) return '<div class="empty">Sem dados ainda.</div>';
   const mx = max || Math.min(1, Math.max(.1, Math.ceil(Math.max(...vals) * 1.12 * 10) / 10));
-  const W = 560, H = 392, cx = W / 2, cy = H / 2 + 2, R = 126, id = 'rg' + (++radN), st = 2 * Math.PI / N;
+  const W = 560, H = 410, cx = W / 2, cy = H / 2 + 2, R = 150, id = 'rg' + (++radN), st = 2 * Math.PI / N;
   const ang = (i) => -Math.PI / 2 + i * st;
   const at = (a, r) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
   const P = (i, v) => at(ang(i), R * Math.max(0, Math.min(1, (v || 0) / mx)));
   const f = (q) => `${q[0].toFixed(1)},${q[1].toFixed(1)}`;
   const wrap2 = (t) => { t = String(t).toUpperCase(); if (t.length <= 12 || !t.includes(' ')) return [t];
     const sp = [...t.matchAll(/ /g)].map((m) => m.index).sort((a, b) => Math.abs(a - t.length / 2) - Math.abs(b - t.length / 2))[0]; return [t.slice(0, sp), t.slice(sp + 1)]; };
-  let g = `<defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${cx}" cy="${cy}" r="${R}"><stop offset="0" style="stop-color:var(--white);stop-opacity:.02"/><stop offset="1" style="stop-color:var(--white);stop-opacity:.3"/></radialGradient></defs>`;
+  let g = `<defs><radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${cx}" cy="${cy}" r="${R}"><stop offset="0" style="stop-color:var(--volume-accent);stop-opacity:.035"/><stop offset="1" style="stop-color:var(--volume-accent);stop-opacity:.28"/></radialGradient></defs>`;
   for (let k = 1; k <= 4; k++) g += `<circle class="ring" cx="${cx}" cy="${cy}" r="${R * k / 4}"/>`;
   for (let i = 0; i < N; i++) g += `<line class="spoke" x1="${cx}" y1="${cy}" x2="${f(at(ang(i), R)).split(',')[0]}" y2="${f(at(ang(i), R)).split(',')[1]}"/>`;
   g += `<text class="tk" x="${cx + 5}" y="${cy - R / 2 - 4}">${pct(mx / 2, 0)}</text><text class="tk" x="${cx + 5}" y="${cy - R - 4}">${pct(mx, 0)}</text>`;
@@ -956,9 +1048,9 @@ function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
   return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${g}</svg></div>`;
 }
 /** Linhas (uma escala só). series: [{name, color, dash, values:[n|null]}]; tip(i) → texto. */
-function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
+function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1, height}) {
   const el = document.getElementById(id); if (!el) return;
-  const W = Math.max(320, el.clientWidth || 640), H = 232, L = 46, R = 12, T = 12, B = 28;
+  const W = Math.max(320, el.clientWidth || 640), H = height || (W < 620 ? 240 : 328), L = 46, R = 22, T = 12, B = 28;
   const vals = series.flatMap((s) => s.values).filter(Number.isFinite);
   if (!vals.length || xs.length < 2) { el.innerHTML = '<div class="empty">Poucos dias para desenhar a curva.</div>'; return; }
   let lo = y0 ?? Math.min(...vals), hi = y1 ?? Math.max(...vals); const pad = (hi - lo) * .12 || .05; if (y0 == null) lo = Math.max(0, lo - pad); if (y1 == null) hi += pad;
@@ -973,7 +1065,7 @@ function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
     const area = !s.dash && si === 0 ? runs.filter((r) => r.length > 1).map((r) => `${smoothOpen(r)}L${r[r.length - 1][0].toFixed(1)},${H - B}L${r[0][0].toFixed(1)},${H - B}Z`).join('') : '';
     return (area ? `<path d="${area}" fill="url(#${id}g)" stroke="none"/>` : '') + `<path class="path" d="${d}" stroke="${s.color}" ${s.dash ? 'stroke-dasharray="5 5" opacity=".8"' : ''}/>`; }).join('');
   const lastPts = series.filter((s) => !s.dash).map((s) => { const i = s.values.length - 1; return Number.isFinite(s.values[i]) ? `<circle cx="${X(i)}" cy="${Y(s.values[i])}" r="4" fill="${s.color}" stroke="var(--black)" stroke-width="2"/>` : ''; }).join('');
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--white);stop-opacity:.14"/><stop offset="1" style="stop-color:var(--white);stop-opacity:0"/></linearGradient></defs>${g}${paths}${lastPts}<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${series[0].color};stop-opacity:.19"/><stop offset="1" style="stop-color:var(--white);stop-opacity:0"/></linearGradient></defs>${g}${paths}${lastPts}<line class="xh" y1="${T}" y2="${H - B}" stroke="var(--line-strong)" visibility="hidden"/><g class="dots"></g><rect x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/></svg>`;
   const svg = el.querySelector('svg'), xh = svg.querySelector('.xh'), dots = svg.querySelector('.dots');
   svg.addEventListener('mousemove', (e) => { const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width;
     const i = Math.max(0, Math.min(xs.length - 1, Math.round((x - L) / (W - L - R) * (xs.length - 1))));
@@ -1023,7 +1115,15 @@ function shell() {
     <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
-  ${ready ? `<div class="wrap briefing" id="briefing">
+  ${ready ? `<section class="wrap sentinel-board" id="sentinel" aria-label="Modo sentinela">
+    <div class="sentinel-copy" id="sentinelCopy">
+      <div class="sentinel-kicker"><i aria-hidden="true"></i>SENTINELA</div>
+      <div class="sentinel-frame" id="sentinelFrame"></div>
+      <div class="sentinel-controls" id="sentinelControls" role="group" aria-label="Controles do modo sentinela"></div>
+    </div>
+    <div class="sentinel-plot"><h2 id="sentinelPlotTitle"></h2><div class="chart" id="sentinelChart"></div></div>
+  </section>
+  <div class="wrap briefing" id="briefing">
     <section id="today" aria-label="Resumo das compras"></section>
     <section id="planning" aria-label="Meta e sensibilidade a preço"></section>
   </div>
@@ -1237,6 +1337,107 @@ function update() { saveF(); syncBar(); cancelAnimationFrame(raf); raf = request
 /* ====================================================================== */
 /* render                                                                   */
 /* ====================================================================== */
+const sentinel = {
+  slides: [], active: 0, timer: 0,
+  playing: !matchMedia('(prefers-reduced-motion: reduce)').matches,
+};
+const sentinelMotion = matchMedia('(prefers-reduced-motion: reduce)');
+sentinelMotion.addEventListener('change', (event) => {
+  if (event.matches) {
+    sentinel.playing = false;
+    paintSentinelControls();
+    scheduleSentinel();
+  }
+});
+
+function paintSentinelControls() {
+  const toggle = $('#sentinelToggle');
+  if (!toggle) return;
+  const label = sentinel.playing ? 'Pausar sentinela' : 'Reproduzir sentinela';
+  toggle.setAttribute('aria-label', label);
+  toggle.title = label;
+  toggle.innerHTML = sentinel.playing
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 5v14m6-14v14"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 12 7-12 7Z"/></svg>';
+  toggle.hidden = sentinel.slides.length < 2;
+}
+
+function paintSentinel() {
+  const frame = $('#sentinelFrame');
+  if (!frame) return;
+  const slide = sentinel.slides[sentinel.active];
+  frame.innerHTML = `<div class="sentinel-reading" data-tone="${slide.tone}">
+    <h1>${esc(slide.label)}</h1><strong>${esc(slide.value)}</strong><p>${esc(slide.detail)}</p>
+  </div>`;
+  $$('#sentinelControls [data-slide]').forEach((button, index) => button.setAttribute('aria-current', String(index === sentinel.active)));
+}
+
+function scheduleSentinel() {
+  clearTimeout(sentinel.timer);
+  const copy = $('#sentinelCopy');
+  if (!copy || !sentinel.playing || sentinel.slides.length < 2) return;
+  sentinel.timer = setTimeout(() => {
+    if (document.visibilityState === 'visible' && !copy.matches(':hover') && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'))) {
+      sentinel.active = (sentinel.active + 1) % sentinel.slides.length;
+      paintSentinel();
+    }
+    scheduleSentinel();
+  }, 8000);
+}
+
+function renderSentinel(rows, total, previous, realized, range) {
+  const scope = focusShort();
+  const market = realized ? 'no período' : 'em venda';
+  const change = previous?.pax > 0 && total.pax > 0 ? ` · ${pp(total.share - previous.share)} vs. anterior` : '';
+  const slides = [{tone: 'share', label: 'Parcela de mercado', value: pct(total.share), detail: `${scope} ${market}${change}`}];
+  if (total.pax > 0) {
+    slides.push({tone: 'volume', label: realized ? 'Passageiros estimados' : 'Poltronas ocupadas', value: n0(total.upax), detail: `${scope} de ${n0(total.pax)} no mercado`});
+    const routes = [...groupBy(rows, (row) => row.r)].map(([key, items]) => ({key, ...tot(items)}));
+    const leader = routes.sort((a, b) => b.upax - a.upax)[0];
+    if (leader?.upax > 0) slides.push({tone: 'route', label: 'Linha com maior volume', value: shortRoute(DB.dims.rotas[leader.key].l), detail: `${n0(leader.upax)} ${realized ? 'passageiros' : 'ocupadas'} · ${pct(leader.share)} de parcela`});
+  }
+  const lastTone = sentinel.slides[sentinel.active]?.tone;
+  sentinel.slides = slides;
+  sentinel.active = Math.max(0, slides.findIndex((slide) => slide.tone === lastTone));
+  const controls = $('#sentinelControls');
+  controls.innerHTML = slides.length > 1 ? slides.map((slide, index) => `<button type="button" data-slide="${index}" aria-label="Mostrar ${esc(slide.label.toLowerCase())}" aria-controls="sentinelFrame">${index + 1}</button>`).join('') + '<button type="button" id="sentinelToggle"></button>' : '';
+  controls.onclick = (event) => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.id === 'sentinelToggle') {
+      sentinel.playing = !sentinel.playing;
+      paintSentinelControls();
+    } else {
+      sentinel.active = Number(button.dataset.slide);
+      paintSentinel();
+    }
+    scheduleSentinel();
+  };
+  paintSentinel();
+  paintSentinelControls();
+  scheduleSentinel();
+
+  const groups = groupBy(rows, (row) => row.d);
+  const dates = [...groups.keys()].sort();
+  const edge = realized ? dates.at(-1) : dates[0];
+  const a = realized && edge ? [range.a, addD(edge, -13)].sort().at(-1) : edge;
+  const b = realized ? edge : edge ? [range.b, addD(edge, 13)].sort()[0] : null;
+  const days = a && b ? Array.from({length: diffD(b, a) + 1}, (_, index) => addD(a, index)) : [];
+  const values = days.map((day) => groups.has(day) ? tot(groups.get(day)).share : NaN);
+  const valid = values.filter(Number.isFinite);
+  $('#sentinelPlotTitle').textContent = realized ? 'Parcela por dia' : 'Parcela por data de viagem';
+  if (valid.length < 2) {
+    $('#sentinelChart').innerHTML = '<p class="empty">Poucas datas para mostrar a evolução.</p>';
+    return;
+  }
+  lineSvg('sentinelChart', days, [{name: scope, color: 'var(--volume-accent)', values}], {
+    yFmt: (value) => pct(value, 0), xFmt: br, y0: Math.max(0, Math.min(...valid) - .045),
+    y1: Math.min(1, Math.max(...valid) + .045), height: matchMedia('(max-width: 700px)').matches ? 186 : 288,
+    tip: (index) => `${br(days[index])} · ${scope} ${pct(values[index])}`,
+  });
+}
+
+
 function render() {
   const R = ranges(); const real = F.view === 'real';
   const cur = pick(R.a, R.b, real ? 0 : 1);
@@ -1246,6 +1447,7 @@ function render() {
   const prog = $('#prog'); if (prog) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
   $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' e Quero Passagem (ofertas)' : ''} · Atualização a cada ${CONFIG.refreshMin} min`;
 
+  renderSentinel(cur, T, P, real, R);
   const todayDetailOpen = $('#today .today-detail')?.open;
   $('#today').innerHTML = todayHtml();
   if (todayDetailOpen) $('#today .today-detail').open = true;
@@ -1318,7 +1520,7 @@ function lineTrendSummary(lines, total) {
   const all = compared.length === total;
   const scope = all && counts.down === total ? 'Perda de parcela em todas as linhas.' :
     all && counts.up === total ? 'Ganho de parcela em todas as linhas.' :
-    `${compared.length} de ${total} linhas com comparação. Variações abaixo de 1 p.p. são estáveis.`;
+    `${compared.length} de ${total} linhas comparadas.`;
   const extreme = (label, line, direction) => `<span class="${direction}">${label} <b>${esc(shortRoute(line.l))}</b> ${pp(line.delta)}</span>`;
   return `<div class="trend-counts" aria-label="Variação por linha">${['down', 'up', 'flat'].map((trend) =>
     `<div class="trend-kpi ${trend}"><b>${trendIcon(trend)} ${counts[trend]}</b><span>${trendText[trend]}</span></div>`).join('')}</div>
@@ -1454,7 +1656,7 @@ function modRadar(cur, prev) {
   const svg = radarSvg(keys.map((k) => ({label: shortRoute(k)})), ser, {tip: (i) => `${keys[i]}\nParcela ${us}: ${pct(T[i].share)} · ${n0(T[i].upax)} de ${n0(T[i].pax)}\nOferta ${us}: ${pct(T[i].fair)} das poltronas${P[i]?.pax ? `\nPeríodo anterior: ${pct(P[i].share)}` : ''}`});
   const gaps = keys.map((k, i) => ({k, g: T[i].share - T[i].fair})).filter((x) => Number.isFinite(x.g)).sort((x, y) => y.g - x.g);
   const ins = gaps.length >= 2 ? `Acima da oferta em <em>${esc(shortRoute(gaps[0].k))} (${pp(gaps[0].g)})</em> · mais abaixo em <em>${esc(shortRoute(gaps[gaps.length - 1].k))} (${pp(gaps[gaps.length - 1].g)})</em>` : '';
-  return mod('Radar das linhas', `Parcela de ${esc(us)} em cada ${byM ? 'mercado' : 'sentido'}. Fora do tracejado = enche mais do que a frota sugere.`,
+  return mod('Radar das linhas', '',
     `<div class="lg2"><span><i></i>Parcela ${esc(us)}</span><span><i class="d"></i>Parcela de oferta</span>${prev.length ? '<span><i class="o"></i>Período anterior</span>' : ''}</div>${svg}${ins ? `<p class="insight" style="font-size:14px">${ins}</p>` : ''}`);
 }
 
@@ -1490,13 +1692,13 @@ function modCompanyRadar(cur, prev, total) {
     {kind: 's1', values: leaders.map((entry) => entry.share)},
     ...(oldTotal ? [{kind: 's2', values: leaders.map((entry) => entry.previous)}] : []),
   ], {tip: (i) => tip(leaders[i]), label: 'Parcela estimada de passageiros por empresa'}) : '';
-  const legend = oldTotal && chart ? '<div class="legend"><span><i class="ln" style="background:var(--white)"></i>Recorte atual</span><span><i class="dash"></i>Período anterior</span></div>' : '';
+  const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${oldTotal ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
   const ranking = hbars(leaders, {
     val: (entry) => entry.share, us: (entry) => companyIsUs(entry.v), color: (entry) => colorOf(entry.v),
     right: (entry) => '<b>' + n0(entry.pax) + '</b><em>' + pct(entry.share) + '</em>', tip,
   });
-  return mod('Por empresa', 'Viações com mais passageiros estimados no recorte. A parcela é calculada sobre todo o mercado filtrado.',
-    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + legend + chart + ranking)
+  return mod('Por empresa', '', legend + chart +
+    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + ranking)
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
@@ -1693,7 +1895,7 @@ function helpHtml() {
       <div><dt>Índice oferta × procura</dt><dd>Parcela ÷ parcela de oferta × 100. Acima de 100 = leva mais passageiros do que o tamanho da frota sugere.</dd></div>
       <div><dt>Realizado × Em venda</dt><dd>Realizado = viagens que já partiram (números finais). Em venda = hoje até D+14, com o que já foi comprado.</dd></div>
       <div><dt>Ritmo de compra</dt><dd>Poltronas que o Helios viu sair do estoque em cada dia de coleta, pelo dia da compra.</dd></div>
-      <div><dt>Cores</dt><dd>O tom mais claro destaca o foco. Tons neutros e os nomes identificam as demais viações.</dd></div></dl>`);
+      <div><dt>Cores</dt><dd>O dourado destaca o foco. As cores e os nomes distinguem as demais viações.</dd></div></dl>`);
   return `<header><div><p class="eyebrow">Helios · Mercado</p><h2>Sobre os dados</h2></div><button class="btn ico" data-close title="Fechar (Esc)">×</button></header>${coleta}${panel}${gl}`;
 }
 
@@ -1793,15 +1995,13 @@ function modMarketPlan(rows, range, realized) {
   const goal = scenario ? `${pct(scenario.share)} → ${pct(scenario.target)} de parcela` : '';
   const price = reference !== null ? offerPrice.format(reference) : '';
   const volume = seats !== null ? `~${n0(seats)} poltronas` : '';
-  const pricing = price ? `a <strong>${price}</strong> por poltrona na simulação` : 'Tarifa de referência indisponível';
-  const revenue = seats && reference ? ` · ${money(seats * reference)} de receita bruta estimada` : '';
-  const spareLabel = realized ? 'lugares ficaram livres na base' : 'lugares livres na base em venda';
+  const pricing = price ? `a <strong>${price}</strong> por poltrona · simulação` : 'Tarifa de referência indisponível';
   return `<div class="plan-card">
     <div class="plan-top"><div><p class="eyebrow">Parcela de mercado</p><h2>Meta de ganho</h2></div>
       <div class="plan-switch" role="group" aria-label="Janela da meta">${planPeriods.map(([key, label]) => `<button type="button" data-plan-period="${key}" aria-pressed="${marketPlan.period === key}">${label}</button>`).join('')}</div></div>
     <div class="plan-base" data-plan-window>${dateTitle} · ${group}</div>
     <div class="plan-switch plan-target" role="group" aria-label="Ganho desejado em pontos percentuais">${planGains.map((gain) => `<button type="button" data-plan-gain="${gain}" aria-pressed="${marketPlan.gain === gain}">+${gain} p.p.</button>`).join('')}</div>
-    <div class="plan-result" aria-live="polite">${volume ? `<p>Precisamos vender <strong data-plan-seats>${volume}</strong></p><p data-plan-price>${pricing}</p><p class="plan-note">${goal}${revenue}</p><p class="plan-note">${n0(spare)} ${spareLabel}${seats > spare ? ' · meta acima da folga observada' : ''}</p>` : `<p data-plan-seats>${scenario ? 'Ganho acima do limite de parcela.' : 'Ainda sem base para a meta neste recorte.'}</p>`}</div>
+    <div class="plan-result" aria-live="polite">${volume ? `<p>Precisamos vender <strong data-plan-seats>${volume}</strong></p><p data-plan-price>${pricing}</p><p class="plan-note">${goal}${seats > spare ? ' · acima da folga observada' : ''}</p>` : `<p data-plan-seats>${scenario ? 'Ganho acima do limite de parcela.' : 'Ainda sem base para a meta neste recorte.'}</p>`}</div>
     <section class="plan-elasticity" data-plan-elasticity><div class="plan-elasticity-head"><div><p class="eyebrow">Preço × ocupação</p><h3>Elasticidade observada</h3></div><strong aria-label="Elasticidade observada ${rate}">${rate}</strong></div>
       ${meter}<p>${rateText}${showSensitivity ? '' : ` · ${n0(sensitivity.pairs)} de 8 pares mínimos`}</p>
       <details class="plan-method"><summary>Como ler</summary><p>A meta supõe vendas constantes das outras viações. A referência é a tarifa média estimada, ponderada pelas poltronas ocupadas nas observações com preço.</p><p>A elasticidade mostra a variação percentual da ocupação associada a 1% de variação na tarifa estimada. Usa a mediana ponderada pela oferta de até 30 dias fechados, com a mesma linha, viação, classe, faixa de partida e tipo de dia. Cada par tem ao menos 5% de variação no preço. É uma associação histórica, sem previsão de demanda.</p></details>
