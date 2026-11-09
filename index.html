@@ -57,19 +57,12 @@ button { cursor: pointer; }
 .btn:hover, .btn.pri { background: var(--white); color: var(--black); border-color: var(--white); }
 .btn svg { width: 14px; height: 14px; }
 
-/* entrada */
-.start { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; padding: 24px var(--pad); }
-.start-mid { align-self: center; justify-self: center; width: min(640px, 100%); text-align: center; }
-.start-mid > svg { height: clamp(80px, 14vw, 130px); width: auto; margin-bottom: 30px; }
-.start h1 { font-size: clamp(34px, 6vw, 64px); line-height: .98; letter-spacing: -.045em; font-weight: 600; margin: 0 0 14px; }
-.start p { color: var(--muted); margin: 0 auto 26px; max-width: 46ch; }
-.paste { display: flex; gap: 8px; border: 1px solid var(--line-strong); border-radius: 999px; padding: 4px 4px 4px 16px; margin: 0 auto 18px; max-width: 520px; }
-.paste input { flex: 1; min-width: 0; background: transparent; border: 0; outline: 0; font-size: 13px; }
-.start small { color: var(--faint); font-size: 12px; }
-.load { min-height: 100vh; display: grid; place-items: center; color: var(--muted); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
-.load i { display: block; width: 120px; height: 1px; background: var(--line); margin: 16px auto 0; overflow: hidden; position: relative; }
-.load i::after { content: ""; position: absolute; inset: 0; width: 40%; background: var(--white); animation: slide 1.1s var(--ease) infinite; }
-@keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+/* estado inicial do painel */
+.load { min-height: 150px; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
+.status-card { padding: 20px 24px; border: 1px solid var(--card-line); border-radius: var(--r); background: var(--card-solid); }
+.status-card h1 { margin: 0 0 6px; font-size: 19px; }
+.status-card p { margin: 0; color: var(--muted); font-size: 14px; }
+.status-card .btn { margin-top: 14px; }
 
 /* topo */
 .demo-bar { background: var(--white); color: var(--black); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; text-align: center; padding: 6px; }
@@ -505,6 +498,7 @@ const dpct = (v) => Number.isFinite(v) ? (v > 0 ? '+' : v < 0 ? '−' : '±') + 
 const sgn = (v) => (v > 0 ? '+' : v < 0 ? '−' : '±') + NF0.format(Math.abs(v));
 const cls = (v, eps = 1e-9) => v > eps ? 'up' : v < -eps ? 'down' : 'flat';
 const compact = (v) => !Number.isFinite(v) ? '—' : Math.abs(v) >= 1e6 ? NF1.format(v / 1e6) + ' mi' : Math.abs(v) >= 1e4 ? NF1.format(v / 1e3) + ' mil' : NF0.format(v);
+const offerPrice = new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'});
 const money = (v) => !Number.isFinite(v) ? '—' : Math.abs(v) >= 1e6 ? 'R$ ' + NF1.format(v / 1e6) + ' mi' : Math.abs(v) >= 1e4 ? 'R$ ' + NF1.format(v / 1e3) + ' mil' : BRL.format(v);
 const WD = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const WDL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
@@ -545,7 +539,7 @@ async function fetchData() {
   const embedded = $('#helios-gz').textContent.trim();
   if (embedded) return gunzip64(embedded);
   const q = new URLSearchParams(location.search);
-  if (q.has('demo') || store.get('demo') === '1') { const r = await fetch(q.get('src') || 'demo.json', {cache: 'no-cache'}); return r.json(); }
+  if (q.has('demo')) { const r = await fetch(q.get('src') || 'demo.json', {cache: 'no-cache'}); return r.json(); }
   if (q.get('src')) { const r = await fetch(q.get('src'), {cache: 'no-cache'}); return r.json(); }
   const k = store.get('k'), api = apiUrl();
   if (!k || !api) return null;
@@ -747,32 +741,21 @@ document.addEventListener('scroll', hideTip, {passive: true});
 /* ====================================================================== */
 /* telas                                                                    */
 /* ====================================================================== */
-function startScreen(msg) {
-  $('#app').innerHTML = `<section class="start"><div class="top" style="padding:0"><span class="brand">${MARK}<span>Helios</span></span><button class="btn" id="mode">Tema</button></div>
-  <div class="start-mid">${MARK.replace('<svg', '<svg style="color:var(--white)"')}<p class="eyebrow" style="margin-bottom:16px">Revenue · Grupo JCA</p><h1>Parcela de mercado</h1>
-  <p>${esc(msg || 'Passageiros de cada viação nas linhas monitoradas pelo Helios. Abra pelo link do menu Helios → Painel web, ou cole o link aqui.')}</p>
-  <form class="paste" id="pasteF"><input id="pasteI" placeholder="Cole o link do Helios (com a chave)" autocomplete="off"><button class="btn pri" type="submit">Abrir</button></form>
-  <button class="btn" id="demoB">Ver demonstração</button></div><small>Os dados vêm da planilha do Helios. A chave fica salva só neste navegador.</small></section>`;
-  bindMode();
-  $('#pasteF').onsubmit = (e) => { e.preventDefault(); const v = $('#pasteI').value.trim(); try { const u = new URL(v); const h = new URLSearchParams(u.hash.slice(1));
-    const k = h.get('k') || u.searchParams.get('k'); const api = h.get('api') || (u.hostname.includes('script.google') ? u.origin + u.pathname : '');
-    if (k) store.set('k', k); if (api) store.set('api', api); store.set('demo', null); boot(); } catch { $('#pasteI').value = ''; $('#pasteI').placeholder = 'Link inválido. Copie de Helios → Painel web.'; } };
-  $('#demoB').onclick = () => { store.set('demo', '1'); boot(); };
-}
 function bindMode() { const b = $('#mode'); if (b) b.onclick = () => { const r = document.documentElement; r.dataset.mode = r.dataset.mode === 'light' ? 'dark' : 'light'; store.set('mode', r.dataset.mode); if (DB) render(); }; }
 
 function shell() {
-  const demo = DB.data.demo;
+  const ready = !!DB;
+  const demo = DB?.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><button class="live-st" id="reload"><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" title="Sobre os dados, a coleta e como ler">?</button></div></header>
+    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
-  <nav class="wrap bar" id="bar" aria-label="Filtros do painel"></nav>
+  <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
   <section class="wrap" id="today"></section>
   <section class="wrap hero" id="hero"></section>
   <section class="wrap kpis" id="kpis"></section>
   <main class="wrap" id="main"></main>
-  <footer class="wrap"><p class="eyebrow">Método</p><ul>
+  <footer class="wrap" ${ready ? '' : 'hidden'}><p class="eyebrow">Método</p><ul>
     <li><b>Passageiros</b> = poltronas ocupadas do ônibus na última leitura da ClickBus antes da partida (capacidade − livres). O estoque é o do ônibus inteiro: entra guichê, site da viação e outros apps.</li>
     <li><b>Parcela</b> = passageiros da viação ÷ passageiros de todas as viações nas linhas, datas, classes e horários filtrados. <b>Parcela de oferta</b> = mesma conta com as poltronas oferecidas.</li>
     <li>Ônibus que aparece em dois anúncios (terminais ou marcas diferentes) conta uma vez, dividido entre as marcas. Viações sem capacidade no anúncio ficam fora.</li>
@@ -782,9 +765,8 @@ function shell() {
   $('#reload').onclick = () => refresh(true);
   $('#helpB').onclick = openHelp;
   $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
-  if ($('#leaveDemo')) $('#leaveDemo').onclick = () => { store.set('demo', null); history.replaceState(null, '', location.pathname); RAW = DB = null; boot(); };
-  buildBar();
+  if ($('#leaveDemo')) $('#leaveDemo').onclick = () => { history.replaceState(null, '', location.pathname); RAW = DB = null; boot(); };
+  if (ready) buildBar();
 }
 
 function buildBar() {
@@ -987,7 +969,7 @@ function todayHtml() {
   const early = D.t < 15, has7 = Number.isFinite(avg);
   const state = early ? 'Ainda cedo para dizer' : !has7 ? `${us} com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
   const c = early || !has7 ? '' : d >= .01 ? 'up' : d <= -.01 ? 'down' : '';
-  const last = DB.data.coleta?.ultimaLeitura;
+  const last = lastClickBus(DB.data);
   const when = last ? `${last.slice(11)} · ${ago(brtMs(last))}` : new Date(DB.data.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   const nowH = Number(new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23'}).format(new Date()));
   const hrs = showHours ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
@@ -1138,7 +1120,7 @@ function modQuero() {
   const statusText = status ? '<p class="note">Última tentativa ' + esc(ultimaTentativa) + ' · ' + esc(status) + '</p>' : '';
   const body = offers.length ? '<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Linha</th><th>Viação</th><th>Classe</th><th>Partida</th><th>Preço</th><th>Lugares anunciados</th></tr></thead><tbody>'
     + offers.map(([day, route, company, cls, time, price, seats]) => '<tr><td>' + br(day) + '</td><td>' + esc(shortRoute(route)) + '</td><td>' + esc(shortCompany(company))
-      + '</td><td>' + esc(cls) + '</td><td>' + esc(time) + '</td><td>' + money(price) + '</td><td>' + (seats == null ? '—' : n0(seats)) + '</td></tr>').join('') + '</tbody></table></div>'
+      + '</td><td>' + esc(cls) + '</td><td>' + esc(time) + '</td><td>' + offerPrice.format(price) + '</td><td>' + (seats == null ? '—' : n0(seats)) + '</td></tr>').join('') + '</tbody></table></div>'
     : '<p class="empty">Sem ofertas válidas da Quero Passagem neste recorte.</p>';
   return mod('Ofertas · Quero Passagem', 'Próximas partidas e preços publicados em SPO ↔ SJR. O ranking de passageiros usa as leituras de ocupação da ClickBus.', statusText + body);
 }
@@ -1324,12 +1306,16 @@ function helpHtml() {
 
 /* ---------- partida e atualização em segundo plano ---------- */
 let lastFetch = 0, sig = '', pending = false, busy = false, failed = false;
-const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero]);
+const lastClickBus = (d) => {
+  const sources = d.coleta?.fontes;
+  return sources?.length ? sources.find((source) => source.f === 'ClickBus')?.ultima : d.coleta?.ultimaLeitura;
+};
+const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
   b.classList.toggle('busy', busy); b.classList.toggle('bad', failed && !busy);
-  const last = DB.data.coleta?.ultimaLeitura, ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
+  const last = lastClickBus(DB.data), ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
   const stale = !!last && Date.now() - ref > 20 * 60000;
   b.classList.toggle('stale', stale && !busy && !failed && !DB.data.demo);
   const todayStamp = $('#todayStamp');
@@ -1338,7 +1324,7 @@ function stampTick() {
     todayStamp.parentElement.classList.toggle('stale', stale && !DB.data.demo);
   }
   s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : !last ? 'Dados disponíveis' : stale ? 'Coleta atrasada' : 'Ao vivo'} · leitura <b>${ago(ref)}</b>`;
-  b.title = isStatic() ? 'Dados fixos' : `Última leitura do Helios: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
+  b.title = isStatic() ? 'Dados fixos' : `Última leitura da ClickBus: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
 const canRender = () => !$$('details.dd[open]').length && $('#help')?.hidden !== false && !document.activeElement?.matches?.('input');
@@ -1359,19 +1345,46 @@ async function refresh(manual) {
   } catch (e) { console.warn(e); busy = false; failed = true; }
   stampTick();
 }
+function panelStatus(title, message, retry = false) {
+  $('#main').innerHTML = `<section class="mod wide status-card" role="status"><h1>${esc(title)}</h1><p>${esc(message)}</p>
+    ${retry ? '<button class="btn" id="retry">Tentar novamente</button>' : ''}</section>`;
+  if (retry) $('#retry').onclick = boot;
+}
 async function boot() {
+  if (busy) return;
   readHash();
-  $('#app').innerHTML = '<div class="load"><div>Helios · carregando mercado<i></i></div></div>';
-  try { RAW = await fetchData(); }
-  catch (e) { console.error(e); return startScreen(`Não consegui ler a API: ${e.message} Confira o link (menu Helios → Painel web).`); }
-  if (!RAW) return startScreen();
-  lastFetch = Date.now(); sig = signature(RAW); busy = failed = false;
-  DB = model(RAW); loadF(); if (!DB.hasClosed) F.view = 'venda'; // nenhuma viagem fechada ainda: só existe o que está à venda
+  shell();
+  const q = new URLSearchParams(location.search);
+  if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !(store.get('k') && apiUrl())) {
+    lastFetch = 0;
+    return panelStatus('Acesso ao painel', 'Abra o link autorizado pelo menu Helios → Painel web na planilha.');
+  }
+  busy = true;
+  lastFetch = Date.now();
+  panelStatus('Carregando dados', 'Consultando a última atualização do Hélios.');
+  try {
+    RAW = await fetchData();
+    DB = model(RAW);
+    sig = signature(RAW);
+    lastFetch = Date.now();
+    failed = false;
+    loadF();
+    if (!DB.hasClosed) F.view = 'venda';
+  } catch (error) {
+    console.warn(error);
+    DB = null;
+    panelStatus('Dados temporariamente indisponíveis', 'A consulta será repetida automaticamente enquanto o painel estiver aberto.', true);
+    return;
+  } finally {
+    busy = false;
+  }
   shell(); syncBar(); render();
 }
-setInterval(() => { stampTick(); flush(); if (document.visibilityState === 'visible' && Date.now() - lastFetch >= CONFIG.refreshMin * 6e4) refresh(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - lastFetch >= 6e4) refresh(); });
-addEventListener('online', () => refresh());
+const checkData = () => DB ? refresh() : lastFetch ? boot() : undefined;
+setInterval(() => { stampTick(); flush(); if (document.visibilityState === 'visible' && Date.now() - lastFetch >= CONFIG.refreshMin * 6e4) checkData(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - lastFetch >= 6e4) checkData(); });
+addEventListener('online', checkData);
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
 let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => DB && render(), 250); });
 document.documentElement.dataset.mode = store.get('mode') || 'dark';
 boot();
