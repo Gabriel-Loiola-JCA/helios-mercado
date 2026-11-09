@@ -435,14 +435,28 @@ footer ul { margin-top: 10px; }
 .today { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-radius: var(--r); margin-top: 0; overflow: hidden; }
 .today > div { padding: 24px 26px; }
 .today .t-lines { grid-column: 1 / -1; border-left: 0 !important; border-top: 1px solid var(--card-line); }
-.today h2 { font-size: clamp(28px, 3.4vw, 42px); margin: 12px 0 6px; }
+.today h2 { display: flex; align-items: center; gap: 11px; font-size: clamp(25px, 3.1vw, 39px); margin: 12px 0 8px; }
+.trend-icon { display: block; width: 1em; height: 1em; flex: none; }
+.trend-icon-box { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 12px; background: var(--panel-2); }
+.trend-icon-box.up, .trend-kpi.up { background: var(--teal-dim); }
+.trend-icon-box.down, .trend-kpi.down { background: var(--red-dim); }
+.trend-icon-box .trend-icon { width: 26px; height: 26px; }
+.trend-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0 7px; }
+.trend-kpi { display: grid; gap: 4px; min-width: 0; padding: 8px 9px; background: var(--panel-2); border-radius: 10px; font-size: 11px; }
+.trend-kpi b { display: flex; align-items: center; gap: 6px; font-size: 18px; line-height: 1; }
+.trend-kpi .trend-icon { width: 15px; height: 15px; }
+.trend-scope { margin: 0; font-size: 11px; color: var(--muted); }
+.trend-highlights { display: flex; flex-wrap: wrap; gap: 6px 13px; margin: 10px 0 0; font-size: 12px; }
+.trend-highlights b { color: var(--white); }
+.trend-pill { display: inline-flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums; }
+.trend-pill .trend-icon { width: 13px; height: 13px; }
 .today .nums { display: flex; gap: 8px; height: auto; margin: 18px 0 18px; }
 .today .nums > div { flex: 1; background: var(--panel-2); border-radius: 14px; padding: 10px 14px; min-width: 0; }
 .today .nums b { font-size: 22px; }
 .today .cols { height: 92px; gap: 3px; }
 .today .cols .seg2 i { border-radius: 3px; }
 .tl-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 36px; }
-.tl { display: grid; grid-template-columns: minmax(84px, 140px) minmax(0, 1fr) 40px 76px; gap: 12px; align-items: center; min-height: 34px; font-size: 13px; transition: opacity .2s; }
+.tl { display: grid; grid-template-columns: minmax(84px, 140px) minmax(0, 1fr) 40px 96px; gap: 12px; align-items: center; min-height: 34px; font-size: 13px; transition: opacity .2s; }
 .tl .nm { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tl .bar2 { position: relative; height: 10px; border-radius: 999px; background: var(--them); }
 .tl .bar2 i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--us); }
@@ -460,7 +474,7 @@ footer ul { margin-top: 10px; }
 @media (max-width: 640px) {
   .bar { position: static; }
   .mod { padding: 18px 16px 20px; } .today > div { padding: 20px 18px; }
-  .tl { grid-template-columns: minmax(70px, 100px) minmax(0, 1fr) 36px 64px; gap: 8px; }
+  .tl { grid-template-columns: minmax(68px, 100px) minmax(0, 1fr) 34px 88px; gap: 8px; }
   .kpi { padding: 18px 14px; } .kpi + .kpi { padding-left: 14px; }
 }
 </style>
@@ -476,7 +490,7 @@ footer ul { margin-top: 10px; }
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbxAYXsmAEpQfmPZ_QixFPbKSvrUS1Wp83hVb8kvwqsdOy31AhpvaV2MSURjfGNpzJHOtg/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbxHuQXPB9Fc-a2ngAwClNyI4Hqq5UgdcO__XkXk2aum6Smx9MYWMiG9vf3BK_5Sp4jc6Q/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -531,17 +545,15 @@ async function gunzip64(b64) {
 function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get('k')) store.set('k', h.get('k'));
-  if (h.get('api')) store.set('api', h.get('api'));
   if (h.get('k') || h.get('api')) history.replaceState(null, '', location.pathname + location.search);
 }
-const apiUrl = () => store.get('api') || CONFIG.api;
 async function fetchData() {
   const embedded = $('#helios-gz').textContent.trim();
   if (embedded) return gunzip64(embedded);
   const q = new URLSearchParams(location.search);
   if (q.has('demo')) { const r = await fetch(q.get('src') || 'demo.json', {cache: 'no-cache'}); return r.json(); }
   if (q.get('src')) { const r = await fetch(q.get('src'), {cache: 'no-cache'}); return r.json(); }
-  const k = store.get('k'), api = apiUrl();
+  const k = store.get('k'), api = CONFIG.api;
   if (!k || !api) return null;
   const gz = !!window.DecompressionStream;
   const r = await fetch(`${api}?fmt=${gz ? 'gz' : 'json'}&dias=${CONFIG.dias}&k=${encodeURIComponent(k)}`, {cache: 'no-store', redirect: 'follow'});
@@ -952,6 +964,35 @@ function render() {
 }
 const afterRender = [];
 
+/* SVGs Lucide. Licença em LUCIDE-LICENSE.txt. */
+const trendPaths = {
+  up: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
+  down: '<path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/>',
+  flat: '<path d="M5 12h14"/>',
+};
+const trendIcon = (trend) => `<svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${trendPaths[trend]}</svg>`;
+const shareTrend = (delta) => delta >= .01 ? 'up' : delta <= -.01 ? 'down' : 'flat';
+const trendText = {up: 'Em alta', down: 'Em baixa', flat: 'Estáveis'};
+
+function lineTrendSummary(lines, total) {
+  const compared = lines.filter((line) => Number.isFinite(line.delta)).sort((a, b) => a.delta - b.delta);
+  if (!compared.length) return '<p class="trend-scope">Aguardando dados para comparar as linhas.</p>';
+  const counts = {up: 0, down: 0, flat: 0};
+  for (const line of compared) counts[shareTrend(line.delta)]++;
+  const all = compared.length === total;
+  const scope = all && counts.down === total ? 'Perda de parcela em todas as linhas.' :
+    all && counts.up === total ? 'Ganho de parcela em todas as linhas.' :
+    `${compared.length} de ${total} linhas com comparação. Variações abaixo de 1 p.p. são estáveis.`;
+  const extreme = (label, line, direction) => `<span class="${direction}">${label} <b>${esc(shortRoute(line.l))}</b> ${pp(line.delta)}</span>`;
+  return `<div class="trend-counts" aria-label="Variação por linha">${['down', 'up', 'flat'].map((trend) =>
+    `<div class="trend-kpi ${trend}"><b>${trendIcon(trend)} ${counts[trend]}</b><span>${trendText[trend]}</span></div>`).join('')}</div>
+    <p class="trend-scope">${scope}</p>
+    ${counts.down || counts.up ? `<div class="trend-highlights">
+      ${counts.down ? extreme('Maior perda', compared[0], 'down') : ''}
+      ${counts.up ? extreme('Maior ganho', compared[compared.length - 1], 'up') : ''}
+    </div>` : ''}`;
+}
+
 /* Hoje: compras detectadas hoje × média dos 7 dias anteriores — no total, por mercado (radar) e por linha. */
 function todayHtml() {
   const t = DB.today, hh = DB.data.hojeHoras, from = addD(t, -7), us = focusShort();
@@ -967,8 +1008,9 @@ function todayHtml() {
   if (!DB.sales.length && showHours) for (const h of hh) { D.t += h[1]; D.u += h[2]; }
   const sh = D.t ? D.u / D.t : NaN, avg = Wk.t ? Wk.u / Wk.t : NaN, d = sh - avg;
   const early = D.t < 15, has7 = Number.isFinite(avg);
-  const state = early ? 'Ainda cedo para dizer' : !has7 ? `${us} com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
-  const c = early || !has7 ? '' : d >= .01 ? 'up' : d <= -.01 ? 'down' : '';
+  const c = early || !has7 ? 'flat' : shareTrend(d);
+  const state = early ? 'Ainda cedo para avaliar' : !has7 ? 'Sem histórico para comparar' :
+    c === 'up' ? 'Ganhando parcela' : c === 'down' ? 'Perdendo parcela' : 'Parcela estável';
   const last = lastClickBus(DB.data);
   const when = last ? `${last.slice(11)} · ${ago(brtMs(last))}` : new Date(DB.data.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   const nowH = Number(new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23'}).format(new Date()));
@@ -983,13 +1025,23 @@ function todayHtml() {
     {kind: 's1', values: DB.markets.map((m) => sv(md.get(m)))}, {kind: 's2', values: DB.markets.map((m) => sv(mr.get(m)))}],
     {tip: (i) => { const m = DB.markets[i], a = md.get(m), b = mr.get(m); return `${m}\n${us} hoje: ${pct(sv(a) ?? NaN)} · ${n0(a.u)} de ${n0(a.t)} compras\n${refName}: ${pct(sv(b) ?? NaN)}`; }});
   const lines = DB.dims.rotas.map((r, i) => ({l: r.l, a: day.get(i) || z(), b: ref.get(i)})).filter((x) => x.a.t > 0).sort((x, y) => y.a.t - x.a.t);
-  const row = (x) => { const s = x.a.u / x.a.t, rv = sv(x.b), dd = has7 && rv != null ? s - rv : NaN;
+  for (const line of lines) {
+    const reference = sv(line.b);
+    line.delta = has7 && reference != null ? line.a.u / line.a.t - reference : NaN;
+  }
+  const scope = F.routes.size || DB.dims.rotas.length;
+  const row = (x) => {
+    const s = x.a.u / x.a.t, rv = sv(x.b), trend = shareTrend(x.delta);
+    const badge = Number.isFinite(x.delta)
+      ? `<span class="pill trend-pill ${trend}" aria-label="${trendText[trend]} ${pp(x.delta)}">${trendIcon(trend)}${pp(x.delta)}</span>`
+      : `<span class="mut">${n0(x.a.t)} compras</span>`;
     return `<div class="tl${x.a.t < 5 ? ' low' : ''}"${tipAttr(`${x.l}\n${us}: ${n0(x.a.u)} de ${n0(x.a.t)} compras hoje (${pct(s)})${rv != null ? `\n${refName}: ${pct(rv)}` : ''}`)}>
       <div class="nm">${esc(shortRoute(x.l))}</div><div class="bar2"><i style="width:${s * 100}%"></i>${rv != null ? `<b style="left:${rv * 100}%"></b>` : ''}</div>
-      <div class="v">${pct(s, 0)}</div><div class="p">${Number.isFinite(dd) ? deltaPill(dd) : `<span class="mut">${n0(x.a.t)} compras</span>`}</div></div>`; };
+      <div class="v">${pct(s, 0)}</div><div class="p">${badge}</div></div>`; };
   return `<div class="today">
-    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura <span id="todayStamp">${esc(when)}</span></p><h2 class="${c}">${esc(state)}</h2>
-      <p class="sub">${esc(us)} com <b>${pct(sh)}</b> das compras de hoje${has7 ? ` · média 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p>
+    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura <span id="todayStamp">${esc(when)}</span></p><h2 class="${c}"><span class="trend-icon-box ${c}">${trendIcon(c)}</span>${esc(state)}</h2>
+      <p class="sub">${esc(us)} com <b>${pct(sh)}</b> das compras de hoje${has7 ? ` · média dos últimos 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p>
+      ${lineTrendSummary(lines, scope)}
       <div class="nums"><div><b>${n0(D.t)}</b><span>compras hoje</span></div><div><b>${n0(D.u)}</b><span>${esc(us)}</span></div><div><b>${n0(D.t - D.u)}</b><span>concorrência</span></div></div>
       ${hrs.length ? `<p class="h4">Compras por hora</p>${columns(hrs, {h: 72, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
         tip: (x) => `${x[0]}h–${x[0]}h59\n${us} ${n0(x[2])} · concorrência ${n0(x[1] - x[2])}${x[1] ? `\nParcela ${pct(x[2] / x[1])}` : ''}`})}` : ''}</div>
@@ -1355,7 +1407,7 @@ async function boot() {
   readHash();
   shell();
   const q = new URLSearchParams(location.search);
-  if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !(store.get('k') && apiUrl())) {
+  if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !(store.get('k') && CONFIG.api)) {
     lastFetch = 0;
     return panelStatus('Acesso ao painel', 'Abra o link autorizado pelo menu Helios → Painel web na planilha.');
   }
