@@ -135,7 +135,7 @@ main { display: grid; padding-bottom: 40px; }
 /* barras horizontais e divergentes */
 .hb { display: grid; gap: 3px; }
 .hrow { display: grid; grid-template-columns: minmax(96px, 210px) minmax(0, 1fr) minmax(118px, auto); gap: 14px; align-items: center; min-height: 28px; transition: opacity .3s; }
-.hb:hover .hrow:not(:hover) { opacity: .4; }
+.hb:hover .hrow:not(:hover) { opacity: .72; }
 .hrow .nm { font-size: 13px; color: var(--muted); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hrow.us .nm { color: var(--white); font-weight: 500; }
 .track { position: relative; height: 16px; }
@@ -172,7 +172,7 @@ main { display: grid; padding-bottom: 40px; }
 .cols .seg2 i:last-child { border-radius: 3px 3px 0 0; }
 .cols .lbl { font-size: 10.5px; color: var(--faint); text-align: center; margin-top: 6px; height: 14px; overflow: hidden; white-space: nowrap; }
 .cols .pct { font-size: 10px; color: var(--muted); text-align: center; margin-bottom: 4px; height: 13px; white-space: nowrap; overflow: hidden; }
-.cols:hover .c:not(:hover) { opacity: .45; }
+.cols:hover .c:not(:hover) { opacity: .72; }
 .cols .c { transition: opacity .25s; }
 
 /* halteres */
@@ -743,7 +743,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-kicker { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .15em; color: var(--muted); }
 .sentinel-kicker i { background: var(--market-accent); width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--market-accent) 14%, transparent); }
 .sentinel-frame { min-height: 127px; min-width: 0; }
-.sentinel-reading { min-width: 0; animation: sentinel-in .64s var(--ease) both; }
+.sentinel-reading { min-width: 0; animation: sentinel-in .72s var(--ease) both; }
 .sentinel-reading[data-tone="share"] { --reading: var(--market-accent); }
 .sentinel-reading[data-tone="volume"] { --reading: var(--volume-accent); }
 .sentinel-reading[data-tone="route"] { --reading: var(--route-accent); }
@@ -763,7 +763,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-controls svg { width: 14px; height: 14px; }
 .sentinel-plot { min-width: 0; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
 .sentinel-controls .sentinel-chart-toggle { display: none; }
-.reveal-await { opacity: .62; filter: blur(2px); transform: translateY(6px); }
+.reveal-await { opacity: .8; filter: blur(1.25px); transform: translateY(4px); }
 .reveal-await:focus-within { opacity: 1; filter: none; transform: none; }
 .dd[open] > .pop { animation: reveal .2s var(--ease) both; }
 .sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
@@ -771,8 +771,8 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-plot .chart .path { stroke-width: 2.5; }
 .sentinel-plot .chart-series { animation: sentinel-plot-in .72s var(--ease) both; }
 .sentinel-plot .chart .empty { padding-block: 12px; }
-@keyframes sentinel-plot-in { from { opacity: .48; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-@keyframes sentinel-in { from { opacity: .58; filter: blur(1px); transform: translateY(4px); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes sentinel-plot-in { from { opacity: .72; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+@keyframes sentinel-in { from { opacity: .76; transform: translateY(2px); } to { opacity: 1; transform: none; } }
 .briefing { gap: var(--dashboard-gap); align-items: stretch; margin-block: var(--dashboard-gap); padding-block: var(--dashboard-gap); border-block: 1px solid var(--line); }
 #today .today, #planning .plan-card { border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 #today .t-main { padding: 0 var(--dashboard-pad) 12px 0; }
@@ -808,15 +808,36 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 }
 .analysis-card .hrow { grid-template-columns: minmax(72px, 1fr) minmax(18px, 1fr) auto; gap: 8px; }
 .analysis-card .hrow .nm { text-align: left; }
-.coverage { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
-.coverage h3, .coverage p { margin: 0; }
-.coverage h3 { font-size: 14px; font-weight: 600; }
-.coverage-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
-.coverage-meta p, .coverage-empty { font-size: 12px; color: var(--muted); }
-.coverage ul { margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 162px), 1fr)); gap: 5px 14px; }
-.coverage li { display: flex; justify-content: space-between; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px solid var(--line); }
-.coverage li b { color: var(--volume-accent); font-variant-numeric: tabular-nums; }
-.coverage a { width: fit-content; color: var(--white); font-size: 12px; text-underline-offset: 3px; }
+.company-values { container-type: inline-size; }
+.company-values :is(ul, dl, dd, p), .rank-extra ul { margin: 0; }
+.company-values ul, .rank-extra ul { padding: 0; list-style: none; }
+.company-columns { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr); gap: 10px; align-items: center; }
+.company-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; text-align: end; }
+.with-fares .company-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.company-head { padding-block: 8px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+.company-head small { display: block; color: var(--faint); font-size: 10px; }
+.company-row { padding-block: 10px; border-bottom: 1px solid var(--line); font-size: 13px; transition: background-color .3s ease; }
+.company-row:hover { background-color: color-mix(in srgb, var(--line) 40%, transparent); }
+.company-name { display: flex; align-items: center; gap: 7px; font-weight: 600; }
+.company-name .dot { flex: none; }
+.company-metrics dd { font-variant-numeric: tabular-nums; font-weight: 600; }
+.company-metrics dd small { font-weight: 400; color: var(--muted); white-space: nowrap; }
+.company-metrics dd.missing { color: var(--faint); font-weight: 400; }
+.company-fare dd:not(.missing) { color: var(--volume-accent); }
+.company-metrics dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.company-foot { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px 12px; padding-top: 9px; color: var(--muted); font-size: 11px; }
+.company-foot a { color: var(--white); text-underline-offset: 3px; }
+.rank-extra { border-top: 1px solid var(--line); padding-top: 10px; }
+.rank-extra p { margin: 0 0 5px; color: var(--muted); font-size: 12px; }
+.rank-extra li { display: flex; justify-content: space-between; gap: 9px; padding-block: 5px; font-size: 12px; }
+.rank-extra li b { white-space: nowrap; color: var(--volume-accent); }
+@container (max-width: 470px) {
+  .company-head { display: none; }
+  .company-row { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+  .company-metrics { text-align: start; }
+  .company-metrics dt { position: static; width: auto; height: auto; clip-path: none; white-space: normal; color: var(--muted); font-size: 10px; }
+  .company-metrics dd { font-size: 12px; }
+}
 #qp-offers { scroll-margin-block-start: 145px; }
 .hourly {
   display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(200px, 1fr); gap: var(--dashboard-gap);
@@ -898,7 +919,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbyBks9SiXkfqUejJb4Idfb_IDZCfEYnDpLq7AlD1eAgAmXDFRjSrwL5qdnvrX5SK7QduQ/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbxUVe991dTdPz44nUXvfbXYbInfF6SvhsBrCG0YqNcwRf2mhbZlduZMZP50rTPYphbbWA/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -1393,7 +1414,10 @@ function syncBar() {
   $('#filtersSummary').textContent = tk.length ? `${tk.length} ativos` : 'Todas as linhas';
 }
 let raf = 0;
-function update() { saveF(); syncBar(); cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }
+function update() {
+  saveF(); syncBar(); cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => render(true));
+}
 
 /* ====================================================================== */
 /* render                                                                   */
@@ -1427,9 +1451,9 @@ function paintSentinel() {
   const frame = $('#sentinelFrame');
   if (!frame) return;
   const slide = sentinel.slides[sentinel.active];
-  frame.innerHTML = `<div class="sentinel-reading" data-tone="${slide.tone}">
+  paintDashboard(frame, `<div class="sentinel-reading" data-tone="${slide.tone}">
     <h1>${esc(slide.label)}</h1><strong>${esc(slide.value)}</strong><p>${esc(slide.detail)}</p>
-  </div>`;
+  </div>`);
   $$('#sentinelControls [data-slide]').forEach((button, index) => button.setAttribute('aria-current', String(index === sentinel.active)));
   drawSentinelPlot(slide.plot);
 }
@@ -1449,10 +1473,15 @@ function scheduleSentinel() {
 
 function drawSentinelPlot(plot) {
   const {title, color, values, format, percentage} = plot;
+  const chart = $('#sentinelChart');
+  const height = matchMedia('(max-width: 700px)').matches ? 186 : 288;
+  const key = JSON.stringify([title, color, values, sentinel.days, percentage, chart.clientWidth, height]);
+  if (chart.dataset.plotKey === key) return;
+  chart.dataset.plotKey = key;
   $('#sentinelPlotTitle').textContent = title;
   const valid = values.filter(Number.isFinite);
   if (valid.length < 2) {
-    $('#sentinelChart').innerHTML = '<p class="empty">Sem série no recorte.</p>';
+    chart.innerHTML = '<p class="empty">Sem série no recorte.</p>';
     return;
   }
   const days = sentinel.days;
@@ -1462,7 +1491,7 @@ function drawSentinelPlot(plot) {
   } : {y0: 0, y1: Math.ceil(Math.max(...valid) * 1.08 / 4) * 4 || 4};
   lineSvg('sentinelChart', days, [{name: title, color, values}], {
     ...bounds, label: title, points: true, yFmt: format, xFmt: br,
-    height: matchMedia('(max-width: 700px)').matches ? 186 : 288,
+    height,
     tip: (index) => `${br(days[index])} · ${format(values[index])}`,
   });
 }
@@ -1609,23 +1638,36 @@ function renderHourly(rows, total, real) {
   };
 }
 
-function render() {
+const paintedDashboard = new WeakMap();
+function paintDashboard(element, markup) {
+  if (paintedDashboard.get(element) === markup) return false;
+  element.innerHTML = markup;
+  paintedDashboard.set(element, markup);
+  return true;
+}
+
+function render(animateChanges = false) {
   const R = ranges(); const real = F.view === 'real';
   const cur = pick(R.a, R.b, real ? 0 : 1);
   const prev = real && F.cmp ? pick(R.pa, R.pb, 0) : [];
   const T = tot(cur), P = prev.length ? tot(prev) : null;
   const us = focusShort();
-  const prog = $('#prog'); if (prog) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
+  const prog = $('#prog'); if (prog && animateChanges) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
   $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' e Quero Passagem (ofertas)' : ''} · Atualização a cada ${CONFIG.refreshMin} min`;
 
   renderSentinel(cur, T, P, real, R);
   renderHourly(cur, T, real);
+  const changed = new Set();
+  const paint = (element, markup) => {
+    if (paintDashboard(element, markup)) changed.add(element);
+  };
   const todayDetailOpen = $('#today .today-detail')?.open;
-  $('#today').innerHTML = todayHtml();
+  paint($('#today'), todayHtml());
   if (todayDetailOpen) $('#today .today-detail').open = true;
   const quero = queroSelection();
-  $('#radarGrid').innerHTML = modRadar(cur, prev) + modCompanyRadar(cur, prev, T, quero);
-  $('#planning').innerHTML = modMarketPlan(cur, R, real);
+  const companies = companyMetrics(cur, prev, T, quero);
+  paint($('#radarGrid'), modRadar(cur, prev) + modCompanyRadar(companies, prev, quero));
+  paint($('#planning'), modMarketPlan(cur, R, real));
   bindMarketPlan(cur, R, real);
   // ---- abertura ----
   const dM = P ? T.pax / P.pax - 1 : NaN, dU = P ? T.upax / P.upax - 1 : NaN, dS = P ? T.share - P.share : NaN;
@@ -1643,32 +1685,34 @@ function render() {
   const lead = !T.pax ? 'Ajuste os filtros: nenhuma viagem com capacidade conhecida neste recorte.' : real
     ? (P && P.pax ? `O mercado ${dM >= 0 ? 'cresceu' : 'caiu'} <b>${dpct(dM).replace('+', '')}</b> e ${us === 'JCA' ? 'a JCA' : esc(us)} ${dU >= 0 ? 'cresceu' : 'caiu'} <b>${dpct(dU).replace('+', '')}</b> contra os ${R.len} dias anteriores. Parcela ${dS >= 0 ? 'subiu' : 'caiu'} <b>${pp(dS).replace('+', '').replace('−', '')}</b>` : `${n0(T.pax)} passageiros no período (${per}).`)
     : `<b>${n0(T.upax)}</b> poltronas já vendidas de ${n0(T.pax)} no mercado para ${per}.`;
-  $('#hero').innerHTML = `<div><p class="eyebrow">${real ? 'Parcela de passageiros · ' + per : 'Em venda · ' + per}</p>
+  paint($('#hero'), `<div><p class="eyebrow">${real ? 'Parcela de passageiros · ' + per : 'Em venda · ' + per}</p>
     <h1>${esc(us)} ${real ? 'levou' : 'tem'} ${pct(T.share)}<span>${real ? 'dos passageiros' : 'das poltronas já vendidas'} ${F.routes.size ? 'nas linhas escolhidas' : 'nas linhas monitoradas'}</span></h1></div>
-    <div><div class="verdict ${vcls}"><i></i>${esc(verdict)}</div><p class="lead">${lead}</p></div>`;
+    <div><div class="verdict ${vcls}"><i></i>${esc(verdict)}</div><p class="lead">${lead}</p></div>`);
 
   // ---- KPIs ----
   const kp = (l, v, d, extra = '') => `<div class="kpi"><p class="eyebrow">${l}</p><div class="v">${v}</div><div class="d">${d}</div>${extra}</div>`;
-  $('#kpis').innerHTML =
+  paint($('#kpis'),
     kp(real ? 'Passageiros no mercado' : 'Vendidos no mercado', compact(T.pax), P ? `${deltaPill(dM, dpct)} <span>${n0(P.pax)} antes</span>` : `${n0(T.n)} ônibus`) +
     kp(`${real ? 'Passageiros' : 'Vendidos'} ${esc(us)}`, compact(T.upax), P ? `${deltaPill(dU, dpct)} <span>${sgn(T.upax - P.upax)} passageiros</span>` : `${n0(T.un)} ônibus`) +
     kp(`Parcela ${esc(us)}`, pct(T.share), P ? `${deltaPill(dS)} <span>era ${pct(P.share)}</span>` : 'dos passageiros', `<div class="meter" title="Parcela de passageiros (barra) e de poltronas oferecidas (traço)"><i style="width:${(T.share || 0) * 100}%"></i><b style="left:${(T.fair || 0) * 100}%"></b></div>`) +
-    kp('Oferta × procura', Number.isFinite(T.idx) ? NF1.format(T.idx * 100) + '<small>índice</small>' : '—', `oferta ${pct(T.fair)} das poltronas · ocupação ${pct(T.lfUs, 0)} × ${pct(T.lfThem, 0)} da concorrência`);
+    kp('Oferta × procura', Number.isFinite(T.idx) ? NF1.format(T.idx * 100) + '<small>índice</small>' : '—', `oferta ${pct(T.fair)} das poltronas · ocupação ${pct(T.lfUs, 0)} × ${pct(T.lfThem, 0)} da concorrência`));
 
   // ---- módulos ----
   const layout = (h, cls) => h.replace('<section class="mod"', `<section class="mod ${cls}"`);
   const wide = (h) => layout(h, 'wide');
   const mods = [];
-  mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T), 'analysis-card'));
+  mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T, companies), 'analysis-card'));
   if (real) mods.push(layout(modAhead(), 'analysis-chart'), layout(modWhere(T, P, cur, prev), 'analysis-card'));
   mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
   if (quero) mods.push(wide(modQuero(quero)));
   mods.push(wide(modTable(cur, prev)));
   $('#main').innerHTML = mods.join('');
-  $('#qp-open')?.addEventListener('click', () => { $('#analysis').open = true; });
+  changed.add($('#main'));
+  const offersLink = $('#qp-open');
+  if (offersLink) offersLink.onclick = () => { $('#analysis').open = true; };
   afterRender.forEach((f) => f()); afterRender.length = 0;
   bindTable(); stampTick();
-  observeDashboardMotion(true);
+  observeDashboardMotion(animateChanges ? changed : null);
 }
 const afterRender = [];
 
@@ -1835,7 +1879,7 @@ function modRadar(cur, prev) {
 }
 
 /* 3 · ranking */
-function modRank(cur, prev, T) {
+function modRank(cur, prev, T, companies) {
   const a = groupBy(cur, companyKey), b = groupBy(prev, companyKey);
   const Pt = prev.reduce((n, r) => n + r.pax, 0);
   const items = [...a.entries()].map(([k, l]) => { const t = tot(l); const y = (b.get(k) || []).reduce((n, r) => n + r.pax, 0);
@@ -1843,36 +1887,63 @@ function modRank(cur, prev, T) {
     .filter((x) => x.pax > 0).sort((p, q) => q.pax - p.pax);
   const usItems = items.filter((x) => companyIsUs(x.k));
   const pos = items.findIndex((x) => companyIsUs(x.k)) + 1;
-  return mod('Quem leva os passageiros', `Parcela de cada viação no recorte. ${F.group && F.focus === 'JCA' ? 'Marcas JCA somadas (desligue “Marcas JCA juntas” para abrir).' : ''}`,
-    `${usItems.length ? `<p class="insight">${esc(usItems[0].name)} é a <em>${pos}ª</em> de ${items.length} viações em passageiros.</p>` : ''}
+  const offersOnly = companies.filter((company) => company.pax === null);
+  return mod('Quem leva os passageiros', `Parcela estimada · ClickBus${F.group && F.focus === 'JCA' ? ' · Marcas JCA somadas' : ''}`,
+    `${usItems.length ? `<p class="insight">${esc(usItems[0].name)} ocupa a <em>${pos}ª posição</em> entre as ${items.length} viações com estimativa.</p>` : ''}
     ${hbars(items.slice(0, 20), {val: (x) => x.s, us: (x) => companyIsUs(x.k), color: (x) => colorOf(x.k), right: (x) => `<b>${pct(x.s)}</b>${prev.length ? deltaPill(x.s - x.sp) : ''}`,
       tip: (x) => `${x.name}\n${n0(x.pax)} passageiros · parcela ${pct(x.s)}${prev.length ? ` (${pp(x.s - x.sp)})` : ''}\nOferta ${pct(x.fair)} das poltronas · ${n0(x.n)} ônibus\nOcupação ${pct(x.lf, 0)} · tíquete médio ${money(x.tk)}`})}
-    ${items.length > 20 ? `<p class="note">+ ${items.length - 20} viações menores na tabela abaixo.</p>` : ''}`);
+    ${items.length > 20 ? `<p class="note">+ ${items.length - 20} viações menores na tabela abaixo.</p>` : ''}
+    ${offersOnly.length ? `<div class="rank-extra"><p>Menor tarifa anunciada · Quero Passagem</p><ul>${offersOnly.map((company) => `<li><span>${esc(company.name)}</span><b>${company.fare === null ? '—' : offerPrice.format(company.fare)}</b></li>`).join('')}</ul><p>Sem estimativa de passageiros para estas viações.</p></div>` : ''}`);
 }
 
-function modCompanyRadar(cur, prev, total, quero) {
-  const previous = groupBy(prev, (r) => r.v);
+function companyMetrics(cur, prev, total, quero) {
+  const keyOf = (name) => nrm(name.trim());
+  const nameOf = (r) => companyName(r.v);
+  const previous = groupBy(prev, (r) => keyOf(nameOf(r)));
   const oldTotal = prev.reduce((sum, r) => sum + r.pax, 0);
-  const leaders = [...groupBy(cur, (r) => r.v)].map(([v, rows]) => {
+  const companies = new Map();
+  for (const [key, rows] of groupBy(cur, (r) => keyOf(nameOf(r)))) {
     const pax = rows.reduce((sum, r) => sum + r.pax, 0);
-    const oldPax = (previous.get(v) || []).reduce((sum, r) => sum + r.pax, 0);
-    return {v, name: companyName(v), pax, share: pax / total.pax, previous: oldPax / oldTotal};
-  }).filter((entry) => entry.pax > 0)
-    .sort((a, b) => b.pax - a.pax || a.name.localeCompare(b.name, 'pt-BR')).slice(0, 7);
+    const rec = rows.reduce((sum, r) => sum + (Number.isFinite(r.rec) ? r.rec : 0), 0);
+    const oldPax = (previous.get(key) || []).reduce((sum, r) => sum + r.pax, 0);
+    companies.set(key, {v: rows[0].v, name: nameOf(rows[0]), pax, rec: rec > 0 || pax === 0 ? rec : null,
+      share: pax / total.pax, previous: oldPax / oldTotal, fare: null});
+  }
+  for (const [, , company, , , price] of quero?.offers || []) {
+    const name = shortCompany(company), key = keyOf(name);
+    if (!companies.has(key)) companies.set(key, {v: null, name, pax: null, rec: null, fare: null});
+    const entry = companies.get(key);
+    if (Number.isFinite(price) && price > 0 && (entry.fare === null || price < entry.fare)) entry.fare = price;
+  }
+  return [...companies.values()].sort((a, b) => (b.pax ?? -1) - (a.pax ?? -1) || a.name.localeCompare(b.name, 'pt-BR'));
+}
+
+function modCompanyRadar(companies, prev, quero) {
+  const leaders = companies.filter((entry) => entry.pax > 0).slice(0, 7);
+  const compare = prev.some((r) => r.pax > 0);
   const lead = leaders[0];
-  const tip = (entry) => [DB.dims.viacoes[entry.v].n, n0(entry.pax) + ' passageiros estimados · ' + pct(entry.share),
-    ...(oldTotal ? ['Período anterior · ' + pct(entry.previous)] : [])].join('\n');
+  const tip = (entry) => [entry.name, `${n0(entry.pax)} passageiros estimados · ${pct(entry.share)}`,
+    ...(compare ? ['Período anterior · ' + pct(entry.previous)] : [])].join('\n');
   const chart = leaders.length >= 3 ? radarSvg(leaders.map((entry) => ({label: entry.name})), [
     {kind: 's1', values: leaders.map((entry) => entry.share)},
-    ...(oldTotal ? [{kind: 's2', values: leaders.map((entry) => entry.previous)}] : []),
+    ...(compare ? [{kind: 's2', values: leaders.map((entry) => entry.previous)}] : []),
   ], {tip: (i) => tip(leaders[i]), label: 'Parcela estimada de passageiros por empresa'}) : '';
-  const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${oldTotal ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
-  const ranking = hbars(leaders, {
-    val: (entry) => entry.share, us: (entry) => companyIsUs(entry.v), color: (entry) => colorOf(entry.v),
-    right: (entry) => '<b>' + n0(entry.pax) + '</b><em>' + pct(entry.share) + '</em>', tip,
-  });
-  return mod('Por empresa', 'Passageiros estimados · ClickBus', legend + chart +
-    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + ranking + (quero ? companyOffers(quero) : ''))
+  const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${compare ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
+  const headline = lead ? `<p class="insight">${esc(lead.name)} lidera na ClickBus com <em>${n0(lead.pax)} passageiros (${pct(lead.share)})</em>.</p>` : '';
+  const headers = `<div class="company-head company-columns" aria-hidden="true"><span>Viação</span><div class="company-metrics">
+    <span>Passageiros<small>ClickBus</small></span><span>Receita estimada<small>ClickBus</small></span>
+    ${quero ? '<span>Menor tarifa<small>Quero Passagem</small></span>' : ''}</div></div>`;
+  const value = (label, amount, cls = '') => `<div class="${cls}"><dt>${label}</dt><dd${amount === null ? ' class="missing" aria-label="Sem dados"' : ''}>${amount ?? '—'}</dd></div>`;
+  const ranking = companies.length ? `${headers}<ul aria-label="Valores por viação">${companies.map((entry) => `<li class="company-row company-columns">
+    <span class="company-name">${entry.v === null ? '' : dot(entry.v)}${esc(entry.name)}</span>
+    <dl class="company-metrics">${value('Passageiros estimados · ClickBus', entry.pax === null ? null : `${n0(entry.pax)} <small>${Number.isFinite(entry.share) ? pct(entry.share) : ''}</small>`)}
+      ${value('Receita estimada · ClickBus', entry.rec === null ? null : BRL.format(entry.rec))}
+      ${quero ? value('Menor tarifa · Quero Passagem', entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl></li>`).join('')}</ul>`
+    : '<p class="empty">Sem dados para os filtros escolhidos.</p>';
+  const coverage = quero ? `<p>${esc(quero.line)} · Tarifas para viagens futuras</p>${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}` : '';
+  return mod('Por empresa', 'Passageiros, receita estimada e tarifas', legend + chart + headline +
+    `<div class="company-values${quero ? ' with-fares' : ''}">${ranking}<div class="company-foot">${coverage}
+      <p>Receita estimada pela ocupação e pelas tarifas observadas na ClickBus.</p></div></div>`)
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
@@ -1887,14 +1958,6 @@ function queroSelection() {
     && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2))));
   const {status, ultimaTentativa} = DB.data.quero;
   return {offers, status, ultimaTentativa, line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
-}
-
-function companyOffers({offers, line}) {
-  const companies = [...groupBy(offers, (r) => shortCompany(r[2]))]
-    .sort(([a, x], [b, y]) => y.length - x.length || a.localeCompare(b, 'pt-BR'));
-  return `<div class="coverage"><div class="coverage-meta"><h3>Ofertas futuras · Quero Passagem</h3><p>${esc(line)} · ${n0(offers.length)} ofertas · ${n0(companies.length)} ${companies.length === 1 ? 'viação' : 'viações'}</p></div>` +
-    (companies.length ? `<ul aria-label="Ofertas por viação">${companies.map(([name, rows]) => `<li><span>${esc(name)}</span><b>${n0(rows.length)}</b></li>`).join('')}</ul><a id="qp-open" href="#qp-offers">Ver partidas e preços</a>`
-      : '<p class="coverage-empty">Sem ofertas para os filtros selecionados.</p>') + '</div>';
 }
 
 function modQuero({offers, status, ultimaTentativa, line}) {
@@ -2199,7 +2262,7 @@ function bindMarketPlan(rows, range, realized) {
     if (button.dataset.planPeriod) marketPlan.period = button.dataset.planPeriod;
     else marketPlan.gain = Number(button.dataset.planGain);
     const attribute = button.dataset.planPeriod ? 'data-plan-period' : 'data-plan-gain';
-    panel.innerHTML = modMarketPlan(rows, range, realized);
+    paintDashboard(panel, modMarketPlan(rows, range, realized));
     animateDashboard(panel);
     panel.querySelector(`[${attribute}="${button.getAttribute(attribute)}"]`)?.focus({preventScroll: true});
   };
@@ -2222,20 +2285,20 @@ const dashboardReveal = new IntersectionObserver((entries) => {
 function animateDashboard(element, revealed = false) {
   if (sentinelMotion.matches) return;
   dashboardAnimations.get(element)?.forEach((animation) => animation.cancel());
-  const easing = 'cubic-bezier(.22,.68,.2,1)';
+  const easing = 'cubic-bezier(.22,.75,.27,1)';
   const animations = [element.animate([
-    {opacity: revealed ? .62 : .87, filter: revealed ? 'blur(2px)' : 'blur(.6px)', transform: `translateY(${revealed ? 6 : 2}px)`},
+    {opacity: revealed ? .8 : .94, filter: revealed ? 'blur(1.25px)' : 'none', transform: `translateY(${revealed ? 4 : 1}px)`},
     {opacity: 1, filter: 'none', transform: 'none'},
-  ], {duration: revealed ? 610 : 460, easing})];
+  ], {duration: revealed ? 570 : 480, easing})];
   const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v, #hour-value');
   numbers.forEach((number, index) => animations.push(number.animate([
-    {opacity: .75, transform: 'translateY(3px)'},
+    {opacity: .84, transform: 'translateY(2px)'},
     {opacity: 1, transform: 'none'},
   ], {duration: 470, delay: Math.min(index * 24, 96), fill: 'backwards', easing})));
   dashboardAnimations.set(element, animations);
 }
 
-function observeDashboardMotion(animateVisible = false) {
+function observeDashboardMotion(changed = null) {
   dashboardReveal.disconnect();
   for (const element of $$(movingDashboard)) {
     element.classList.remove('reveal-await');
@@ -2246,14 +2309,14 @@ function observeDashboardMotion(animateVisible = false) {
       dashboardReveal.observe(element);
     } else if (rect.top < innerHeight && rect.bottom > 0) {
       revealedDashboard.add(element);
-      if (animateVisible && !element.matches('#quickCharts, #analysis')) animateDashboard(element);
+      if (changed?.has(element) || changed?.has(element.parentElement)) animateDashboard(element);
     }
   }
 }
 
 sentinelMotion.addEventListener('change', () => observeDashboardMotion());
 document.addEventListener('toggle', (event) => {
-  if (event.target.matches('#quickCharts, #analysis, .today-detail, .footer-method')) observeDashboardMotion(event.target.open);
+  if (event.target.matches('#quickCharts, #analysis, .today-detail, .footer-method')) observeDashboardMotion();
 }, true);
 
 /* ---------- partida e atualização em segundo plano ---------- */
@@ -2280,7 +2343,13 @@ function stampTick() {
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
 const canRender = () => !$$('details.dd[open]').length && $('#help')?.hidden !== false && !document.activeElement?.matches?.('input');
-function flush() { if (!pending || !DB || !canRender()) return; pending = false; const y = scrollY; syncBar(); render(); scrollTo(0, y); }
+function flush() {
+  if (!pending || !DB || !canRender()) return;
+  pending = false;
+  const y = scrollY;
+  syncBar(); render();
+  if (scrollY !== y) scrollTo({top: y, behavior: 'instant'});
+}
 async function refresh(manual) {
   if (busy || isStatic()) return;
   busy = true; stampTick();
