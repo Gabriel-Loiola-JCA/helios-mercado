@@ -177,7 +177,7 @@ main { display: grid; padding-bottom: 40px; }
 .rt { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 2.2fr) 74px 80px 64px; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); font-size: 13px; }
 .rt .nm b { display: block; font-weight: 500; }
 .rt .nm small { color: var(--muted); font-size: 11.5px; }
-.rt .n { text-align: right; white-space: nowrap; }
+.rt .n { min-width: 0; text-align: right; overflow-wrap: anywhere; }
 .rt .n small { display: block; color: var(--muted); font-size: 11px; }
 .rt.h { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); border-top: 0; padding-bottom: 4px; }
 
@@ -376,7 +376,28 @@ main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14p
 .mod-head { position: static; gap: 6px; }
 .mod-head h2 { font-size: 19px; letter-spacing: -.02em; }
 .mod-head p { font-size: 13px; max-width: 72ch; }
-.mod-body { background: none; border: 0; border-radius: 0; padding: 0; gap: 18px; }
+.mod-body { background: none; border: 0; border-radius: 0; padding: 0; gap: 18px; grid-template-columns: minmax(0, 1fr); }
+.mod-body > *, .cols, .cols .seg2, .cols .seg2 i { min-width: 0; }
+.mod-body { container-type: inline-size; }
+.routes, .dumb { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 640px) {
+  .drow, .axis { grid-template-columns: 78px minmax(0, 1fr) 75px; gap: 6px; }
+  .drow .val { font-size: 11px; }
+  .rt { grid-template-columns: minmax(0, 1fr) 58px 58px; gap: 6px; }
+  .rt.h { letter-spacing: .04em; }
+  .rt .nm { min-width: 0; overflow-wrap: anywhere; }
+}
+@container (max-width: 520px) { .cols.hours .pct { visibility: hidden; } }
+.company-card .radar svg { max-height: 280px; }
+.company-card .hrow { grid-template-columns: minmax(72px, 1.15fr) minmax(24px, 1fr) auto; gap: 8px; }
+.company-card .hrow .nm { text-align: left; }
+.company-card .hrow .val { gap: 6px; }
+.live-st.stale i, .today .now.stale i { background: var(--neg-text); box-shadow: 0 0 0 3px var(--red-dim); }
+#perS { max-width: 100%; flex-wrap: wrap; }
+.bar [hidden] { display: none; }
+.bar + #today { margin-top: 14px; }
+.dd .pop { left: clamp(calc(-1 * var(--pop-left, 0px)), 0px, calc(100vw - var(--pop-left, 0px) - min(340px, 88vw) - 10px)); }
+.dd .pop.wide { width: min(340px, 88vw); }
 .insight { font-size: 16px; }
 /* marcas arredondadas */
 .hrow { min-height: 30px; }
@@ -493,7 +514,17 @@ const diffD = (a, b) => Math.round((ms(a) - ms(b)) / 864e5);
 const br = (d) => d ? `${d.slice(8, 10)}/${d.slice(5, 7)}` : '—';
 const brY = (d) => d ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(2, 4)}` : '—';
 const wdOf = (d) => new Date(ms(d)).getUTCDay();
-const shortRoute = (l) => String(l).replace(/São Paulo/g, 'SP').replace(/Rio de Janeiro/g, 'Rio').replace(/Florianópolis/g, 'Floripa').replace(/Belo Horizonte/g, 'BH').replace(/São José do Rio Preto/g, 'Rio Preto');
+const cityCodes = new Map(Object.entries({
+  'sao paulo': 'SPO', sp: 'SPO', 'rio de janeiro': 'RJO', rio: 'RJO', florianopolis: 'FLN', floripa: 'FLN',
+  curitiba: 'CTB', 'sao jose do rio preto': 'SJR', 'rio preto': 'SJR', 'belo horizonte': 'BHZ', bh: 'BHZ', 'juiz de fora': 'JDF',
+}));
+const shortRoute = (label) => String(label).split(/(\s*[→⇄↔]\s*)/).map((part) => cityCodes.get(nrm(part.trim().replace(/\s*\/\s*[a-z]{2}$/i, ''))) || part).join('');
+const brandNames = new Map(Object.entries({
+  cometa: 'Cometa', catarinense: 'Catarinense', v1001: 'V1001', expresso: 'Expresso',
+  'viacao cometa': 'Cometa', 'auto viacao catarinense': 'Catarinense', 'viacao catarinense': 'Catarinense',
+  'auto viacao 1001': 'V1001', 'viacao 1001': 'V1001', '1001': 'V1001', 'expresso do sul': 'Expresso',
+}));
+const shortCompany = (name) => brandNames.get(nrm(name)) || name;
 const HOURS = [{k: 'mad', l: 'Madrugada', a: 0, b: 5}, {k: 'man', l: 'Manhã', a: 6, b: 11}, {k: 'tar', l: 'Tarde', a: 12, b: 17}, {k: 'noi', l: 'Noite', a: 18, b: 23}];
 
 /* ---------- dados ---------- */
@@ -560,7 +591,7 @@ function ranges() {
 const hourOk = (h) => !F.hours.size || HOURS.some((x) => F.hours.has(x.k) && h >= x.a && h <= x.b);
 const dimOk = (r) => (!F.routes.size || F.routes.has(r.r)) && (!F.classes.size || F.classes.has(r.c)) && (!F.wds.size || F.wds.has(r.wd));
 function isUs(r) { return F.focus === 'JCA' ? r.j : r.v === Number(F.focus); }
-const focusName = () => F.focus === 'JCA' ? 'Grupo JCA' : DB.dims.viacoes[Number(F.focus)]?.n || '—';
+const focusName = () => F.focus === 'JCA' ? 'Grupo JCA' : shortCompany(DB.dims.viacoes[Number(F.focus)]?.n || '—');
 const focusShort = () => F.focus === 'JCA' ? 'JCA' : focusName();
 function pick(a, b, open) { if (!a) return []; return DB.rows.filter((r) => r.open === open && r.d >= a && r.d <= b && dimOk(r) && hourOk(r.h)); }
 
@@ -573,7 +604,7 @@ function tot(list) { const t = {pax: 0, cap: 0, n: 0, rec: 0, upax: 0, ucap: 0, 
   t.them = t.pax - t.upax; return t; }
 const groupBy = (a, f) => { const m = new Map(); for (const x of a) { const k = f(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); } return m; };
 function companyKey(r) { return F.group && r.j && F.focus === 'JCA' ? 'JCA' : String(r.v); }
-function companyName(k) { return k === 'JCA' ? 'Grupo JCA' : DB.dims.viacoes[Number(k)].n; }
+function companyName(k) { return k === 'JCA' ? 'Grupo JCA' : shortCompany(DB.dims.viacoes[Number(k)].n); }
 function companyIsUs(k) { return k === 'JCA' ? true : F.focus === 'JCA' ? DB.jca[Number(k)] : Number(k) === Number(F.focus); }
 
 /* ---------- cores por empresa ---------- */
@@ -614,10 +645,10 @@ function divbars(items, {val, right, tip, us, color}) {
     const st = v >= 0 ? `left:${z}%;width:${w}%` : `left:${z - w}%;width:${w}%`;
     return `<div class="hrow${us && us(it) ? ' us' : ''}"${color ? ` style="--c:${color(it)}"` : ''}${tipAttr(tip(it))}><div class="nm">${color ? '<i class="dot"></i>' : ''}${esc(it.name)}</div><div class="track"><div class="zero" style="left:${z}%"></div><div class="b ${v >= 0 ? 'pos' : 'neg'}" style="${st};--i:${i}"></div></div><div class="val">${right(it)}</div></div>`; }).join('')}</div>`;
 }
-function columns(items, {label, us, them, tip, top, h}) {
+function columns(items, {label, us, them, tip, top, h, hours = false}) {
   if (!items.length) return '<div class="empty">Sem dados.</div>';
   const mx = Math.max(...items.map((x) => us(x) + them(x)), 1e-9);
-  return `<div class="cols">${items.map((it, i) => { const a = us(it), b = them(it); const H = h || 136;
+  return `<div class="cols${hours ? ' hours' : ''}">${items.map((it, i) => { const a = us(it), b = them(it); const H = h || 136;
     return `<div class="c"${tipAttr(tip(it))}><div class="pct">${top ? top(it) : ''}</div><div class="seg2" style="--i:${i}"><i class="us" style="height:${a / mx * H}px"></i><i style="height:${b / mx * H}px"></i></div><div class="lbl">${esc(label(it))}</div></div>`; }).join('')}</div>`;
 }
 /** Curva suave que não passa do valor dos pontos vizinhos (sem picos falsos). */
@@ -640,7 +671,7 @@ function closedSmooth(p) {
 }
 /** Radar: um eixo por linha/mercado. series: [{kind:'s1'|'s2'|'s3', values:[0..1|null]}]. s1 = cheio, s2 = tracejado, s3 = pontilhado. */
 let radN = 0;
-function radarSvg(axes, series, {tip, max} = {}) {
+function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
   const N = axes.length;
   if (N < 3) return '<div class="empty">O radar precisa de pelo menos 3 linhas no recorte.</div>';
   const vals = series.flatMap((x) => x.values).filter(Number.isFinite);
@@ -671,7 +702,7 @@ function radarSvg(axes, series, {tip, max} = {}) {
     g += `<g class="ax"${tip ? tipAttr(tip(i)) : ''}><path class="hit" d="M${cx},${cy}L${f(w0)}L${f(w1)}L${f(w2)}Z"/><circle class="od" cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="3"/>` +
       `<text class="lab" text-anchor="${anchor}">${lines.map((t, k) => `<tspan x="${l[0].toFixed(1)}" y="${(y0 + k * 12).toFixed(1)}">${esc(t)}</tspan>`).join('')}</text></g>`;
   }
-  return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg></div>`;
+  return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${g}</svg></div>`;
 }
 /** Linhas (uma escala só). series: [{name, color, dash, values:[n|null]}]; tip(i) → texto. */
 function lineSvg(id, xs, series, {yFmt, xFmt, tip, y0, y1}) {
@@ -736,9 +767,9 @@ function shell() {
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
     <div class="acts"><button class="live-st" id="reload"><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
+  <nav class="wrap bar" id="bar" aria-label="Filtros do painel"></nav>
   <section class="wrap" id="today"></section>
   <section class="wrap hero" id="hero"></section>
-  <nav class="wrap bar" id="bar"></nav>
   <section class="wrap kpis" id="kpis"></section>
   <main class="wrap" id="main"></main>
   <footer class="wrap"><p class="eyebrow">Método</p><ul>
@@ -774,10 +805,10 @@ function buildBar() {
     <details class="dd" id="ddF" title="Quem é o “nós” das contas"><summary class="chip fsum" id="sumF"></summary><div class="pop wide" id="focusL">
       <label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="fq" placeholder="Buscar viação" autocomplete="off"></label>
       <div class="grp"><span>Nós</span></div><button class="it" data-f="JCA"><i class="dot" style="--c:var(--white)"></i>Grupo JCA<small>todas as marcas</small></button>
-      <div class="grp"><span>Marcas JCA</span></div>${viac.filter((v) => v.g === 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
-      <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}">${dot(v.i)}${esc(v.n)}</button>`).join('')}
+      <div class="grp"><span>Marcas JCA</span></div>${viac.filter((v) => v.g === 'JCA').map((v) => `<button class="it" data-f="${v.i}" data-search="${esc(v.n)}" title="${esc(v.n)}">${dot(v.i)}${esc(shortCompany(v.n))}</button>`).join('')}
+      <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}" data-search="${esc(v.n)}" title="${esc(v.n)}">${dot(v.i)}${esc(shortCompany(v.n))}</button>`).join('')}
     </div></details>
-    <details class="dd" id="ddR"><summary class="chip fsum" id="sumR"></summary><div class="pop" id="rteL"><label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="rq" placeholder="Buscar linha" autocomplete="off"></label>${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span>${esc(m)}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
+    <details class="dd" id="ddR"><summary class="chip fsum" id="sumR"></summary><div class="pop" id="rteL"><label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="rq" placeholder="Buscar linha" autocomplete="off"></label>${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span title="${esc(m)}">${esc(shortRoute(m))}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label data-search="${esc(r.l)}" title="${esc(r.l)}"><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
       <div class="grp"><button id="allR">todas as linhas</button></div></div></details>
     <details class="dd" id="ddC"><summary class="chip fsum" id="sumC"></summary><div class="pop">${dims.classes.map((c, i) => `<label><input type="checkbox" data-c="${i}">${esc(c)}</label>`).join('')}<div class="grp"><button id="allC">todas as classes</button></div></div></details>
     <details class="dd" id="ddH"><summary class="chip fsum" id="sumH"></summary><div class="pop" id="hrs">${HOURS.map((h) => `<label><input type="checkbox" data-h="${h.k}">${h.l}<small>${h.a}h–${h.b}h59</small></label>`).join('')}<div class="grp"><button id="allH">qualquer horário</button></div></div></details>
@@ -786,6 +817,11 @@ function buildBar() {
   </div>
   <div class="tokens" id="tokens" hidden></div>`;
   const bar = $('#bar');
+  bar.querySelectorAll('details.dd').forEach((details) => {
+    details.addEventListener('toggle', () => {
+      if (details.open) details.style.setProperty('--pop-left', details.getBoundingClientRect().left + 'px');
+    });
+  });
   if (!bar.dataset.b) { bar.dataset.b = '1'; // ouvintes uma vez só (a barra é refeita quando chegam viações novas)
   bar.addEventListener('click', (e) => {
     const dims = DB.dims; const b = e.target.closest('button'); if (!b) return;
@@ -818,9 +854,9 @@ function buildBar() {
   document.addEventListener('click', (e) => { for (const d of $$('details.dd[open]')) if (!d.contains(e.target)) d.open = false; });
   document.addEventListener('toggle', () => setTimeout(flush, 50), true);
   }
-  $('#rq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#rteL label:not(.find)').forEach((l) => l.hidden = !!q && !nrm(l.textContent).includes(q)); });
+  $('#rq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#rteL label:not(.find)').forEach((l) => l.hidden = !!q && !nrm(l.textContent + ' ' + (l.dataset.search || '')).includes(q)); });
   $('#ddR').addEventListener('toggle', () => { if ($('#ddR').open) { $('#rq').value = ''; $$('#rteL label').forEach((l) => l.hidden = false); } });
-  $('#fq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#focusL .it').forEach((b) => b.hidden = !!q && !nrm(b.textContent).includes(q)); });
+  $('#fq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#focusL .it').forEach((b) => b.hidden = !!q && !nrm(b.textContent + ' ' + (b.dataset.search || '')).includes(q)); });
   $('#ddF').addEventListener('toggle', () => { if ($('#ddF').open) { $('#fq').value = ''; $$('#focusL .it').forEach((b) => b.hidden = false); setTimeout(() => $('#fq').focus(), 30); } });
 }
 const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
@@ -854,7 +890,7 @@ function syncBar() {
   $$('#ddC input').forEach((i) => i.checked = !F.classes.size || F.classes.has(Number(i.dataset.c)));
   const nR = F.routes.size, nC = F.classes.size;
   const mk = nR ? [...new Set([...F.routes].map((i) => DB.dims.rotas[i].m))] : [];
-  $('#sumR').textContent = !nR ? 'Todas as linhas' : nR === 1 ? shortRoute(DB.dims.rotas[[...F.routes][0]].l) : mk.length === 1 && DB.dims.rotas.filter((r) => r.m === mk[0]).length === nR ? `${mk[0]} · ida e volta` : `${nR} linhas`;
+  $('#sumR').textContent = !nR ? 'Todas as linhas' : nR === 1 ? shortRoute(DB.dims.rotas[[...F.routes][0]].l) : mk.length === 1 && DB.dims.rotas.filter((r) => r.m === mk[0]).length === nR ? `${shortRoute(mk[0])} · ida e volta` : `${nR} linhas`;
   $('#sumC').textContent = !nC ? 'Todas as classes' : nC === 1 ? DB.dims.classes[[...F.classes][0]] : `${nC} classes`;
   $('#sumR').setAttribute('aria-pressed', String(!!nR)); $('#sumC').setAttribute('aria-pressed', String(!!nC));
   // filtros ativos como fichas removíveis
@@ -918,12 +954,15 @@ function render() {
   if (real) mods.push(Wd(modWhere(T, P, cur, prev)));
   mods.push(Wd(modTime(R, cur, real)));
   mods.push(modRadar(cur, prev));
-  mods.push(modRank(cur, prev, T));
+  mods.push(modCompanyRadar(cur, prev, T));
+  mods.push(Wd(modRank(cur, prev, T)));
   mods.push(Wd(modRoutes(cur, prev)));
-  mods.push(modWhen(cur));
-  mods.push(modOcc(cur));
+  mods.push(Wd(modWhen(cur)));
+  mods.push(Wd(modOcc(cur)));
   if (real) mods.push(modAhead());
   mods.push(real ? modPace() : Wd(modPace()));
+  const quero = modQuero();
+  if (quero) mods.push(Wd(quero));
   mods.push(Wd(modTable(cur, prev)));
   $('#main').innerHTML = mods.join('');
   afterRender.forEach((f) => f()); afterRender.length = 0;
@@ -937,11 +976,13 @@ function todayHtml() {
   const z = () => ({t: 0, u: 0});
   const day = new Map(), week = new Map(), D = z(), Wk = z();
   for (const s of DB.sales) {
+    if (!dimOk(s)) continue;
     const isT = s.d === t; if (!isT && !(s.d >= from && s.d < t)) continue;
     const m = isT ? day : week, o = m.get(s.r) || z(), g = isT ? D : Wk, u = isUs(s) ? s.pax : 0;
     o.t += s.pax; o.u += u; m.set(s.r, o); g.t += s.pax; g.u += u;
   }
-  if (!D.t && hh && F.focus === 'JCA') for (const h of hh) { D.t += h[1]; D.u += h[2]; }
+  const showHours = hh && F.focus === 'JCA' && !F.routes.size && !F.classes.size && !F.wds.size && !F.hours.size;
+  if (!DB.sales.length && showHours) for (const h of hh) { D.t += h[1]; D.u += h[2]; }
   const sh = D.t ? D.u / D.t : NaN, avg = Wk.t ? Wk.u / Wk.t : NaN, d = sh - avg;
   const early = D.t < 15, has7 = Number.isFinite(avg);
   const state = early ? 'Ainda cedo para dizer' : !has7 ? `${us} com ${pct(sh, 0)} hoje` : d >= .01 ? 'Ganhando mercado' : d <= -.01 ? 'Perdendo mercado' : 'Mercado estável';
@@ -949,11 +990,11 @@ function todayHtml() {
   const last = DB.data.coleta?.ultimaLeitura;
   const when = last ? `${last.slice(11)} · ${ago(brtMs(last))}` : new Date(DB.data.gerado).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   const nowH = Number(new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', hour: 'numeric', hourCycle: 'h23'}).format(new Date()));
-  const hrs = hh && F.focus === 'JCA' ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
+  const hrs = showHours ? hh.filter((h) => h[0] <= (t === new Date(Date.now() - 3 * 36e5).toISOString().slice(0, 10) ? nowH : 23)) : [];
   // referência: média dos 7 dias; sem histórico ainda, o que já está vendido para os próximos 14 dias
   const ref = new Map(); let refName = 'Média 7 dias';
   if (Wk.t) for (const [r, o] of week) ref.set(r, o);
-  else { refName = 'Em venda · 14 dias'; for (const r of DB.rows) if (r.open) { const o = ref.get(r.r) || z(); o.t += r.pax; if (isUs(r)) o.u += r.pax; ref.set(r.r, o); } }
+  else { refName = 'Em venda · 14 dias'; for (const r of DB.rows) if (r.open && dimOk(r)) { const o = ref.get(r.r) || z(); o.t += r.pax; if (isUs(r)) o.u += r.pax; ref.set(r.r, o); } }
   const byMkt = (map) => { const out = new Map(DB.markets.map((m) => [m, z()])); for (const [r, o] of map) { const x = out.get(DB.dims.rotas[r].m); if (x) { x.t += o.t; x.u += o.u; } } return out; };
   const md = byMkt(day), mr = byMkt(ref), sv = (o) => o && o.t ? o.u / o.t : null;
   const radar = radarSvg(DB.markets.map((m) => ({label: shortRoute(m)})), [
@@ -965,7 +1006,7 @@ function todayHtml() {
       <div class="nm">${esc(shortRoute(x.l))}</div><div class="bar2"><i style="width:${s * 100}%"></i>${rv != null ? `<b style="left:${rv * 100}%"></b>` : ''}</div>
       <div class="v">${pct(s, 0)}</div><div class="p">${Number.isFinite(dd) ? deltaPill(dd) : `<span class="mut">${n0(x.a.t)} compras</span>`}</div></div>`; };
   return `<div class="today">
-    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura ${esc(when)}</p><h2 class="${c}">${esc(state)}</h2>
+    <div class="t-main"><p class="eyebrow now"><i></i>Hoje · leitura <span id="todayStamp">${esc(when)}</span></p><h2 class="${c}">${esc(state)}</h2>
       <p class="sub">${esc(us)} com <b>${pct(sh)}</b> das compras de hoje${has7 ? ` · média 7 dias ${pct(avg)} ${deltaPill(d)}` : ''}</p>
       <div class="nums"><div><b>${n0(D.t)}</b><span>compras hoje</span></div><div><b>${n0(D.u)}</b><span>${esc(us)}</span></div><div><b>${n0(D.t - D.u)}</b><span>concorrência</span></div></div>
       ${hrs.length ? `<p class="h4">Compras por hora</p>${columns(hrs, {h: 72, label: (x) => x[0] % 3 === 0 ? x[0] + 'h' : '', us: (x) => x[2], them: (x) => x[1] - x[2],
@@ -1058,6 +1099,50 @@ function modRank(cur, prev, T) {
     ${items.length > 20 ? `<p class="note">+ ${items.length - 20} viações menores na tabela abaixo.</p>` : ''}`);
 }
 
+function modCompanyRadar(cur, prev, total) {
+  const previous = groupBy(prev, (r) => r.v);
+  const oldTotal = prev.reduce((sum, r) => sum + r.pax, 0);
+  const leaders = [...groupBy(cur, (r) => r.v)].map(([v, rows]) => {
+    const pax = rows.reduce((sum, r) => sum + r.pax, 0);
+    const oldPax = (previous.get(v) || []).reduce((sum, r) => sum + r.pax, 0);
+    return {v, name: companyName(v), pax, share: pax / total.pax, previous: oldPax / oldTotal};
+  }).filter((entry) => entry.pax > 0)
+    .sort((a, b) => b.pax - a.pax || a.name.localeCompare(b.name, 'pt-BR')).slice(0, 7);
+  const lead = leaders[0];
+  const tip = (entry) => [DB.dims.viacoes[entry.v].n, n0(entry.pax) + ' passageiros estimados · ' + pct(entry.share),
+    ...(oldTotal ? ['Período anterior · ' + pct(entry.previous)] : [])].join('\n');
+  const chart = leaders.length >= 3 ? radarSvg(leaders.map((entry) => ({label: entry.name})), [
+    {kind: 's1', values: leaders.map((entry) => entry.share)},
+    ...(oldTotal ? [{kind: 's2', values: leaders.map((entry) => entry.previous)}] : []),
+  ], {tip: (i) => tip(leaders[i]), label: 'Parcela estimada de passageiros por empresa'}) : '';
+  const legend = oldTotal && chart ? '<div class="legend"><span><i class="ln" style="background:var(--white)"></i>Recorte atual</span><span><i class="dash"></i>Período anterior</span></div>' : '';
+  const ranking = hbars(leaders, {
+    val: (entry) => entry.share, us: (entry) => companyIsUs(entry.v), color: (entry) => colorOf(entry.v),
+    right: (entry) => '<b>' + n0(entry.pax) + '</b><em>' + pct(entry.share) + '</em>', tip,
+  });
+  return mod('Por empresa', 'Viações com mais passageiros estimados no recorte. A parcela é calculada sobre todo o mercado filtrado.',
+    (lead ? '<p class="insight">' + esc(lead.name) + ' lidera com <em>' + n0(lead.pax) + ' passageiros (' + pct(lead.share) + ')</em>.</p>' : '') + legend + chart + ranking)
+    .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
+}
+
+function modQuero() {
+  if (!DB.data.quero) return '';
+  const marketRoutes = DB.dims.rotas.filter((route, i) => ['SPO → SJR', 'SJR → SPO'].includes(shortRoute(route.l))
+    && (!F.routes.size || F.routes.has(i)));
+  if (F.routes.size && !marketRoutes.length) return '';
+  const classes = new Set([...F.classes].map((i) => DB.dims.classes[i]));
+  const routes = new Set(marketRoutes.map((route) => route.l));
+  const offers = DB.data.quero.rows.filter((r) => (!F.routes.size || routes.has(r[1])) && (!classes.size || classes.has(r[3]))
+    && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2))));
+  const {status, ultimaTentativa} = DB.data.quero;
+  const statusText = status ? '<p class="note">Última tentativa ' + esc(ultimaTentativa) + ' · ' + esc(status) + '</p>' : '';
+  const body = offers.length ? '<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Linha</th><th>Viação</th><th>Classe</th><th>Partida</th><th>Preço</th><th>Lugares anunciados</th></tr></thead><tbody>'
+    + offers.map(([day, route, company, cls, time, price, seats]) => '<tr><td>' + br(day) + '</td><td>' + esc(shortRoute(route)) + '</td><td>' + esc(shortCompany(company))
+      + '</td><td>' + esc(cls) + '</td><td>' + esc(time) + '</td><td>' + money(price) + '</td><td>' + (seats == null ? '—' : n0(seats)) + '</td></tr>').join('') + '</tbody></table></div>'
+    : '<p class="empty">Sem ofertas válidas da Quero Passagem neste recorte.</p>';
+  return mod('Ofertas · Quero Passagem', 'Próximas partidas e preços publicados em SPO ↔ SJR. O ranking de passageiros usa as leituras de ocupação da ClickBus.', statusText + body);
+}
+
 /* 4 · linha a linha */
 function modRoutes(cur, prev) {
   const keyOf = F.mode === 'mkt' ? (r) => DB.dims.rotas[r.r].m : (r) => DB.dims.rotas[r.r].l;
@@ -1091,7 +1176,7 @@ function modWhen(cur) {
   const ins = bestH.length > 3 ? `Mais forte às <em>${bestH[0].h}h (${pct(bestH[0].t.share, 0)})</em>, mais fraca às <em>${bestH[bestH.length - 1].h}h (${pct(bestH[bestH.length - 1].t.share, 0)})</em>.` : '';
   return mod('Horário e dia da semana', `Passageiros por hora de partida e por dia da viagem. Branco = ${esc(us)}. O número em cima é a parcela.`,
     `${ins ? `<p class="insight">${ins}</p>` : ''}
-    ${columns(hrs, {label: (x) => x.h % 3 === 0 ? x.h + 'h' : '', us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
+    ${columns(hrs, {hours: true, label: (x) => x.h % 3 === 0 ? x.h + 'h' : '', us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
       tip: (x) => `Partidas das ${x.h}h\n${us}: ${n0(x.t.upax)} · concorrência: ${n0(x.t.them)}\nParcela ${pct(x.t.share)} · oferta ${pct(x.t.fair)}\nOcupação ${pct(x.t.lfUs, 0)} × ${pct(x.t.lfThem, 0)}`})}
     <div><p class="h4">Dia da semana da viagem</p>${columns(wds, {label: (x) => WD[x.w], us: (x) => x.t.upax, them: (x) => x.t.them, top: (x) => x.t.pax ? pct(x.t.share, 0) : '',
       tip: (x) => `${WDL[x.w]}\n${us}: ${n0(x.t.upax)} · concorrência: ${n0(x.t.them)}\nParcela ${pct(x.t.share)}`})}</div>`);
@@ -1239,13 +1324,20 @@ function helpHtml() {
 
 /* ---------- partida e atualização em segundo plano ---------- */
 let lastFetch = 0, sig = '', pending = false, busy = false, failed = false;
-const signature = (d) => JSON.stringify([d.coleta?.ultimaLeitura, d.hojeHoras, d.viagens?.rows, d.vendas?.rows]);
+const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
   b.classList.toggle('busy', busy); b.classList.toggle('bad', failed && !busy);
   const last = DB.data.coleta?.ultimaLeitura, ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
-  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : 'Ao vivo'} · leitura <b>${ago(ref)}</b>`;
+  const stale = !!last && Date.now() - ref > 20 * 60000;
+  b.classList.toggle('stale', stale && !busy && !failed && !DB.data.demo);
+  const todayStamp = $('#todayStamp');
+  if (todayStamp && last) {
+    todayStamp.textContent = last.slice(11) + ' · ' + ago(ref);
+    todayStamp.parentElement.classList.toggle('stale', stale && !DB.data.demo);
+  }
+  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : !last ? 'Dados disponíveis' : stale ? 'Coleta atrasada' : 'Ao vivo'} · leitura <b>${ago(ref)}</b>`;
   b.title = isStatic() ? 'Dados fixos' : `Última leitura do Helios: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
