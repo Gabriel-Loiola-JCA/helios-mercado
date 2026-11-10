@@ -1003,20 +1003,47 @@ html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animati
   padding: 14px 0 0 clamp(12px, 2vw, 32px);
   border-inline-start: 0;
 }
-.sentinel-plot::before {
-  position: absolute;
-  z-index: -1;
+.sentinel-board::before, .hour-stat::before {
   content: "";
-  inset: 50% auto auto 64%;
-  width: min(72%, 410px);
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  border: 1px dashed color-mix(in srgb, var(--line-strong) 64%, transparent);
-  border-radius: 50%;
-  background: radial-gradient(circle, transparent 57%, color-mix(in srgb, var(--line) 76%, transparent) 57.2%, transparent 57.6%, transparent 68%, var(--line) 68.2%, transparent 68.6%);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
   pointer-events: none;
-  animation: chart-orbit 58s linear infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.42'/%3E%3C/svg%3E");
+  opacity: .12;
+  mask-image: linear-gradient(105deg, transparent, #000 70%);
 }
+.hour-stat { position: relative; isolation: isolate; }
+.wrap { max-width: 1660px; }
+#bar { width: fit-content; max-width: min(1660px, calc(100% - 2 * var(--pad))); }
+.filter-receipt { margin-block-end: 8px; }
+.filter-receipt small { display: none; }
+#extraFilters > .pop { min-width: min(300px, calc(100vw - 40px)); padding: 12px; }
+#extraFilters .pop .pop { position: static; width: auto; max-height: 235px; box-shadow: none; margin-block: 4px; }
+#extraFilters > .pop > .dd { display: block; margin-bottom: 5px; }
+#extraFilters > .pop > .dd > summary { width: 100%; justify-content: space-between; }
+.acts { flex-wrap: wrap; }
+.export-menu { position: relative; }
+.export-menu .pop { right: 0; left: auto; min-width: 144px; }
+.export-menu .pop button { min-height: 34px; width: 100%; }
+.export-status:empty { display: none; }
+.export-status { padding: 4px 8px; margin: 0; color: var(--muted); font-size: 11px; }
+.company-name { color: inherit; background: none; border: 0; text-align: start; font: inherit; font-weight: 650; padding: 3px 2px; cursor: pointer; }
+.company-name:hover, .company-name[aria-pressed="true"] { color: var(--market-accent); }
+.company-maps { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px 12px; font-size: 11px; color: var(--muted); padding-inline-start: 2px; }
+.company-maps b { color: var(--white); }
+.company-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.radar [data-company-focus] { cursor: pointer; }
+.sentinel-scope { font-size: 11px; color: var(--white); }
+.sentinel-legend { display: flex; flex-wrap: wrap; gap: 7px 17px; margin: 0 0 9px; color: var(--muted); font-size: 12px; }
+.sentinel-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sentinel-legend i { width: 16px; height: 2px; background: var(--market-accent); }
+.sentinel-legend span + span i { background: repeating-linear-gradient(90deg, var(--volume-accent) 0 4px, transparent 4px 6px); }
+.sentinel-legend b { color: var(--white); font-variant-numeric: tabular-nums; }
+.bar .pop { background: var(--card-solid); }
+.bar .dd[open] { z-index: 3; }
+.quiet-refresh :is(.sentinel-reading > *, .sentinel-plot .chart-series, .seat-map[open] > dl, .seat-memory-card[open] > .seat-order) { animation: none; }
 .sentinel-plot h2 { margin-block-end: 15px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
 .sentinel-plot .chart-series { animation: trace-chart .92s 90ms var(--stage-ease) both; }
 .sentinel-plot .chart .grid { stroke-dasharray: 3 5; }
@@ -1030,7 +1057,6 @@ html[data-motion="sentinel"]::view-transition-new(helios-sentinel) {
   animation: stage-slide .56s var(--stage-ease) both;
 }
 html[data-motion] :is(.sentinel-reading > *, .sentinel-plot .chart-series) { animation: none; }
-@keyframes chart-orbit { to { rotate: 1turn; } }
 @keyframes data-rise {
   from { clip-path: inset(100% -10px -8px -10px); filter: blur(8px); transform: translateY(14px); }
   to { clip-path: inset(-10px); filter: none; transform: none; }
@@ -1073,10 +1099,12 @@ html[data-motion] :is(.sentinel-reading > *, .sentinel-plot .chart-series) { ani
   .sentinel-reading strong { font-size: clamp(45px, 12vw, 70px); }
   .sentinel-reading[data-tone="route"] strong { font-size: clamp(32px, 9vw, 51px); }
   .sentinel-plot { padding: 10px 0 0; }
-  .sentinel-plot::before { width: 56%; }
+  #bar { width: calc(100% - 2 * var(--pad)); }
+  .top .acts { gap: 4px; }
+  .top .btn { padding-inline: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sentinel-reading > *, .sentinel-plot::before, .sentinel-plot .chart-series,
+  .sentinel-reading > *, .sentinel-plot .chart-series,
   html[data-motion="sentinel"]::view-transition-new(helios-sentinel) { animation: none; }
   .reveal-await { filter: none; transform: none; }
 }
@@ -1185,10 +1213,10 @@ function model(data) {
 }
 
 /* ---------- filtros ---------- */
-const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set(), classes: new Set(), hours: new Set(), wds: new Set(), focus: 'JCA', group: true, mode: 'dir'};
+const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set(), classes: new Set(), hours: new Set(), wds: new Set(), focus: 'JCA', direct: '', group: true, mode: 'dir'};
 function loadF() {
   try { const s = JSON.parse(store.get('f') || '{}');
-    for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
+    for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'direct', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
     if (s.view === 'real' || s.view === 'venda') F.view = s.view;
     for (const k of ['routes', 'classes', 'hours', 'wds']) if (Array.isArray(s[k])) F[k] = new Set(s[k]);
     if (s.keys) {
@@ -1240,6 +1268,15 @@ function companyIsUs(k) { return k === 'JCA' ? true : F.focus === 'JCA' ? DB.jca
 
 /* ---------- cores por empresa ---------- */
 const nrm = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const mapBrands = ['BusCo', 'Esmeralda', 'Levare', 'Viação Pai Eterno'];
+function companyLabel(name) {
+  const key = nrm(name).replace(/[^a-z0-9]+/g, ' ');
+  if (/\bbus\s*co\b/.test(key)) return 'BusCo';
+  if (/\besmeralda\b/.test(key)) return 'Esmeralda';
+  if (/\blevare\b/.test(key)) return 'Levare';
+  if (/\bpai eterno\b/.test(key)) return 'Viação Pai Eterno';
+  return shortCompany(name);
+}
 const companyTones = ['var(--series-1)', 'var(--series-2)', 'var(--series-3)', 'var(--series-4)', 'var(--series-5)'];
 function colorOf(k) {
   return companyIsUs(k) ? 'var(--market-accent)' : companyTones[Number(k) % companyTones.length];
@@ -1317,7 +1354,8 @@ function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
     const lines = wrap2(axes[i].label), anchor = Math.abs(c) < .25 ? 'middle' : c > 0 ? 'start' : 'end';
     const y0 = sn < -.3 ? l[1] - (lines.length - 1) * 12 : sn > .3 ? l[1] + 8 : l[1] - (lines.length - 1) * 6 + 4;
     const w0 = at(a - st / 2, R + 46), w1 = at(a, R + 46), w2 = at(a + st / 2, R + 46);
-    g += `<g class="ax"${tip ? tipAttr(tip(i)) : ''}><path class="hit" d="M${cx},${cy}L${f(w0)}L${f(w1)}L${f(w2)}Z"/><circle class="od" cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="3"/>` +
+    const focus = axes[i].key !== undefined ? ` data-company-focus="${esc(axes[i].key)}" role="button" tabindex="0" aria-label="Focar ${esc(axes[i].label)}"` : '';
+    g += `<g class="ax"${focus}${tip ? tipAttr(tip(i)) : ''}><path class="hit" d="M${cx},${cy}L${f(w0)}L${f(w1)}L${f(w2)}Z"/><circle class="od" cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="3"/>` +
       `<text class="lab" text-anchor="${anchor}">${lines.map((t, k) => `<tspan x="${l[0].toFixed(1)}" y="${(y0 + k * 12).toFixed(1)}">${esc(t)}</tspan>`).join('')}</text></g>`;
   }
   return `<div class="radar"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${g}</svg></div>`;
@@ -1390,17 +1428,19 @@ function shell() {
   const demo = DB?.data.demo;
   $('#app').innerHTML = `${demo ? '<div class="demo-bar">Demonstração · dados fictícios<button id="leaveDemo">sair</button></div>' : ''}
   <header class="wrap top"><span class="brand">${MARK}<span>Helios · Mercado</span></span>
-    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
+    <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button>
+    ${ready ? '<details class="dd export-menu"><summary class="btn">Exportar</summary><div class="pop"><button class="it" data-export="xlsx">Excel</button><button class="it" data-export="pdf">PDF</button><button class="it" data-export="pptx">PowerPoint</button><p class="export-status" id="exportStatus" role="status"></p></div></details>' : ''}
+    <button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
   ${ready ? `<div class="wrap filter-receipt" id="filterReceipt" role="status" aria-atomic="true"></div>
-  <section class="wrap sentinel-board" id="sentinel" aria-label="Modo sentinela">
+  <section class="wrap sentinel-board plot-open" id="sentinel" aria-label="Modo sentinela">
     <div class="sentinel-copy" id="sentinelCopy">
-      <div class="sentinel-kicker"><i aria-hidden="true"></i>SENTINELA</div>
+      <div class="sentinel-kicker"><i aria-hidden="true"></i><span id="sentinelScope" class="sentinel-scope"></span></div>
       <div class="sentinel-frame" id="sentinelFrame"></div>
       <div class="sentinel-controls" id="sentinelControls" role="group" aria-label="Controles do modo sentinela"></div>
     </div>
-    <div class="sentinel-plot" id="sentinelPlot"><h2 id="sentinelPlotTitle"></h2><div class="chart" id="sentinelChart"></div></div>
+    <div class="sentinel-plot" id="sentinelPlot"><h2 id="sentinelPlotTitle"></h2><div class="sentinel-legend" id="sentinelLegend"></div><div class="chart" id="sentinelChart"></div></div>
   </section>
   <div class="wrap briefing" id="briefing">
     <section id="today" aria-label="Resumo das compras"></section>
@@ -1480,6 +1520,10 @@ function shell() {
     </ul></details></footer>`;
   bindMode();
   $('#reload').onclick = () => refresh(true);
+  if (ready) $('.export-menu').onclick = (event) => {
+    const format = event.target.closest('[data-export]')?.dataset.export;
+    if (format) downloadReport(format);
+  };
   $('#helpB').onclick = openHelp;
   $('#help').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeHelp(); });
   if ($('#leaveDemo')) $('#leaveDemo').onclick = () => { history.replaceState(null, '', location.pathname); RAW = DB = null; boot(); };
@@ -1491,7 +1535,6 @@ function buildBar() {
   const routeIdx = dims.rotas.map((r, i) => ({...r, i}));
   const byMkt = groupBy(routeIdx, (r) => r.m);
   const viac = dims.viacoes.map((v, i) => ({...v, i})).sort((a, b) => (b.g === 'JCA') - (a.g === 'JCA') || a.n.localeCompare(b.n, 'pt-BR'));
-  const opt = (v, l) => `<option value="${esc(v)}">${esc(l)}</option>`;
   const expanded = $('#bar').classList.contains('expanded');
   $('#bar').innerHTML = `<button class="filters-toggle" id="filtersToggle" aria-controls="filtersPanel" aria-expanded="${expanded}">
     Filtros <small id="filtersSummary"></small>
@@ -1508,14 +1551,16 @@ function buildBar() {
       <label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="fq" placeholder="Buscar viação" autocomplete="off"></label>
       <div class="grp"><span>Nós</span></div><button class="it" data-f="JCA"><i class="dot" style="--c:var(--white)"></i>Grupo JCA<small>todas as marcas</small></button>
       <div class="grp"><span>Marcas JCA</span></div>${viac.filter((v) => v.g === 'JCA').map((v) => `<button class="it" data-f="${v.i}" data-search="${esc(v.n)}" title="${esc(v.n)}">${dot(v.i)}${esc(shortCompany(v.n))}</button>`).join('')}
-      <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}" data-search="${esc(v.n)}" title="${esc(v.n)}">${dot(v.i)}${esc(shortCompany(v.n))}</button>`).join('')}
+      <div class="grp"><span>Concorrência</span></div>${viac.filter((v) => v.g !== 'JCA').map((v) => `<button class="it" data-f="${v.i}" data-search="${esc(v.n)}" title="${esc(v.n)}">${dot(v.i)}${esc(companyLabel(v.n))}</button>`).join('')}
+      <div class="grp"><span>Mapas e tarifas</span></div>${mapBrands.map((name) => `<button class="it" data-direct="${esc(name)}" data-search="${esc(name)}">${esc(name)}</button>`).join('')}
     </div></details>
     <details class="dd" id="ddR"><summary class="chip fsum" id="sumR"></summary><div class="pop" id="rteL"><label class="find"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="rq" placeholder="Buscar linha" autocomplete="off"></label>${[...byMkt.entries()].map(([m, list]) => `<div class="grp"><span title="${esc(m)}">${esc(shortRoute(m))}</span><button data-mkt="${esc(m)}">só este</button></div>${list.map((r) => `<label data-search="${esc(r.l)}" title="${esc(r.l)}"><input type="checkbox" data-r="${r.i}">${esc(shortRoute(r.l))}</label>`).join('')}`).join('')}
       <div class="grp"><button id="allR">todas as linhas</button></div></div></details>
+    <details class="dd" id="extraFilters"><summary class="chip">Mais filtros</summary><div class="pop">
     <details class="dd" id="ddC"><summary class="chip fsum" id="sumC"></summary><div class="pop">${dims.classes.map((c, i) => `<label><input type="checkbox" data-c="${i}">${esc(c)}</label>`).join('')}<div class="grp"><button id="allC">todas as classes</button></div></div></details>
     <details class="dd" id="ddH"><summary class="chip fsum" id="sumH"></summary><div class="pop" id="hrs">${HOURS.map((h) => `<label><input type="checkbox" data-h="${h.k}">${h.l}<small>${h.a}h–${h.b}h59</small></label>`).join('')}<div class="grp"><button id="allH">qualquer horário</button></div></div></details>
     <details class="dd" id="ddW"><summary class="chip fsum" id="sumW"></summary><div class="pop" id="wds">${[1, 2, 3, 4, 5, 6, 0].map((d) => `<label><input type="checkbox" data-w="${d}">${WDL[d]}</label>`).join('')}<div class="grp"><button data-wset="1,2,3,4">seg–qui</button><button data-wset="5,6,0">sex–dom</button><button id="allW">todos</button></div></div></details>
-    <span class="sp"></span><button class="chip" id="groupB" title="Somar as marcas do grupo no ranking">Marcas JCA juntas</button><button class="chip" id="clearB">Limpar filtros</button>
+    <button class="chip" id="groupB" title="Somar as marcas do grupo nos radares">Agrupar JCA</button></div></details><button class="chip" id="clearB">Limpar</button>
   </div>
   <div class="tokens" id="tokens" hidden></div></div>`;
   const bar = $('#bar');
@@ -1528,14 +1573,17 @@ function buildBar() {
   bar.addEventListener('click', (e) => {
     const dims = DB.dims; const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'filtersToggle') {
-      transitionView(() => {
-        const expanded = bar.classList.toggle('expanded');
-        b.setAttribute('aria-expanded', String(expanded));
-      }, 'filters-menu');
+      const expanded = bar.classList.toggle('expanded');
+      b.setAttribute('aria-expanded', String(expanded));
       return;
     }
     if (b.dataset.tok) dropTok(b.dataset.tok);
-    else if (b.dataset.f !== undefined) { F.focus = b.dataset.f; $('#ddF').open = false; }
+    else if (b.dataset.f !== undefined || b.dataset.direct) {
+      const index = b.dataset.direct ? dims.viacoes.findIndex((company) => companyLabel(company.n) === b.dataset.direct) : -1;
+      F.focus = b.dataset.f ?? (index >= 0 ? String(index) : 'JCA');
+      F.direct = b.dataset.direct || '';
+      $('#ddF').open = false;
+    }
     else if (b.closest('#viewS')) F.view = b.dataset.v;
     else if (b.closest('#perS')) F.per = b.dataset.v;
     else if (b.id === 'cmpB') F.cmp = !F.cmp;
@@ -1543,7 +1591,7 @@ function buildBar() {
     else if (b.id === 'allW') F.wds.clear();
     else if (b.dataset.wset) F.wds = new Set(b.dataset.wset.split(',').map(Number));
     else if (b.id === 'groupB') F.group = !F.group;
-    else if (b.id === 'clearB') { F.routes.clear(); F.classes.clear(); F.hours.clear(); F.wds.clear(); F.focus = 'JCA'; }
+    else if (b.id === 'clearB') { F.routes.clear(); F.classes.clear(); F.hours.clear(); F.wds.clear(); F.focus = 'JCA'; F.direct = ''; }
     else if (b.dataset.mkt) { F.routes = new Set(dims.rotas.map((r, i) => r.m === b.dataset.mkt ? i : -1).filter((i) => i >= 0)); }
     else if (b.id === 'allR') F.routes.clear();
     else if (b.id === 'allC') F.classes.clear();
@@ -1560,7 +1608,10 @@ function buildBar() {
     else return;
     update();
   });
-  document.addEventListener('click', (e) => { for (const d of $$('details.dd[open]')) if (!d.contains(e.target)) d.open = false; });
+  document.addEventListener('click', (e) => {
+    if (!e.isTrusted) return;
+    for (const d of $$('details.dd[open]')) if (!d.contains(e.target)) d.open = false;
+  });
   document.addEventListener('toggle', () => setTimeout(flush, 50), true);
   }
   $('#rq').addEventListener('input', (e) => { const q = nrm(e.target.value); $$('#rteL label:not(.find)').forEach((l) => l.hidden = !!q && !nrm(l.textContent + ' ' + (l.dataset.search || '')).includes(q)); });
@@ -1570,6 +1621,7 @@ function buildBar() {
 }
 const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
 function dropTok(k) {
+  if (k === 'direct') { F.direct = ''; return; }
   const [t, v] = k.split(':');
   if (t === 'focus') F.focus = 'JCA'; else if (t === 'routes') F.routes.clear(); else if (t === 'r') F.routes.delete(Number(v));
   else if (t === 'c') F.classes.delete(Number(v)); else if (t === 'h') F.hours.delete(v); else if (t === 'w') F.wds.delete(Number(v)); else if (t === 'wds') F.wds.clear();
@@ -1605,6 +1657,7 @@ function syncBar() {
   // filtros ativos como fichas removíveis
   const tk = [];
   if (F.focus !== 'JCA') tk.push(['focus', `Foco: ${focusName()}`]);
+  if (F.direct) tk.push(['direct', `Mapas: ${F.direct}`]);
   if (nR) (nR <= 3 ? [...F.routes].map((i) => ['r:' + i, shortRoute(DB.dims.rotas[i].l)]) : [['routes', `${nR} linhas`]]).forEach((x) => tk.push(x));
   for (const i of F.classes) tk.push(['c:' + i, DB.dims.classes[i]]);
   for (const h of HOURS) if (F.hours.has(h.k)) tk.push(['h:' + h.k, h.l]);
@@ -1613,18 +1666,16 @@ function syncBar() {
   $('#tokens').hidden = !tk.length; $('#clearB').hidden = !tk.length;
   $('#filtersSummary').textContent = tk.length ? `${tk.length} ativos` : 'Todas as linhas';
 }
-let filterFrame = 0, filterRevision = 0;
+let filterFrame = 0;
 function update() {
   saveF();
-  const revision = ++filterRevision;
   cancelAnimationFrame(filterFrame);
   filterFrame = requestAnimationFrame(() => {
     filterFrame = 0;
-    transitionView((animated) => {
-      if (revision !== filterRevision) return;
-      syncBar();
-      render(!animated);
-    }, 'filter');
+    activeViewMotion?.skipTransition();
+    document.documentElement.classList.remove('quiet-refresh');
+    syncBar();
+    render();
   });
 }
 
@@ -1687,32 +1738,34 @@ function canAdvanceSentinel(copy) {
 }
 
 function drawSentinelPlot(plot) {
-  const {title, color, values, format, percentage} = plot;
+  const {title, values, against, format, percentage, totals} = plot;
+  const own = F.focus === 'JCA' ? 'Grupo JCA' : focusName();
+  const other = F.focus === 'JCA' ? 'Concorrência' : 'Demais viações';
   const chart = $('#sentinelChart');
-  const height = matchMedia('(max-width: 700px)').matches ? 186 : Math.min(366, Math.max(288, Math.round(chart.clientWidth * .46)));
-  const key = JSON.stringify([title, color, values, sentinel.days, percentage, chart.clientWidth, height]);
+  const height = matchMedia('(max-width: 700px)').matches ? 165 : Math.min(350, Math.max(270, Math.round(chart.clientWidth * .46)));
+  const key = JSON.stringify([title, own, values, against, totals, sentinel.days, percentage, chart.clientWidth, height]);
   if (chart.dataset.plotKey === key) return;
   chart.dataset.plotKey = key;
   $('#sentinelPlotTitle').textContent = title;
-  const valid = values.filter(Number.isFinite);
-  if (valid.length < 2) {
+  paintDashboard($('#sentinelLegend'), [own, other].map((name, i) => `<span><i aria-hidden="true"></i>${esc(name)} <b>${format(totals[i])}</b></span>`).join(''));
+  const valid = [...values, ...against].filter(Number.isFinite);
+  if (valid.length < 2 || sentinel.days.length < 2) {
     chart.innerHTML = '<p class="empty">Sem série no recorte.</p>';
     return;
   }
   const days = sentinel.days;
-  const bounds = percentage ? {
-    y0: Math.max(0, Math.min(...valid) - .045),
-    y1: Math.min(1, Math.max(...valid) + .045),
-  } : {y0: 0, y1: Math.ceil(Math.max(...valid) * 1.08 / 4) * 4 || 4};
-  lineSvg('sentinelChart', days, [{name: title, color, values}], {
-    ...bounds, label: title, points: true, yFmt: format, xFmt: br,
+  const bounds = {y0: 0, y1: percentage ? 1 : Math.ceil(Math.max(...valid) * 1.08 / 4) * 4 || 4};
+  lineSvg('sentinelChart', days, [{name: own, color: 'var(--market-accent)', values},
+    {name: other, color: 'var(--volume-accent)', dash: true, values: against}], {
+    ...bounds, label: title + ' · ' + own + ' × ' + other, points: true, yFmt: format, xFmt: br,
     height,
-    tip: (index) => `${br(days[index])} · ${format(values[index])}`,
+    tip: (index) => `${br(days[index])}\n${own}: ${format(values[index])}\n${other}: ${format(against[index])}`,
   });
 }
 
 function renderSentinel(rows, total, previous, realized, range) {
   const scope = focusShort();
+  $('#sentinelScope').textContent = F.routes.size ? $('#sumR').textContent : 'Mercado monitorado';
   const groups = groupBy(rows, (row) => row.d);
   const dates = [...groups.keys()].sort();
   const edge = realized ? dates.at(-1) : dates[0];
@@ -1722,18 +1775,21 @@ function renderSentinel(rows, total, previous, realized, range) {
   sentinel.days = days;
   const daily = days.map((day) => groups.has(day) ? tot(groups.get(day)) : null);
   const formatShare = (value) => pct(value, 0);
+  const volume = realized ? 'Passageiros estimados' : 'Poltronas ocupadas';
+  const volumePlot = (title, series, sum) => ({title, values: series.map((day) => day?.upax),
+    against: series.map((day) => day ? day.pax - day.upax : null), format: (value) => Number.isFinite(value) ? n0(value) : '—',
+    totals: [sum.upax, sum.pax - sum.upax]});
   const change = previous?.pax > 0 && total.pax > 0 ? ` · ${pp(total.share - previous.share)}` : '';
   const slides = [{
     tone: 'share', label: 'Parcela de mercado', value: pct(total.share), detail: scope + change,
-    plot: {title: realized ? 'Parcela por dia' : 'Parcela por data de viagem', color: 'var(--market-accent)',
-      values: daily.map((day) => day?.share), format: formatShare, percentage: true},
+    plot: volumePlot(volume + ' por dia', daily, total),
   }];
   if (total.pax > 0) {
-    const volume = realized ? 'Passageiros' : 'Poltronas ocupadas';
     slides.push({
       tone: 'volume', label: realized ? 'Passageiros estimados' : volume, value: n0(total.upax),
       detail: `${scope} · ${n0(total.pax)} no mercado`,
-      plot: {title: `${volume} por dia`, color: 'var(--volume-accent)', values: daily.map((day) => day?.upax), format: n0},
+      plot: {title: 'Parcela de passageiros por dia', values: daily.map((day) => day?.share),
+        against: daily.map((day) => day?.pax ? 1 - day.share : null), totals: [total.share, 1 - total.share], format: formatShare, percentage: true},
     });
     const routes = [...groupBy(rows, (row) => row.r)].map(([key, items]) => ({key, ...tot(items)}));
     const leader = routes.sort((a, b) => b.upax - a.upax)[0];
@@ -1743,8 +1799,8 @@ function renderSentinel(rows, total, previous, realized, range) {
       slides.push({
         tone: 'route', label: 'Linha com maior volume', value: route,
         detail: `${n0(leader.upax)} ${volume.toLowerCase()} · ${pct(leader.share)} de parcela`,
-        plot: {title: `${route} · parcela por dia`, color: 'var(--route-accent)',
-          values: days.map((day) => routeDays.has(day) ? tot(routeDays.get(day)).share : NaN), format: formatShare, percentage: true},
+        plot: volumePlot(`${route} · ${volume.toLowerCase()}`,
+          days.map((day) => routeDays.has(day) ? tot(routeDays.get(day)) : null), leader),
       });
     }
   }
@@ -1890,6 +1946,22 @@ function render(animateChanges = false) {
   const quero = externalSelection(R);
   const companies = companyMetrics(cur, prev, T, quero);
   paint($('#radarGrid'), modRadar(cur, prev) + modCompanyRadar(companies, prev, quero));
+  $('#radarGrid').onclick = (event) => {
+    if (event.target.closest('#radarGroup')) { F.group = !F.group; update(); return; }
+    const button = event.target.closest('[data-company-focus]');
+    if (!button) return;
+    const entry = companies.find((company) => company.name === button.dataset.companyFocus);
+    if (!entry) return;
+    F.focus = entry.focus ?? 'JCA';
+    F.direct = mapBrands.includes(entry.name) || entry.focus === null ? (F.direct === entry.name ? '' : entry.name) : '';
+    update();
+  };
+  $('#radarGrid').onkeydown = (event) => {
+    const axis = event.target.closest('g[data-company-focus]');
+    if (!axis || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    axis.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+  };
   paint($('#planning'), modMarketPlan(cur, R, real));
   bindMarketPlan(cur, R, real);
   // ---- abertura ----
@@ -1921,39 +1993,46 @@ function render(animateChanges = false) {
     kp('Oferta × procura', Number.isFinite(T.idx) ? NF1.format(T.idx * 100) + '<small>índice</small>' : '—', `oferta ${pct(T.fair)} das poltronas · ocupação ${pct(T.lfUs, 0)} × ${pct(T.lfThem, 0)} da concorrência`));
 
   // ---- módulos ----
-  const layout = (h, cls) => h.replace('<section class="mod"', `<section class="mod ${cls}"`);
-  const wide = (h) => layout(h, 'wide');
-  const mods = [];
-  mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T, companies), 'analysis-card'));
-  if (real) mods.push(layout(modAhead(), 'analysis-chart'), layout(modWhere(T, P, cur, prev), 'analysis-card'));
-  mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
-  if (quero?.memory) mods.push(wide(modSeatMemory(quero)));
-  if (quero?.maps) mods.push(wide(modSeatMaps(quero)));
-  if (quero?.hasQuero) mods.push(wide(modQuero(quero)));
-  if (quero?.hasBusco) mods.push(wide(modBusco(quero)));
-  mods.push(wide(modTable(cur, prev)));
-  const openMaps = new Set($$('.seat-map[open]').map((map) => map.dataset.departure));
-  const memoryCards = new Map($$('.seat-memory-card').map((card) => [card.dataset.memory, card.open]));
-  $('#main').innerHTML = mods.join('');
-  for (const map of $$('.seat-map')) map.open = openMaps.has(map.dataset.departure);
-  for (const card of $$('.seat-memory-card')) if (memoryCards.has(card.dataset.memory)) card.open = memoryCards.get(card.dataset.memory);
-  changed.add($('#main'));
+  paintAnalysis = () => {
+    paintAnalysis = null;
+    const layout = (h, cls) => h.replace('<section class="mod"', `<section class="mod ${cls}"`);
+    const wide = (h) => layout(h, 'wide');
+    const mods = [];
+    mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T, companies), 'analysis-card'));
+    if (real) mods.push(layout(modAhead(), 'analysis-chart'), layout(modWhere(T, P, cur, prev), 'analysis-card'));
+    mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
+    if (quero?.memory) mods.push(wide(modSeatMemory(quero)));
+    if (quero?.maps) mods.push(wide(modSeatMaps(quero)));
+    if (quero?.hasQuero) mods.push(wide(modQuero(quero)));
+    if (quero?.hasBusco) mods.push(wide(modBusco(quero)));
+    mods.push(wide(modTable(cur, prev)));
+    const openMaps = new Set($$('.seat-map[open]').map((map) => map.dataset.departure));
+    const memoryCards = new Map($$('.seat-memory-card').map((card) => [card.dataset.memory, card.open]));
+    const mainChanged = paintDashboard($('#main'), mods.join(''));
+    for (const map of $$('.seat-map')) map.open = openMaps.has(map.dataset.departure);
+    for (const card of $$('.seat-memory-card')) if (memoryCards.has(card.dataset.memory)) card.open = memoryCards.get(card.dataset.memory);
+    if (mainChanged) changed.add($('#main'));
+    afterRender.forEach((f) => f()); afterRender.length = 0;
+    bindTable();
+  };
+  if ($('#analysis').open) paintAnalysis();
   for (const link of $$('#qp-open, #busco-open, #maps-open, #memory-open')) link.onclick = (event) => {
     if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     if (location.hash !== link.hash) history.pushState(null, '', link.hash);
     scrollToPanel(link.hash, sentinelMotion.matches ? 'instant' : 'smooth');
   };
-  afterRender.forEach((f) => f()); afterRender.length = 0;
-  bindTable(); stampTick();
+  stampTick();
   observeDashboardMotion(animateChanges ? changed : null);
 }
 const afterRender = [];
+let paintAnalysis;
 function scrollToPanel(hash, behavior) {
   if (!['#qp-offers', '#busco-offers', '#seat-maps', '#seat-memory'].includes(hash)) return;
+  $('#analysis').open = true;
+  paintAnalysis?.();
   const target = $(hash);
   if (!target) return;
-  $('#analysis').open = true;
   requestAnimationFrame(() => target.scrollIntoView({behavior}));
 }
 
@@ -2137,24 +2216,34 @@ function modRank(cur, prev, T, companies) {
     ${offersOnly.length ? `<div class="rank-extra"><p>Menor tarifa anunciada · Quero Passagem</p><ul>${offersOnly.map((company) => `<li><span>${esc(company.name)}</span><b>${company.fare === null ? '—' : offerPrice.format(company.fare)}</b></li>`).join('')}</ul><p>Sem estimativa de passageiros para estas viações.</p></div>` : ''}`);
 }
 
-function companyMetrics(cur, prev, total, quero) {
-  const keyOf = (name) => nrm(name.trim());
-  const nameOf = (r) => companyName(r.v);
-  const previous = groupBy(prev, (r) => keyOf(nameOf(r)));
+function companyMetrics(cur, prev, total, quero, grouped = F.group) {
+  const focusOf = (r) => grouped && r.j ? 'JCA' : String(r.v);
+  const nameOf = (r) => companyLabel(companyName(focusOf(r)));
+  const previous = groupBy(prev, nameOf);
   const oldTotal = prev.reduce((sum, r) => sum + r.pax, 0);
   const companies = new Map();
-  for (const [key, rows] of groupBy(cur, (r) => keyOf(nameOf(r)))) {
+  const direct = (name) => {
+    if (!companies.has(name)) companies.set(name, {v: null, focus: null, name, pax: null, rec: null, fare: null, maps: {}});
+    return companies.get(name);
+  };
+  for (const [name, rows] of groupBy(cur, nameOf)) {
     const pax = rows.reduce((sum, r) => sum + r.pax, 0);
     const rec = rows.reduce((sum, r) => sum + (Number.isFinite(r.rec) ? r.rec : 0), 0);
-    const oldPax = (previous.get(key) || []).reduce((sum, r) => sum + r.pax, 0);
-    companies.set(key, {v: rows[0].v, name: nameOf(rows[0]), pax, rec: rec > 0 || pax === 0 ? rec : null,
-      share: pax / total.pax, previous: oldPax / oldTotal, fare: null});
+    const oldPax = (previous.get(name) || []).reduce((sum, r) => sum + r.pax, 0);
+    const focus = focusOf(rows[0]);
+    companies.set(name, {v: focus, focus, name, pax, rec: rec > 0 || pax === 0 ? rec : null,
+      share: pax / total.pax, previous: oldPax / oldTotal, fare: null, maps: {}});
   }
   for (const [, , company, , , price] of [...(quero?.offers || []), ...(quero?.busco || [])]) {
-    const name = shortCompany(company), key = keyOf(name);
-    if (!companies.has(key)) companies.set(key, {v: null, name, pax: null, rec: null, fare: null});
-    const entry = companies.get(key);
+    const entry = direct(companyLabel(company));
     if (Number.isFinite(price) && price > 0 && (entry.fare === null || price < entry.fare)) entry.fare = price;
+  }
+  if (quero?.hasQuero) mapBrands.forEach(direct);
+  if (F.direct) direct(F.direct);
+  for (const [, , company, , , source, , , , free, unavailable] of quero?.maps || []) {
+    const entry = direct(companyLabel(company));
+    const stat = entry.maps[source] ??= {count: 0, free: 0, unavailable: 0};
+    stat.count++; stat.free += free.length; stat.unavailable += unavailable.length;
   }
   return [...companies.values()].sort((a, b) => (b.pax ?? -1) - (a.pax ?? -1) || a.name.localeCompare(b.name, 'pt-BR'));
 }
@@ -2165,31 +2254,34 @@ function modCompanyRadar(companies, prev, quero) {
   const lead = leaders[0];
   const tip = (entry) => [entry.name, `${n0(entry.pax)} passageiros estimados · ${pct(entry.share)}`,
     ...(compare ? ['Período anterior · ' + pct(entry.previous)] : [])].join('\n');
-  const chart = leaders.length >= 3 ? radarSvg(leaders.map((entry) => ({label: entry.name})), [
+  const chart = leaders.length >= 3 ? radarSvg(leaders.map((entry) => ({label: entry.name, key: entry.name})), [
     {kind: 's1', values: leaders.map((entry) => entry.share)},
     ...(compare ? [{kind: 's2', values: leaders.map((entry) => entry.previous)}] : []),
   ], {tip: (i) => tip(leaders[i]), label: 'Parcela estimada de passageiros por empresa'}) : '';
   const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${compare ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
-  const headline = lead ? `<p class="insight">${esc(lead.name)} lidera na ClickBus com <em>${n0(lead.pax)} passageiros (${pct(lead.share)})</em>.</p>` : '';
+  const headline = lead ? `<p class="insight">${esc(lead.name)} · <em>${n0(lead.pax)} passageiros (${pct(lead.share)})</em></p>` : '';
+  const controls = `<div class="company-tools"><button id="radarGroup" class="chip" type="button" aria-pressed="${F.group}">Agrupar JCA</button></div>`;
   const fareSources = quero?.hasQuero && quero?.hasBusco ? 'Quero Passagem / BusCo' : quero?.hasBusco ? 'BusCo' : 'Quero Passagem';
   const headers = `<div class="company-head company-columns" aria-hidden="true"><span>Viação</span><div class="company-metrics">
     <span>Passageiros<small>ClickBus</small></span><span>Receita estimada<small>ClickBus</small></span>
     ${quero ? `<span>Menor tarifa<small>${fareSources}</small></span>` : ''}</div></div>`;
   const value = (label, amount, cls = '') => `<div class="${cls}"><dt>${label}</dt><dd${amount === null ? ' class="missing" aria-label="Sem dados"' : ''}>${amount ?? '—'}</dd></div>`;
-  const ranking = companies.length ? `${headers}<ul aria-label="Valores por viação">${companies.map((entry) => `<li class="company-row company-columns">
-    <span class="company-name">${entry.v === null ? '' : dot(entry.v)}${esc(entry.name)}</span>
+  const displayed = F.direct ? companies.filter((entry) => entry.name === F.direct) : companies;
+  const ranking = displayed.length ? `${headers}<ul aria-label="Valores por viação">${displayed.map((entry) => `<li class="company-row company-columns">
+    <button class="company-name" type="button" data-company-focus="${esc(entry.name)}" aria-pressed="${F.direct ? F.direct === entry.name : entry.focus === F.focus}">${entry.v === null ? '' : dot(entry.v)}${esc(entry.name)}</button>
     <dl class="company-metrics">${value('Passageiros estimados · ClickBus', entry.pax === null ? null : `${n0(entry.pax)} <small>${Number.isFinite(entry.share) ? pct(entry.share) : ''}</small>`)}
       ${value('Receita estimada · ClickBus', entry.rec === null ? null : BRL.format(entry.rec))}
-      ${quero ? value('Menor tarifa · ' + fareSources, entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl></li>`).join('')}</ul>`
+      ${quero ? value('Menor tarifa · ' + fareSources, entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl>
+      ${Object.keys(entry.maps).length ? `<div class="company-maps">${Object.entries(entry.maps).map(([source, stat]) => `<span title="Indisponível pode ser venda, reserva ou bloqueio."><b>${esc(source)}</b> · ${n0(stat.count)} mapa(s) · ${n0(stat.free)} livres · ${n0(stat.unavailable)} indisponíveis</span>`).join('')}</div>`
+        : mapBrands.includes(entry.name) && quero ? '<small class="company-maps">Sem mapa no recorte</small>' : ''}</li>`).join('')}</ul>`
     : '<p class="empty">Sem dados para os filtros escolhidos.</p>';
-  const coverage = quero ? `<p>${esc(quero.line)} · Tarifas para viagens futuras</p>
+  const coverage = quero ? `
     ${quero.memory ? '<a id="memory-open" href="#seat-memory">Memória de poltronas</a>' : ''}
     ${quero.maps ? `<a id="maps-open" href="#seat-maps">Ver poltronas${quero.maps.length ? ` (${n0(quero.maps.length)} mapas)` : ''}</a>` : ''}
     ${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}
     ${quero.hasBusco ? `<a id="busco-open" href="#busco-offers">BusCo · ${n0(quero.busco.length)} ${quero.busco.length === 1 ? 'oferta' : 'ofertas'}</a>` : ''}` : '';
-  return mod('Por empresa', 'Passageiros, receita estimada e tarifas', legend + chart + headline +
-    `<div class="company-values${quero ? ' with-fares' : ''}">${ranking}<div class="company-foot">${coverage}
-      <p>Receita estimada pela ocupação e pelas tarifas observadas na ClickBus.</p></div></div>`)
+  return mod('Por empresa', '', controls + legend + chart + headline +
+    `<div class="company-values${quero ? ' with-fares' : ''}">${ranking}<div class="company-foot">${coverage}</div></div>`)
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
@@ -2208,11 +2300,11 @@ function externalSelection(range) {
   const hasBusco = !!data.busco && (attempts.length > 0 || jrRoutes.length > 0 || srRoutes.length > 0 || !F.routes.size);
   if (!hasQuero && !hasBusco) return null;
   const classes = new Set([...F.classes].map((i) => DB.dims.classes[i]));
-  const matches = (r) => matchesRoute(r[1]) && (!classes.size || classes.has(r[3]))
+  const matches = (r) => matchesRoute(r[1]) && (!F.direct || companyLabel(r[2]) === F.direct) && (!classes.size || classes.has(r[3]))
     && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2)));
   const offers = (data.quero?.rows || []).filter(matches);
   const busco = (data.busco?.rows || []).filter(matches);
-  const maps = data.poltronas?.rows.filter(matches);
+  const maps = data.poltronas?.rows.filter((row) => matches(row) && (row[5] !== 'Quero Passagem' || mapBrands.includes(companyLabel(row[2]))));
   const memory = data.memoriaPoltronas?.rows.filter((row) => matches(row) && row[0] >= range.a && row[0] <= range.b);
   const {status, ultimaTentativa} = data.quero || {};
   const scoped = F.routes.size ? selected : [...srRoutes, ...jrRoutes];
@@ -2254,6 +2346,74 @@ function modSeatMemory({memory, line, memoryPeriod}) {
   return mod('Memória de poltronas', `${esc(line)} · ${memoryPeriod} · Primeiras indisponibilidades nas concorrentes`, body +
     '<p class="note">“3 de 5” significa que a poltrona esteve entre as primeiras a ficar indisponíveis em 3 das 5 partidas em que estava livre antes da mudança. Mudanças na mesma leitura empatam. Indisponibilidade pode indicar venda, reserva ou bloqueio.</p>')
     .replace('<section class="mod">', '<section class="mod" id="seat-memory">');
+}
+
+let reportScript;
+async function downloadReport(format) {
+  const status = $('#exportStatus');
+  if (!status || status.dataset.busy) return;
+  const range = ranges(), real = F.view === 'real';
+  const rows = pick(range.a, range.b, real ? 0 : 1);
+  const prior = real && F.cmp ? pick(range.pa, range.pb, 0) : [];
+  const totals = tot(rows), external = externalSelection(range);
+  const selected = F.direct || (F.focus !== 'JCA' ? companyLabel(focusName()) : '');
+  const include = (name) => !selected || companyLabel(name) === selected;
+  const metrics = companyMetrics(rows, prior, totals, external, !selected && F.group).filter((c) => include(c.name));
+  const tripRows = rows.filter((r) => !selected || include(companyName(r.v)));
+  const scope = ['#sumR', '#sumC', '#sumH', '#sumW'].map((id) => $(id).textContent).join(' · ');
+  const market = real ? 'Realizado' : 'Em venda';
+  const summary = [`Mercado observado: ${n0(totals.pax)} passageiros estimados`,
+    `${focusName()}: ${n0(totals.upax)} passageiros estimados · ${pct(totals.share)} de parcela`,
+    `Agrupamento JCA: ${F.group ? 'sim' : 'não'}`];
+  if (prior.length) summary.push(`Anterior (${brY(range.pa)} a ${brY(range.pb)}): ${pct(tot(prior).share)} de parcela`);
+  const report = {
+    file: `Helios-${range.a}-${range.b}`, period: `${market} · ${brY(range.a)} a ${brY(range.b)}`,
+    scope: scope + (selected ? ` · Viação: ${selected}` : ''),
+    summary,
+    blocks: [
+      {title:'Empresas', headers:['Viação', 'Passag. est.', 'Parcela', 'Receita est. (R$)', 'Menor tarifa (R$)'],
+        rows:metrics.map((m) => [m.name, m.pax, Number.isFinite(m.share) ? m.share : null, m.rec, m.fare]),
+        formats:{1:'integer', 2:'percent', 3:'money', 4:'money'}},
+      {title:'Por linha', headers:['Sentido', 'Passag. est.', 'Poltronas', 'Receita est. (R$)'],
+        rows:[...groupBy(tripRows, (r) => shortRoute(DB.dims.rotas[r.r].l))].map(([route, list]) => {
+          const sum = tot(list);
+          return [route, sum.pax, sum.cap, sum.rec];
+        }), formats:{1:'integer', 2:'integer', 3:'money'}},
+      {title:'Disponibilidade por fonte', headers:['Viação', 'Fonte', 'Mapas', 'Livres', 'Indisponíveis'],
+        rows:metrics.flatMap((m) => Object.entries(m.maps).map(([source, s]) => [m.name, source, s.count, s.free, s.unavailable]))},
+    ],
+    details: [
+      {title:'Viagens ClickBus', headers:['Data', 'Linha', 'Viação', 'Classe', 'Hora', 'Ônibus', 'Poltronas', 'Passag. est.', 'Receita est. (R$)'],
+        rows:tripRows.map((r) => [r.d, shortRoute(DB.dims.rotas[r.r].l), companyName(r.v), DB.dims.classes[r.c], r.h, r.n, r.cap, r.pax, r.rec])},
+      {title:'Tarifas futuras', headers:['Data', 'Linha', 'Viação', 'Classe', 'Partida', 'Tarifa (R$)', 'Fonte'],
+        rows:[['Quero Passagem', external?.offers], ['BusCo', external?.busco]].flatMap(([source, list]) =>
+          (list || []).filter((r) => include(r[2])).map((r) => [r[0], shortRoute(r[1]), companyLabel(r[2]), ...r.slice(3, 6), source]))},
+      {title:'Mapas futuros', headers:['Data', 'Linha', 'Viação', 'Classe', 'Partida', 'Fonte', 'Livres', 'Indisponíveis', 'Leitura BRT'],
+        rows:(external?.maps || []).filter((r) => include(r[2])).map((r) => [r[0], shortRoute(r[1]), companyLabel(r[2]), ...r.slice(3, 6),
+          r[9].length, r[10].length, new Date(r[8]).toLocaleString('pt-BR', {timeZone:'America/Sao_Paulo'})])},
+    ],
+  };
+  status.dataset.busy = '1';
+  status.textContent = 'Preparando…';
+  try {
+    const base = /script\.google|googleusercontent/.test(location.hostname)
+      ? 'https://gabriel-loiola-jca.github.io/helios-mercado/' : location.href;
+    reportScript ??= new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = new URL('report-export.js', base).href;
+      script.onload = resolve;
+      script.onerror = () => { reportScript = null; script.remove(); reject(new Error('Falha ao carregar a exportação')); };
+      document.head.append(script);
+    });
+    await reportScript;
+    await window.exportHelios(format, report);
+    status.textContent = 'Arquivo gerado';
+  } catch (error) {
+    console.warn(error);
+    status.textContent = 'Falha na exportação. Tente novamente.';
+  } finally {
+    delete status.dataset.busy;
+  }
 }
 
 function modSeatMaps({maps, line}) {
@@ -2627,6 +2787,7 @@ function bindMarketPlan(rows, range, realized) {
 /* Movimento do painel */
 let activeViewMotion = null;
 function transitionView(apply, kind) {
+  document.documentElement.classList.remove('quiet-refresh');
   if (sentinelMotion.matches || typeof document.startViewTransition !== 'function' || document.visibilityState !== 'visible') {
     apply(false);
     return;
@@ -2698,11 +2859,12 @@ function observeDashboardMotion(changed = null) {
 
 sentinelMotion.addEventListener('change', () => { if (sentinelMotion.matches) activeViewMotion?.skipTransition(); observeDashboardMotion(); });
 document.addEventListener('toggle', (event) => {
+  if (event.target.matches('#analysis[open]')) paintAnalysis?.();
   if (event.target.matches('#quickCharts, #analysis, .today-detail, .footer-method')) observeDashboardMotion();
 }, true);
 
 /* ---------- partida e atualização em segundo plano ---------- */
-let lastFetch = 0, sig = '', pending = null, busy = false, failed = false;
+let lastFetch = 0, sig = '', pending = null, busy = false, failed = false, manualRefresh = false;
 const lastClickBus = (d) => {
   const sources = d.coleta?.fontes;
   const click = sources?.find((source) => source.f === 'ClickBus');
@@ -2722,11 +2884,11 @@ function collectionStatus(data) {
   if (mins > 120) return {text: 'Coleta atrasada', alert: true};
   return {text: mins <= 20 ? 'Ao vivo' : 'Última coleta', alert: false};
 }
-const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.busco, d.poltronas, d.memoriaPoltronas, d.coleta?.automacao]);
+const signature = (d) => JSON.stringify([d.hoje, d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero?.rows, d.busco?.rows, d.poltronas, d.memoriaPoltronas]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
-  b.classList.toggle('busy', busy); b.classList.toggle('bad', failed && !busy);
+  b.classList.toggle('busy', manualRefresh && busy); b.classList.toggle('bad', failed && !busy);
   const last = lastClickBus(DB.data), ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
   const status = collectionStatus(DB.data);
   const stale = status.alert;
@@ -2736,7 +2898,8 @@ function stampTick() {
     todayStamp.textContent = last.slice(11) + ' · ' + ago(ref);
     todayStamp.parentElement.classList.toggle('stale', stale && !DB.data.demo);
   }
-  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${status.text}${last ? `<span class="stamp-age"> · <b>${ago(ref)}</b></span>` : ''}`;
+  const label = manualRefresh && busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${status.text}${last ? `<span class="stamp-age"> · <b>${ago(ref)}</b></span>` : ''}`;
+  paintDashboard(s, label);
   b.title = isStatic() ? 'Dados fixos' : `Última leitura da ClickBus: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
@@ -2745,42 +2908,47 @@ function flush() {
   if (!pending || !DB || filterFrame || activeViewMotion || !canRender()) return;
   const next = pending;
   pending = null;
-  transitionView((animated) => {
-    const y = scrollY;
-    const previous = DB.dims;
-    RAW = next;
-    DB = model(next);
-    if (!DB.hasClosed) F.view = 'venda';
-    if (JSON.stringify(previous) !== JSON.stringify(DB.dims)) {
-      const match = (items, label, key) => items.findIndex((item) => key(item) === label);
-      const remap = (selected, before, after, key) => new Set([...selected]
-        .filter((index) => before[index] !== undefined).map((index) => match(after, key(before[index]), key)).filter((index) => index >= 0));
-      F.routes = remap(F.routes, previous.rotas, DB.dims.rotas, (route) => route.l);
-      F.classes = remap(F.classes, previous.classes, DB.dims.classes, (name) => name);
-      if (F.focus !== 'JCA') {
-        const index = match(DB.dims.viacoes, previous.viacoes[Number(F.focus)]?.n, (company) => company.n);
-        F.focus = index < 0 ? 'JCA' : String(index);
-      }
-      saveF();
-      buildBar();
+  document.documentElement.classList.add('quiet-refresh');
+  const y = scrollY;
+  const previous = DB.dims;
+  RAW = next;
+  DB = model(next);
+  if (!DB.hasClosed) F.view = 'venda';
+  if (JSON.stringify(previous) !== JSON.stringify(DB.dims)) {
+    const match = (items, label, key) => items.findIndex((item) => key(item) === label);
+    const remap = (selected, before, after, key) => new Set([...selected]
+      .filter((index) => before[index] !== undefined).map((index) => match(after, key(before[index]), key)).filter((index) => index >= 0));
+    F.routes = remap(F.routes, previous.rotas, DB.dims.rotas, (route) => route.l);
+    F.classes = remap(F.classes, previous.classes, DB.dims.classes, (name) => name);
+    if (F.focus !== 'JCA') {
+      const index = match(DB.dims.viacoes, previous.viacoes[Number(F.focus)]?.n, (company) => company.n);
+      F.focus = index < 0 ? 'JCA' : String(index);
     }
-    syncBar(); render(!animated);
-    if (scrollY !== y) scrollTo({top: y, behavior: 'instant'});
-  }, 'refresh');
+    saveF();
+    buildBar();
+  }
+  syncBar(); render();
+  if (scrollY !== y) scrollTo({top: y, behavior: 'instant'});
 }
 async function refresh(manual) {
   if (busy || isStatic()) return;
-  busy = true; stampTick();
+  manualRefresh = Boolean(manual);
+  busy = true;
+  if (manualRefresh) stampTick();
   try {
     const d = await fetchData(); busy = false; failed = false; lastFetch = Date.now();
-    if (!d) return stampTick();
+    if (!d) { manualRefresh = false; return stampTick(); }
     const s2 = signature(d);
-    if (s2 !== sig || manual) {
+    if (s2 !== sig || pending) {
       sig = s2;
       pending = d;
       flush();
+    } else {
+      RAW = d;
+      DB.data = d;
     }
   } catch (e) { console.warn(e); busy = false; failed = true; }
+  manualRefresh = false;
   stampTick();
 }
 function panelLoading() {
