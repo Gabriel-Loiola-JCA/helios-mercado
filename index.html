@@ -1674,6 +1674,8 @@ function update() {
     filterFrame = 0;
     activeViewMotion?.skipTransition();
     document.documentElement.classList.remove('quiet-refresh');
+    sentinel.active = 0;
+    hideTip();
     syncBar();
     render();
   });
