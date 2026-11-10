@@ -627,7 +627,7 @@ html[data-motion]::view-transition-image-pair(*) { pointer-events: none; }
 html[data-motion]::view-transition-group(*) { animation-duration: .46s; animation-timing-function: var(--ease); }
 html[data-motion]::view-transition-old(*) { animation: view-out .46s ease both; }
 html[data-motion]::view-transition-new(*) { animation: view-in .46s ease both; }
-html:is([data-motion="filter"], [data-motion="refresh"], [data-motion="filters-menu"]) { view-transition-name: none; }
+html:is([data-motion="filter"], [data-motion="refresh"], [data-motion="filters-menu"], [data-motion="sentinel"], [data-motion="planning"]) { view-transition-name: none; }
 html:is([data-motion="filter"], [data-motion="refresh"]) #filterReceipt { view-transition-name: helios-scope; }
 html:is([data-motion="filter"], [data-motion="refresh"]) #sentinel { view-transition-name: helios-sentinel; }
 html:is([data-motion="filter"], [data-motion="refresh"]) #briefing { view-transition-name: helios-briefing; }
@@ -639,8 +639,6 @@ html:is([data-motion="filter"], [data-motion="refresh"]) #analysis > main { view
 html[data-motion="filters-menu"] #filtersPanel { view-transition-name: helios-filter-menu; }
 html[data-motion="sentinel"] #sentinel { view-transition-name: helios-sentinel; }
 html[data-motion="planning"] #planning { view-transition-name: helios-planning; }
-html:is([data-motion="sentinel"], [data-motion="planning"])::view-transition-old(root) { display: none; }
-html:is([data-motion="sentinel"], [data-motion="planning"])::view-transition-new(root) { animation: none; }
 html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animation: none; }
 @keyframes view-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
@@ -1544,14 +1542,32 @@ function scheduleSentinel() {
   const copy = $('#sentinelCopy');
   if (!copy || !sentinel.playing || sentinel.slides.length < 2) return;
   sentinel.timer = setTimeout(() => {
-    if (!activeViewMotion && document.visibilityState === 'visible' && !copy.matches(':hover') && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'))) {
-      transitionView(() => {
-        sentinel.active = (sentinel.active + 1) % sentinel.slides.length;
-        paintSentinel();
-      }, 'sentinel');
-    }
+    if (canAdvanceSentinel(copy)) fadeToNextSentinel(copy);
     scheduleSentinel();
   }, 8000);
+}
+
+function canAdvanceSentinel(copy) {
+  return sentinel.playing && !activeViewMotion && !filterFrame && document.visibilityState === 'visible'
+    && !$('#bar')?.matches(':hover') && !$('#bar details[open]') && !copy.matches(':hover')
+    && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'));
+}
+
+function fadeToNextSentinel(copy) {
+  const slides = sentinel.slides, current = sentinel.active;
+  const advance = () => {
+    if (sentinel.slides === slides && sentinel.active === current && canAdvanceSentinel(copy)) {
+      sentinel.active = (current + 1) % slides.length;
+      paintSentinel();
+    }
+  };
+  if (sentinelMotion.matches) { advance(); return; }
+  const surfaces = [$('#sentinelFrame'), $('#sentinelPlot')].filter((element) => element.getClientRects().length);
+  const animations = surfaces.map((element) => element.animate([{opacity: 1}, {opacity: .74}], {duration: 180, easing:'ease-out', fill:'forwards'}));
+  Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
+    advance();
+    animations.forEach((animation) => animation.cancel());
+  });
 }
 
 function drawSentinelPlot(plot) {
