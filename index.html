@@ -838,7 +838,16 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
   .company-metrics dt { position: static; width: auto; height: auto; clip-path: none; white-space: normal; color: var(--muted); font-size: 10px; }
   .company-metrics dd { font-size: 12px; }
 }
-#qp-offers { scroll-margin-block-start: 145px; }
+#qp-offers, #seat-maps { scroll-margin-block-start: 145px; }
+.seat-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 355px), 1fr)); gap: 10px; align-items: start; }
+.seat-map { border: 1px solid var(--card-line); border-radius: 12px; background: var(--glass); }
+.seat-map summary { cursor: pointer; padding: 12px 14px; }
+.seat-map summary strong { font-size: 14px; }
+.seat-map summary small { display: block; margin-top: 4px; color: var(--muted); overflow-wrap: anywhere; }
+.seat-map .seat-count { color: var(--volume-accent); font-variant-numeric: tabular-nums; }
+.seat-map dl { display: grid; gap: 7px; padding: 0 14px 12px; margin: 0; font-size: 12px; }
+.seat-map dt { color: var(--muted); margin-bottom: 3px; }
+.seat-map dd { margin: 0; line-height: 1.55; overflow-wrap: anywhere; }
 .hourly {
   display: grid; grid-template-columns: minmax(0, 2.5fr) minmax(200px, 1fr); gap: var(--dashboard-gap);
   border-bottom: 1px solid var(--line); padding-block: 4px var(--dashboard-gap); margin-bottom: var(--dashboard-gap);
@@ -919,7 +928,7 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
    Fonte: API do Helios (Apps Script). Sem dependências.
    ====================================================================== */
 const CONFIG = {
-  api: 'https://script.google.com/macros/s/AKfycbxUVe991dTdPz44nUXvfbXYbInfF6SvhsBrCG0YqNcwRf2mhbZlduZMZP50rTPYphbbWA/exec', // App da Web do Helios (sem a chave não responde)
+  api: 'https://script.google.com/macros/s/AKfycbxbEosQX7BIxqU43Y87x0GH_2w_84nIx6R7OKl8-3AHJESWzFLgbW3siwVSHbgDbzZEUg/exec', // App da Web do Helios (sem a chave não responde)
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -1653,7 +1662,7 @@ function render(animateChanges = false) {
   const T = tot(cur), P = prev.length ? tot(prev) : null;
   const us = focusShort();
   const prog = $('#prog'); if (prog && animateChanges) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
-  $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' e Quero Passagem (ofertas)' : ''} · Atualização a cada ${CONFIG.refreshMin} min`;
+  $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' · Quero Passagem' : ''}${DB.data.poltronas ? ' · BusCo' : ''} · Painel atualizado a cada ${CONFIG.refreshMin} min`;
 
   renderSentinel(cur, T, P, real, R);
   renderHourly(cur, T, real);
@@ -1704,12 +1713,14 @@ function render(animateChanges = false) {
   mods.push(layout(modTime(R, cur, real), 'analysis-chart'), layout(modRank(cur, prev, T, companies), 'analysis-card'));
   if (real) mods.push(layout(modAhead(), 'analysis-chart'), layout(modWhere(T, P, cur, prev), 'analysis-card'));
   mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
+  if (quero?.maps) mods.push(wide(modSeatMaps(quero)));
   if (quero) mods.push(wide(modQuero(quero)));
   mods.push(wide(modTable(cur, prev)));
+  const openMaps = new Set($$('.seat-map[open]').map((map) => map.dataset.departure));
   $('#main').innerHTML = mods.join('');
+  for (const map of $$('.seat-map')) map.open = openMaps.has(map.dataset.departure);
   changed.add($('#main'));
-  const offersLink = $('#qp-open');
-  if (offersLink) offersLink.onclick = () => { $('#analysis').open = true; };
+  for (const link of $$('#qp-open, #maps-open')) link.onclick = () => { $('#analysis').open = true; };
   afterRender.forEach((f) => f()); afterRender.length = 0;
   bindTable(); stampTick();
   observeDashboardMotion(animateChanges ? changed : null);
@@ -1940,7 +1951,9 @@ function modCompanyRadar(companies, prev, quero) {
       ${value('Receita estimada · ClickBus', entry.rec === null ? null : BRL.format(entry.rec))}
       ${quero ? value('Menor tarifa · Quero Passagem', entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl></li>`).join('')}</ul>`
     : '<p class="empty">Sem dados para os filtros escolhidos.</p>';
-  const coverage = quero ? `<p>${esc(quero.line)} · Tarifas para viagens futuras</p>${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}` : '';
+  const coverage = quero ? `<p>${esc(quero.line)} · Tarifas para viagens futuras</p>
+    ${quero.maps ? `<a id="maps-open" href="#seat-maps">Ver poltronas${quero.maps.length ? ` (${n0(quero.maps.length)} mapas)` : ''}</a>` : ''}
+    ${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}` : '';
   return mod('Por empresa', 'Passageiros, receita estimada e tarifas', legend + chart + headline +
     `<div class="company-values${quero ? ' with-fares' : ''}">${ranking}<div class="company-foot">${coverage}
       <p>Receita estimada pela ocupação e pelas tarifas observadas na ClickBus.</p></div></div>`)
@@ -1954,10 +1967,33 @@ function queroSelection() {
   if (F.routes.size && !marketRoutes.length) return null;
   const classes = new Set([...F.classes].map((i) => DB.dims.classes[i]));
   const routes = new Set(marketRoutes.map((route) => route.l));
-  const offers = DB.data.quero.rows.filter((r) => (!F.routes.size || routes.has(r[1])) && (!classes.size || classes.has(r[3]))
-    && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2))));
+  const matches = (r) => (!F.routes.size || routes.has(r[1])) && (!classes.size || classes.has(r[3]))
+    && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2)));
+  const offers = DB.data.quero.rows.filter(matches);
+  const maps = DB.data.poltronas?.rows.filter(matches);
   const {status, ultimaTentativa} = DB.data.quero;
-  return {offers, status, ultimaTentativa, line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
+  return {offers, maps, status, ultimaTentativa, line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
+}
+
+function modSeatMaps({maps, line}) {
+  const readTime = new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
+  const body = maps.length ? `<div class="seat-list">${maps.map((row) => {
+    const [day, route, company, cls, time, source, from, to, stamp, free, unavailable] = row;
+    const terminals = [from, to].filter(Boolean).map(esc).join(' → ');
+    const seats = (labels) => labels.length ? labels.map(esc).join(', ') : 'Nenhuma';
+    return `<details class="seat-map" data-departure="${esc(row.slice(0, 8).join('|'))}"><summary>
+      <strong>${esc(shortCompany(company))} · ${br(day)} ${esc(time)}</strong>
+      <small>${esc(shortRoute(route))} · ${esc(cls)} · ${esc(source)}</small>
+      <small class="seat-count">${n0(free.length)} livres · ${n0(unavailable.length)} indisponíveis · ${n0(free.length + unavailable.length)} no mapa</small>
+      </summary><dl>
+        <div><dt>Leitura</dt><dd>${esc(readTime.format(stamp))}${terminals ? ` · ${terminals}` : ''}</dd></div>
+        <div><dt>Poltronas livres</dt><dd>${seats(free)}</dd></div>
+        <div><dt>Poltronas indisponíveis</dt><dd>${seats(unavailable)}</dd></div>
+      </dl></details>`;
+  }).join('')}</div>` : '<p class="empty">Nenhum mapa coletado para as partidas deste recorte.</p>';
+  return mod('Poltronas por partida', `${esc(line)} · Quero Passagem e BusCo`, body +
+    '<p class="note">As fontes mostram a disponibilidade na leitura. Uma poltrona indisponível pode estar reservada, bloqueada ou vendida.</p>')
+    .replace('<section class="mod">', '<section class="mod" id="seat-maps">');
 }
 
 function modQuero({offers, status, ultimaTentativa, line}) {
@@ -2325,7 +2361,7 @@ const lastClickBus = (d) => {
   const sources = d.coleta?.fontes;
   return sources?.length ? sources.find((source) => source.f === 'ClickBus')?.ultima : d.coleta?.ultimaLeitura;
 };
-const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero]);
+const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.poltronas]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
