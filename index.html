@@ -621,11 +621,22 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 @keyframes reveal { from { opacity: .78; transform: translateY(3px); } to { opacity: 1; transform: none; } }
 
 /* Transições de conteúdo, com controles acessíveis enquanto os dados mudam. */
-html[data-motion]::view-transition { pointer-events: none; }
+html[data-motion]::view-transition,
+html[data-motion]::view-transition-group(*),
+html[data-motion]::view-transition-image-pair(*) { pointer-events: none; }
 html[data-motion]::view-transition-group(*) { animation-duration: .46s; animation-timing-function: var(--ease); }
 html[data-motion]::view-transition-old(*) { animation: view-out .46s ease both; }
 html[data-motion]::view-transition-new(*) { animation: view-in .46s ease both; }
-html[data-motion="filter"] #bar { view-transition-name: helios-filters; }
+html:is([data-motion="filter"], [data-motion="refresh"], [data-motion="filters-menu"]) { view-transition-name: none; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #filterReceipt { view-transition-name: helios-scope; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #sentinel { view-transition-name: helios-sentinel; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #briefing { view-transition-name: helios-briefing; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #hourly { view-transition-name: helios-hourly; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #radarGrid { view-transition-name: helios-companies; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #hero { view-transition-name: helios-headline; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #kpis { view-transition-name: helios-kpis; }
+html:is([data-motion="filter"], [data-motion="refresh"]) #analysis > main { view-transition-name: helios-analysis; }
+html[data-motion="filters-menu"] #filtersPanel { view-transition-name: helios-filter-menu; }
 html[data-motion="sentinel"] #sentinel { view-transition-name: helios-sentinel; }
 html[data-motion="planning"] #planning { view-transition-name: helios-planning; }
 html:is([data-motion="sentinel"], [data-motion="planning"])::view-transition-old(root) { display: none; }
@@ -1392,7 +1403,7 @@ function buildBar() {
       transitionView(() => {
         const expanded = bar.classList.toggle('expanded');
         b.setAttribute('aria-expanded', String(expanded));
-      }, 'filter');
+      }, 'filters-menu');
       return;
     }
     if (b.dataset.tok) dropTok(b.dataset.tok);
@@ -1737,8 +1748,10 @@ function render(animateChanges = false) {
   const period = `${brY(R.a)} a ${brY(R.b)}`;
   const scope = ['#sumR', '#sumC', '#sumH', '#sumW'].map((id) => $(id).textContent).join(' · ');
   const amount = real ? 'passageiros estimados' : 'poltronas ocupadas estimadas';
+  const days = new Set(cur.map((row) => row.d)).size;
+  const coverage = days === 1 ? '1 dia com dados' : `${n0(days)} dias com dados`;
   paint($('#filterReceipt'), `<strong>Recorte aplicado</strong><span>${real ? 'Realizado' : 'Em venda'} · ${period}</span>
-    <b>${n0(T.pax)} ${amount}</b><small>${esc(scope)} · Foco: ${esc(focusName())}</small>`);
+    <b>${n0(T.pax)} ${amount}</b><span>${coverage}</span><small>${esc(scope)} · Foco: ${esc(focusName())}</small>`);
   const todayDetailOpen = $('#today .today-detail')?.open;
   paint($('#today'), todayHtml());
   if (todayDetailOpen) $('#today .today-detail').open = true;
