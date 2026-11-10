@@ -217,8 +217,8 @@ footer ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 8
 footer b { color: var(--white); font-weight: 500; }
 
 #tip { position: fixed; z-index: 80; pointer-events: none; background: var(--panel); color: var(--white); border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 11px;
-  font-size: 12px; line-height: 1.45; max-width: 300px; opacity: 0; transform: translateY(4px); transition: opacity .15s, transform .15s; white-space: pre-line; }
-#tip.on { opacity: 1; transform: none; }
+  font-size: 12px; line-height: 1.45; max-width: 300px; clip-path: inset(0 0 100% 0); transform: translateY(4px); transition: clip-path .15s, transform .15s; white-space: pre-line; }
+#tip.on { clip-path: inset(0); transform: none; }
 #tip b { font-weight: 600; }
 
 /* cores por empresa: sutis em repouso, cheias no foco ou no hover */
@@ -250,8 +250,7 @@ td .dot { margin-right: 7px; }
 .drawer-p { position: absolute; top: 0; right: 0; bottom: 0; width: min(500px, 100vw); background: var(--panel); border-left: 1px solid var(--line-strong); overflow: auto; overflow-x: hidden; padding: 26px 26px 40px; animation: slidein .45s var(--ease); }
 .drawer-p > * + * { margin-top: 26px; }
 .drawer-p > section > * + * { margin-top: 0; }
-@keyframes slidein { from { transform: translateX(40px); opacity: 0; } }
-@keyframes fade { from { opacity: 0; } }
+@keyframes slidein { from { transform: translateX(100%); } }
 .drawer-p header { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
 .drawer-p h2 { margin: 6px 0 0; font-size: 26px; letter-spacing: -.03em; font-weight: 600; line-height: 1.1; }
 .drawer-p h3 { margin: 0 0 10px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
@@ -618,15 +617,15 @@ button:enabled:active, summary:active { transform: translateY(1px); }
 button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color: var(--us); }
 .disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content, .seat-map[open] > dl, .seat-memory-card[open] > .seat-order { animation: reveal .42s var(--ease) both; }
 .dd[open] > .pop { animation: reveal .2s var(--ease) both; }
-@keyframes reveal { from { opacity: .78; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@keyframes reveal { from { transform: translateY(6px); } }
 
 /* Transições de conteúdo, com controles acessíveis enquanto os dados mudam. */
 html[data-motion]::view-transition,
 html[data-motion]::view-transition-group(*),
 html[data-motion]::view-transition-image-pair(*) { pointer-events: none; }
 html[data-motion]::view-transition-group(*) { animation-duration: .46s; animation-timing-function: var(--ease); }
-html[data-motion]::view-transition-old(*) { animation: view-out .46s ease both; }
-html[data-motion]::view-transition-new(*) { animation: view-in .46s ease both; }
+html[data-motion]::view-transition-old(*) { animation: slide-away .46s var(--ease) both; mix-blend-mode: normal; }
+html[data-motion]::view-transition-new(*) { animation: slide-across .46s var(--ease) both; mix-blend-mode: normal; }
 html:is([data-motion="filter"], [data-motion="refresh"], [data-motion="filters-menu"], [data-motion="sentinel"], [data-motion="planning"]) { view-transition-name: none; }
 html:is([data-motion="filter"], [data-motion="refresh"]) #filterReceipt { view-transition-name: helios-scope; }
 html:is([data-motion="filter"], [data-motion="refresh"]) #sentinel { view-transition-name: helios-sentinel; }
@@ -640,25 +639,23 @@ html[data-motion="filters-menu"] #filtersPanel { view-transition-name: helios-fi
 html[data-motion="sentinel"] #sentinel { view-transition-name: helios-sentinel; }
 html[data-motion="planning"] #planning { view-transition-name: helios-planning; }
 html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animation: none; }
-@keyframes view-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-away { from { clip-path: inset(0); } to { clip-path: inset(0 0 0 100%); } }
+@keyframes slide-across { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 
 @supports (interpolate-size: allow-keywords) and selector(details::details-content) {
   :is(.disclosure, .today-detail, .footer-method, .seat-map, .seat-memory-card, .plan-method)::details-content {
     interpolate-size: allow-keywords;
     block-size: 0;
-    opacity: 0;
     overflow: clip;
-    transition: block-size .42s var(--ease), opacity .26s ease, content-visibility .42s allow-discrete;
+    transition: block-size .42s var(--ease), content-visibility .42s allow-discrete;
   }
   :is(.disclosure, .today-detail, .footer-method, .seat-map, .seat-memory-card, .plan-method)[open]::details-content {
     block-size: auto;
-    opacity: 1;
   }
   .disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content, .seat-map[open] > dl, .seat-memory-card[open] > .seat-order { animation: none; }
   .dd::details-content { transition: content-visibility .25s allow-discrete; }
-  .dd > .pop { opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .25s ease, transform .25s var(--ease); }
-  .dd[open] > .pop { opacity: 1; transform: none; pointer-events: auto; animation: none; }
+  .dd > .pop { clip-path: inset(0 0 100% 0); transform: translateY(-4px); pointer-events: none; transition: clip-path .25s var(--ease), transform .25s var(--ease); }
+  .dd[open] > .pop { clip-path: inset(0); transform: none; pointer-events: auto; animation: none; }
   html[data-motion] details::details-content { transition: none; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -812,15 +809,15 @@ html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animati
 .sentinel-controls svg { width: 14px; height: 14px; }
 .sentinel-plot { min-width: 0; padding-inline-start: var(--dashboard-pad); border-inline-start: 1px solid var(--line); }
 .sentinel-controls .sentinel-chart-toggle { display: none; }
-.reveal-await { opacity: .8; filter: blur(1.25px); transform: translateY(4px); }
-.reveal-await:focus-within { opacity: 1; filter: none; transform: none; }
+.reveal-await { filter: blur(1.25px); transform: translateY(4px); }
+.reveal-await:focus-within { filter: none; transform: none; }
 .sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
 .sentinel-plot .chart { min-height: 288px; }
 .sentinel-plot .chart .path { stroke-width: 2.5; }
 .sentinel-plot .chart-series { animation: sentinel-plot-in .72s var(--ease) both; }
 .sentinel-plot .chart .empty { padding-block: 12px; }
-@keyframes sentinel-plot-in { from { opacity: .72; transform: translateY(2px); } to { opacity: 1; transform: none; } }
-@keyframes sentinel-in { from { opacity: .76; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+@keyframes sentinel-plot-in { from { transform: translateY(5px); } }
+@keyframes sentinel-in { from { transform: translateY(6px); } }
 .briefing { gap: var(--dashboard-gap); align-items: stretch; margin-block: var(--dashboard-gap); padding-block: var(--dashboard-gap); border-block: 1px solid var(--line); }
 #today .today, #planning .plan-card { border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 #today .t-main { padding: 0 var(--dashboard-pad) 12px 0; }
@@ -963,7 +960,7 @@ html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animati
 }
 @media (prefers-reduced-motion: reduce) {
   .sentinel-reading { animation: none; }
-  .reveal-await { opacity: 1; filter: none; transform: none; }
+  .reveal-await { filter: none; transform: none; }
 }
 
 </style>
@@ -1542,7 +1539,10 @@ function scheduleSentinel() {
   const copy = $('#sentinelCopy');
   if (!copy || !sentinel.playing || sentinel.slides.length < 2) return;
   sentinel.timer = setTimeout(() => {
-    if (canAdvanceSentinel(copy)) fadeToNextSentinel(copy);
+    if (canAdvanceSentinel(copy)) transitionView(() => {
+      sentinel.active = (sentinel.active + 1) % sentinel.slides.length;
+      paintSentinel();
+    }, 'sentinel');
     scheduleSentinel();
   }, 8000);
 }
@@ -1551,23 +1551,6 @@ function canAdvanceSentinel(copy) {
   return sentinel.playing && !activeViewMotion && !filterFrame && document.visibilityState === 'visible'
     && !$('#bar')?.matches(':hover') && !$('#bar details[open]') && !copy.matches(':hover')
     && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'));
-}
-
-function fadeToNextSentinel(copy) {
-  const slides = sentinel.slides, current = sentinel.active;
-  const advance = () => {
-    if (sentinel.slides === slides && sentinel.active === current && canAdvanceSentinel(copy)) {
-      sentinel.active = (current + 1) % slides.length;
-      paintSentinel();
-    }
-  };
-  if (sentinelMotion.matches) { advance(); return; }
-  const surfaces = [$('#sentinelFrame'), $('#sentinelPlot')].filter((element) => element.getClientRects().length);
-  const animations = surfaces.map((element) => element.animate([{opacity: 1}, {opacity: .74}], {duration: 180, easing:'ease-out', fill:'forwards'}));
-  Promise.allSettled(animations.map((animation) => animation.finished)).then(() => {
-    advance();
-    animations.forEach((animation) => animation.cancel());
-  });
 }
 
 function drawSentinelPlot(plot) {
@@ -1771,7 +1754,7 @@ function render(animateChanges = false) {
   const todayDetailOpen = $('#today .today-detail')?.open;
   paint($('#today'), todayHtml());
   if (todayDetailOpen) $('#today .today-detail').open = true;
-  const quero = queroSelection(R);
+  const quero = externalSelection(R);
   const companies = companyMetrics(cur, prev, T, quero);
   paint($('#radarGrid'), modRadar(cur, prev) + modCompanyRadar(companies, prev, quero));
   paint($('#planning'), modMarketPlan(cur, R, real));
@@ -1813,7 +1796,8 @@ function render(animateChanges = false) {
   mods.push(wide(modRoutes(cur, prev)), modWhen(cur), modOcc(cur), wide(modPace()));
   if (quero?.memory) mods.push(wide(modSeatMemory(quero)));
   if (quero?.maps) mods.push(wide(modSeatMaps(quero)));
-  if (quero) mods.push(wide(modQuero(quero)));
+  if (quero?.hasQuero) mods.push(wide(modQuero(quero)));
+  if (quero?.hasBusco) mods.push(wide(modBusco(quero)));
   mods.push(wide(modTable(cur, prev)));
   const openMaps = new Set($$('.seat-map[open]').map((map) => map.dataset.departure));
   const memoryCards = new Map($$('.seat-memory-card').map((card) => [card.dataset.memory, card.open]));
@@ -2033,7 +2017,7 @@ function companyMetrics(cur, prev, total, quero) {
     companies.set(key, {v: rows[0].v, name: nameOf(rows[0]), pax, rec: rec > 0 || pax === 0 ? rec : null,
       share: pax / total.pax, previous: oldPax / oldTotal, fare: null});
   }
-  for (const [, , company, , , price] of quero?.offers || []) {
+  for (const [, , company, , , price] of [...(quero?.offers || []), ...(quero?.busco || [])]) {
     const name = shortCompany(company), key = keyOf(name);
     if (!companies.has(key)) companies.set(key, {v: null, name, pax: null, rec: null, fare: null});
     const entry = companies.get(key);
@@ -2054,41 +2038,56 @@ function modCompanyRadar(companies, prev, quero) {
   ], {tip: (i) => tip(leaders[i]), label: 'Parcela estimada de passageiros por empresa'}) : '';
   const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${compare ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
   const headline = lead ? `<p class="insight">${esc(lead.name)} lidera na ClickBus com <em>${n0(lead.pax)} passageiros (${pct(lead.share)})</em>.</p>` : '';
+  const fareSources = quero?.hasQuero && quero?.hasBusco ? 'Quero Passagem / BusCo' : quero?.hasBusco ? 'BusCo' : 'Quero Passagem';
   const headers = `<div class="company-head company-columns" aria-hidden="true"><span>Viação</span><div class="company-metrics">
     <span>Passageiros<small>ClickBus</small></span><span>Receita estimada<small>ClickBus</small></span>
-    ${quero ? '<span>Menor tarifa<small>Quero Passagem</small></span>' : ''}</div></div>`;
+    ${quero ? `<span>Menor tarifa<small>${fareSources}</small></span>` : ''}</div></div>`;
   const value = (label, amount, cls = '') => `<div class="${cls}"><dt>${label}</dt><dd${amount === null ? ' class="missing" aria-label="Sem dados"' : ''}>${amount ?? '—'}</dd></div>`;
   const ranking = companies.length ? `${headers}<ul aria-label="Valores por viação">${companies.map((entry) => `<li class="company-row company-columns">
     <span class="company-name">${entry.v === null ? '' : dot(entry.v)}${esc(entry.name)}</span>
     <dl class="company-metrics">${value('Passageiros estimados · ClickBus', entry.pax === null ? null : `${n0(entry.pax)} <small>${Number.isFinite(entry.share) ? pct(entry.share) : ''}</small>`)}
       ${value('Receita estimada · ClickBus', entry.rec === null ? null : BRL.format(entry.rec))}
-      ${quero ? value('Menor tarifa · Quero Passagem', entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl></li>`).join('')}</ul>`
+      ${quero ? value('Menor tarifa · ' + fareSources, entry.fare === null ? null : offerPrice.format(entry.fare), 'company-fare') : ''}</dl></li>`).join('')}</ul>`
     : '<p class="empty">Sem dados para os filtros escolhidos.</p>';
   const coverage = quero ? `<p>${esc(quero.line)} · Tarifas para viagens futuras</p>
     ${quero.memory ? '<a id="memory-open" href="#seat-memory">Memória de poltronas</a>' : ''}
     ${quero.maps ? `<a id="maps-open" href="#seat-maps">Ver poltronas${quero.maps.length ? ` (${n0(quero.maps.length)} mapas)` : ''}</a>` : ''}
-    ${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}` : '';
+    ${quero.offers.length ? '<a id="qp-open" href="#qp-offers">Ver partidas e preços</a>' : ''}
+    ${quero.hasBusco ? `<a id="busco-open" href="#busco-offers">BusCo · ${n0(quero.busco.length)} ${quero.busco.length === 1 ? 'oferta' : 'ofertas'}</a>` : ''}` : '';
   return mod('Por empresa', 'Passageiros, receita estimada e tarifas', legend + chart + headline +
     `<div class="company-values${quero ? ' with-fares' : ''}">${ranking}<div class="company-foot">${coverage}
       <p>Receita estimada pela ocupação e pelas tarifas observadas na ClickBus.</p></div></div>`)
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
-function queroSelection(range) {
-  if (!DB.data.quero) return null;
-  const marketRoutes = DB.dims.rotas.filter((route, i) => ['SPO → SJR', 'SJR → SPO'].includes(shortRoute(route.l))
-    && (!F.routes.size || F.routes.has(i)));
-  if (F.routes.size && !marketRoutes.length) return null;
+function externalSelection(range) {
+  const data = DB.data;
+  if (!data.quero && !data.busco) return null;
+  const sr = ['SPO → SJR', 'SJR → SPO'];
+  const jr = ['SPO → JDF', 'JDF → SPO'];
+  const selected = DB.dims.rotas.filter((_, i) => !F.routes.size || F.routes.has(i));
+  const routes = new Set(selected.map((route) => route.l));
+  const matchesRoute = (label) => !F.routes.size || routes.has(label);
+  const srRoutes = selected.filter((route) => sr.includes(shortRoute(route.l)));
+  const jrRoutes = selected.filter((route) => jr.includes(shortRoute(route.l)));
+  const hasQuero = !!data.quero && (!F.routes.size || srRoutes.length > 0);
+  const attempts = (data.busco?.tentativas || []).filter((row) => matchesRoute(row[1]));
+  const hasBusco = !!data.busco && (attempts.length > 0 || jrRoutes.length > 0 || srRoutes.length > 0 || !F.routes.size);
+  if (!hasQuero && !hasBusco) return null;
   const classes = new Set([...F.classes].map((i) => DB.dims.classes[i]));
-  const routes = new Set(marketRoutes.map((route) => route.l));
-  const matches = (r) => (!F.routes.size || routes.has(r[1])) && (!classes.size || classes.has(r[3]))
+  const matches = (r) => matchesRoute(r[1]) && (!classes.size || classes.has(r[3]))
     && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2)));
-  const offers = DB.data.quero.rows.filter(matches);
-  const maps = DB.data.poltronas?.rows.filter(matches);
-  const memory = DB.data.memoriaPoltronas?.rows.filter((row) => matches(row) && row[0] >= range.a && row[0] <= range.b);
-  const {status, ultimaTentativa} = DB.data.quero;
-  return {offers, maps, memory, memoryPeriod: `${brY(range.a)} a ${brY(range.b)}`, status, ultimaTentativa,
-    line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
+  const offers = (data.quero?.rows || []).filter(matches);
+  const busco = (data.busco?.rows || []).filter(matches);
+  const maps = data.poltronas?.rows.filter(matches);
+  const memory = data.memoriaPoltronas?.rows.filter((row) => matches(row) && row[0] >= range.a && row[0] <= range.b);
+  const {status, ultimaTentativa} = data.quero || {};
+  const scoped = F.routes.size ? selected : [...srRoutes, ...jrRoutes];
+  const line = scoped.length === 1 ? shortRoute(scoped[0].l)
+    : scoped.length === 2 && srRoutes.length === 2 ? 'SPO ↔ SJR'
+    : scoped.length === 2 && jrRoutes.length === 2 ? 'SPO ↔ JDF' : 'Rotas monitoradas';
+  return {offers, busco, attempts, hasQuero, hasBusco, maps, memory, memoryPeriod: `${brY(range.a)} a ${brY(range.b)}`,
+    status, ultimaTentativa, line, queroLine: srRoutes.length === 1 ? shortRoute(srRoutes[0].l) : 'SPO ↔ SJR'};
 }
 
 function modSeatMemory({memory, line, memoryPeriod}) {
@@ -2145,14 +2144,35 @@ function modSeatMaps({maps, line}) {
     .replace('<section class="mod">', '<section class="mod" id="seat-maps">');
 }
 
-function modQuero({offers, status, ultimaTentativa, line}) {
+function modQuero({offers, status, ultimaTentativa, queroLine}) {
   const statusText = status ? '<p class="note">Última tentativa ' + esc(ultimaTentativa) + ' · ' + esc(status) + '</p>' : '';
   const body = offers.length ? '<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Linha</th><th>Viação</th><th>Classe</th><th>Partida</th><th>Preço</th><th>Lugares anunciados</th></tr></thead><tbody>'
     + offers.map(([day, route, company, cls, time, price, seats]) => '<tr><td>' + br(day) + '</td><td>' + esc(shortRoute(route)) + '</td><td>' + esc(shortCompany(company))
       + '</td><td>' + esc(cls) + '</td><td>' + esc(time) + '</td><td>' + offerPrice.format(price) + '</td><td>' + (seats == null ? '—' : n0(seats)) + '</td></tr>').join('') + '</tbody></table></div>'
     : '<p class="empty">Sem ofertas válidas da Quero Passagem neste recorte.</p>';
-  return mod('Ofertas · Quero Passagem', `${line} · Próximas partidas e preços publicados`, statusText + body)
+  return mod('Ofertas · Quero Passagem', `${queroLine} · Próximas partidas e preços publicados`, statusText + body)
     .replace('<section class="mod">', '<section class="mod" id="qp-offers">');
+}
+
+function modBusco({busco, attempts, maps}) {
+  const directMaps = (maps || []).filter((row) => row[5] === 'BusCo');
+  const tripKey = (row, terminals) => JSON.stringify([...row.slice(0, 5), ...terminals]);
+  const byTrip = new Map(directMaps.map((row) => [tripKey(row, row.slice(6, 8)), row]));
+  const fmt = new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
+  const latest = [...groupBy(attempts, (row) => row[1]).values()].map((rows) => rows.reduce((a, b) => a[2] >= b[2] ? a : b));
+  const status = latest.map((row) => `${shortRoute(row[1])}: ${fmt.format(row[2])} · ${row[3]}`).map(esc).join(' | ');
+  const body = busco.length ? `<div class="tbl-wrap"><table><thead><tr><th>Data</th><th>Linha</th><th>Classe</th><th>Partida</th><th>Tarifa</th><th>Poltronas no mapa</th></tr></thead><tbody>
+    ${busco.map((row) => {
+      const [day, route, , cls, time, price] = row;
+      const map = byTrip.get(tripKey(row, row.slice(7, 9)));
+      const seats = map ? `${n0(map[9].length)} livres · ${n0(map[10].length)} indisponíveis` : '—';
+      return `<tr><td>${br(day)}</td><td>${esc(shortRoute(route))}</td><td>${esc(cls)}</td><td>${esc(time)}</td><td>${offerPrice.format(price)}</td><td>${seats}</td></tr>`;
+    }).join('')}</tbody></table></div>`
+    : '<p class="empty">Nenhuma oferta BusCo retornada nas datas consultadas para este recorte.</p>';
+  return mod('Ofertas · BusCo', `${n0(busco.length)} ofertas · ${n0(directMaps.length)} mapas · Datas à venda`,
+    body + (status ? `<p class="note">Última tentativa por sentido · ${status}</p>` : '<p class="note">Aguardando a primeira leitura da BusCo.</p>') +
+    '<p class="note">Indisponível pode indicar venda, reserva ou bloqueio. As ofertas da BusCo ficam separadas dos passageiros e da receita estimados pela ClickBus.</p>')
+    .replace('<section class="mod">', '<section class="mod" id="busco-offers">');
 }
 
 /* 4 · linha a linha */
@@ -2303,9 +2323,11 @@ function helpHtml() {
   const sec = (t, body) => `<section><h3>${t}</h3>${body}</section>`;
   let coleta = '';
   if (C) {
-    const last = brtMs(C.ultimaLeitura), mins = (Date.now() - last) / 6e4;
-    const st = mins <= 20 ? '' : mins <= 90 ? 'warn' : 'bad';
-    const msg = mins <= 20 ? 'Coleta rodando normalmente' : mins <= 90 ? 'Coleta mais lenta que o normal' : 'Coleta parada: confira o Controle da planilha';
+    const last = brtMs(C.ultimaLeitura);
+    const status = collectionStatus(d);
+    const st = status.alert ? 'bad' : '';
+    const msg = status.text;
+    const automation = C.automacao;
     const capTxt = C.tetoClickBus ? `${n0(C.hoje.clickbus)} de ${n0(C.tetoClickBus)}` : n0(C.hoje.clickbus);
     const errs = C.fontes.reduce((n, f) => n + f.erro, 0);
     const pd = C.porDia || [], mx = Math.max(1, ...pd.map((x) => x[1]));
@@ -2316,7 +2338,8 @@ function helpHtml() {
         <div><b>${compact(C.requisicoes)}</b><span>requisições aos sites</span></div>
         <div><b>${n0(C.hoje.leituras)}</b><span>consultas hoje</span></div>
         <div><b>${capTxt}</b><span>requisições ClickBus hoje${C.tetoClickBus ? ' (teto diário)' : ''}</span></div>
-        <div><b class="${errs ? 'down' : ''}">${n0(errs)}</b><span>consultas com erro</span></div></div>` +
+        <div><b class="${errs ? 'down' : ''}">${n0(errs)}</b><span>consultas com erro</span></div>
+        ${automation ? `<div><b>${n0(automation.spent)} de ${n0(automation.limit)} min</b><span>orçamento automático · gatilho ${ago(automation.at)}</span></div>` : ''}</div>` +
       (pd.length ? sec('Consultas por dia', `<div class="spark">${pd.map((x) => `<i class="${x[3] ? 'err' : ''}" style="height:${x[1] / mx * 100}%"${tipAttr(`${WDL[wdOf(x[0])]} ${br(x[0])}\n${n0(x[1])} consultas · ${n0(x[2])} requisições${x[3] ? `\n${x[3]} com erro` : ''}`)}></i>`).join('')}</div>`) : '') +
       (C.cobertura?.length ? sec(`Cobertura das próximas ${C.cobertura.length} datas · ${C.rotasAtivas} sentidos`, `<div class="covg">${C.cobertura.map(([dt, ok, tot], i) => `<div><i class="${ok >= tot ? '' : ok ? 'mid' : 'none'}"${tipAttr(`${WDL[wdOf(dt)]} ${br(dt)} · ${i ? 'D+' + i : 'hoje'}\n${ok} de ${tot} sentidos já lidos na ClickBus`)}>${ok}</i><small>${i ? '+' + i : 'hoje'}</small></div>`).join('')}</div><p class="note" style="margin-top:8px">Hoje é lido a cada 1–2 h, amanhã 2× ao dia e as demais datas 1× ao dia. Número = sentidos já lidos.</p>`) : '') +
       sec('Por fonte', `<div class="tbl-wrap"><table><thead><tr><th>Fonte</th><th>Consultas</th><th>OK</th><th title="Sem partidas ou já encerrado">Vazias</th><th>Erro</th><th>Última</th></tr></thead><tbody>${C.fontes.map((f) => `<tr><td>${esc(f.f)}</td><td>${n0(f.n)}</td><td>${n0(f.ok)}</td><td>${n0(f.vazio)}</td><td class="${f.erro ? 'down' : ''}">${n0(f.erro)}</td><td>${esc(f.ultima.slice(11))}</td></tr>`).join('')}</tbody></table></div>`);
@@ -2507,13 +2530,13 @@ function animateDashboard(element, revealed = false) {
   dashboardAnimations.get(element)?.forEach((animation) => animation.cancel());
   const easing = 'cubic-bezier(.22,.75,.27,1)';
   const animations = [element.animate([
-    {opacity: .8, filter: revealed ? 'blur(1.25px)' : 'none', transform: `translateY(${revealed ? 4 : 3}px)`},
-    {opacity: 1, filter: 'none', transform: 'none'},
+    {filter: revealed ? 'blur(1.25px)' : 'none', transform: `translateY(${revealed ? 4 : 3}px)`},
+    {filter: 'none', transform: 'none'},
   ], {duration: revealed ? 570 : 480, easing})];
   const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v, #hour-value');
   numbers.forEach((number, index) => animations.push(number.animate([
-    {opacity: .84, transform: 'translateY(2px)'},
-    {opacity: 1, transform: 'none'},
+    {transform: 'translateY(4px)'},
+    {transform: 'none'},
   ], {duration: 470, delay: Math.min(index * 24, 96), fill: 'backwards', easing})));
   dashboardAnimations.set(element, animations);
 }
@@ -2543,22 +2566,38 @@ document.addEventListener('toggle', (event) => {
 let lastFetch = 0, sig = '', pending = null, busy = false, failed = false;
 const lastClickBus = (d) => {
   const sources = d.coleta?.fontes;
-  return sources?.length ? sources.find((source) => source.f === 'ClickBus')?.ultima : d.coleta?.ultimaLeitura;
+  const click = sources?.find((source) => source.f === 'ClickBus');
+  return click ? click.ultimaValida ?? click.ultima : sources?.length ? '' : d.coleta?.ultimaLeitura;
 };
-const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.poltronas, d.memoriaPoltronas]);
+function collectionStatus(data) {
+  const last = lastClickBus(data);
+  const mins = last ? (Date.now() - brtMs(last)) / 60000 : Infinity;
+  const tick = data.coleta?.automacao;
+  if (data.demo) return {text: 'Demonstração', alert: false};
+  if (tick && Date.now() - tick.at > 25 * 60000) return {text: 'Gatilho sem resposta', alert: true};
+  if (tick?.state === 'orcamento') return {text: 'Pausa por limite de execução', alert: true};
+  if (tick?.state === 'pausado') return {text: 'Coleta pausada', alert: true};
+  if (tick?.state === 'erro') return {text: 'Erro na automação', alert: true};
+  if (tick?.clickbusUntil > Date.now()) return {text: 'ClickBus em pausa', alert: true};
+  if (!last) return {text: 'Sem leitura válida', alert: !!data.coleta};
+  if (mins > 120) return {text: 'Coleta atrasada', alert: true};
+  return {text: mins <= 20 ? 'Ao vivo' : 'Última coleta', alert: false};
+}
+const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.busco, d.poltronas, d.memoriaPoltronas, d.coleta?.automacao]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
   b.classList.toggle('busy', busy); b.classList.toggle('bad', failed && !busy);
   const last = lastClickBus(DB.data), ref = last ? brtMs(last) : Date.parse(DB.data.gerado);
-  const stale = !!last && Date.now() - ref > 20 * 60000;
+  const status = collectionStatus(DB.data);
+  const stale = status.alert;
   b.classList.toggle('stale', stale && !busy && !failed && !DB.data.demo);
   const todayStamp = $('#todayStamp');
   if (todayStamp && last) {
     todayStamp.textContent = last.slice(11) + ' · ' + ago(ref);
     todayStamp.parentElement.classList.toggle('stale', stale && !DB.data.demo);
   }
-  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${DB.data.demo ? 'Demonstração' : !last ? 'Dados disponíveis' : stale ? 'Coleta atrasada' : 'Ao vivo'}<span class="stamp-age"> · leitura <b>${ago(ref)}</b></span>`;
+  s.innerHTML = busy ? 'Atualizando…' : failed ? 'Sem conexão · <b>tentar</b>' : `${status.text}${last ? `<span class="stamp-age"> · <b>${ago(ref)}</b></span>` : ''}`;
   b.title = isStatic() ? 'Dados fixos' : `Última leitura da ClickBus: ${last ? last.slice(8, 10) + '/' + last.slice(5, 7) + ' ' + last.slice(11) : '—'}\nPágina conferida ${lastFetch ? new Date(lastFetch).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '—'} · busca sozinha a cada ${CONFIG.refreshMin} min\nClique para buscar agora`;
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
