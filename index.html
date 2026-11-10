@@ -101,7 +101,6 @@ input.date { background: var(--black); border: 1px solid var(--line-strong); bor
 .pop input[type=checkbox]:checked { background: var(--white); border-color: var(--white); }
 .pop input[type=checkbox]:checked::after { content: ""; width: 6px; height: 3px; border: 2px solid var(--black); border-top: 0; border-right: 0; transform: rotate(-45deg) translate(1px, -1px); }
 .pop label small { margin-left: auto; color: var(--faint); font-size: 11px; }
-#prog { display: none; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--white); transform-origin: left; transform: scaleX(0); }
 
 /* KPIs */
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; padding-inline: 24px; margin: 20px var(--pad) 0; }
@@ -551,6 +550,9 @@ body {
 .filters-panel { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; min-width: 0; }
 .filters-panel .bar-row { gap: 5px 8px; }
 .filters-panel > .tokens { flex: 1 0 100%; }
+.filter-receipt { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; margin-block: 10px 14px; padding-inline-start: 10px; border-inline-start: 2px solid var(--volume-accent); color: var(--muted); font-size: 12px; }
+.filter-receipt strong { color: var(--white); font-weight: 600; }
+.filter-receipt small { font-size: 11px; }
 #viewS button, #perS button { padding-inline: 9px; }
 .pop { background: var(--card-solid); box-shadow: 0 14px 40px rgba(0,0,0,.18); }
 .briefing { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 14px; margin-block: 14px; align-items: start; }
@@ -614,8 +616,46 @@ footer.wrap { margin-top: 20px; padding-block: 0 22px; }
 button, summary { transition: background-color .16s ease, color .16s ease, border-color .16s ease, transform .16s var(--ease); }
 button:enabled:active, summary:active { transform: translateY(1px); }
 button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color: var(--us); }
-.disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content { animation: reveal .42s var(--ease) both; }
+.disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content, .seat-map[open] > dl, .seat-memory-card[open] > .seat-order { animation: reveal .42s var(--ease) both; }
+.dd[open] > .pop { animation: reveal .2s var(--ease) both; }
 @keyframes reveal { from { opacity: .78; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+
+/* Transições de conteúdo, com controles acessíveis enquanto os dados mudam. */
+html[data-motion]::view-transition { pointer-events: none; }
+html[data-motion]::view-transition-group(*) { animation-duration: .46s; animation-timing-function: var(--ease); }
+html[data-motion]::view-transition-old(*) { animation: view-out .46s ease both; }
+html[data-motion]::view-transition-new(*) { animation: view-in .46s ease both; }
+html[data-motion="filter"] #bar { view-transition-name: helios-filters; }
+html[data-motion="sentinel"] #sentinel { view-transition-name: helios-sentinel; }
+html[data-motion="planning"] #planning { view-transition-name: helios-planning; }
+html:is([data-motion="sentinel"], [data-motion="planning"])::view-transition-old(root) { display: none; }
+html:is([data-motion="sentinel"], [data-motion="planning"])::view-transition-new(root) { animation: none; }
+html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animation: none; }
+@keyframes view-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
+
+@supports (interpolate-size: allow-keywords) and selector(details::details-content) {
+  :is(.disclosure, .today-detail, .footer-method, .seat-map, .seat-memory-card, .plan-method)::details-content {
+    interpolate-size: allow-keywords;
+    block-size: 0;
+    opacity: 0;
+    overflow: clip;
+    transition: block-size .42s var(--ease), opacity .26s ease, content-visibility .42s allow-discrete;
+  }
+  :is(.disclosure, .today-detail, .footer-method, .seat-map, .seat-memory-card, .plan-method)[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+  .disclosure[open] > .radar-grid, .today-detail[open] .today-detail-content, .seat-map[open] > dl, .seat-memory-card[open] > .seat-order { animation: none; }
+  .dd::details-content { transition: content-visibility .25s allow-discrete; }
+  .dd > .pop { opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .25s ease, transform .25s var(--ease); }
+  .dd[open] > .pop { opacity: 1; transform: none; pointer-events: auto; animation: none; }
+  html[data-motion] details::details-content { transition: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-motion]::view-transition-group(*), html[data-motion]::view-transition-old(*), html[data-motion]::view-transition-new(*) { animation: none; }
+  details::details-content { transition: none !important; }
+}
 .status-card { background: var(--card); }
 @media (max-width: 920px) {
   .briefing { grid-template-columns: minmax(0, 1fr); }
@@ -765,7 +805,6 @@ button:focus-visible, summary:focus-visible { outline-offset: 3px; outline-color
 .sentinel-controls .sentinel-chart-toggle { display: none; }
 .reveal-await { opacity: .8; filter: blur(1.25px); transform: translateY(4px); }
 .reveal-await:focus-within { opacity: 1; filter: none; transform: none; }
-.dd[open] > .pop { animation: reveal .2s var(--ease) both; }
 .sentinel-plot h2 { margin: 0 0 9px; font-size: 15px; font-weight: 600; }
 .sentinel-plot .chart { min-height: 288px; }
 .sentinel-plot .chart .path { stroke-width: 2.5; }
@@ -1026,6 +1065,7 @@ const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set
 function loadF() {
   try { const s = JSON.parse(store.get('f') || '{}');
     for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
+    if (s.view === 'real' || s.view === 'venda') F.view = s.view;
     for (const k of ['routes', 'classes', 'hours', 'wds']) if (Array.isArray(s[k])) F[k] = new Set(s[k]);
   } catch {}
 }
@@ -1199,9 +1239,10 @@ function bindMode() {
   };
   apply(document.documentElement.dataset.mode);
   button.onclick = () => {
-    const mode = document.documentElement.dataset.mode === 'light' ? 'dark' : 'light';
-    store.set('mode', mode);
-    apply(mode);
+    transitionView(() => {
+      const mode = document.documentElement.dataset.mode === 'light' ? 'dark' : 'light';
+      store.set('mode', mode); apply(mode);
+    }, 'theme');
   };
 }
 
@@ -1213,7 +1254,8 @@ function shell() {
     <div class="acts"><button class="live-st" id="reload" ${ready ? '' : 'hidden'}><i></i><span id="stamp"></span></button><button class="btn" id="mode">Tema</button><button class="btn ico" id="helpB" ${ready ? '' : 'hidden'} title="Sobre os dados, a coleta e como ler">?</button></div></header>
   <div class="drawer" id="help" hidden><div class="drawer-bg" data-close></div><aside class="drawer-p" id="helpP" role="dialog" aria-label="Sobre os dados"></aside></div>
   <nav class="wrap bar" id="bar" aria-label="Filtros do painel" ${ready ? '' : 'hidden'}></nav>
-  ${ready ? `<section class="wrap sentinel-board" id="sentinel" aria-label="Modo sentinela">
+  ${ready ? `<div class="wrap filter-receipt" id="filterReceipt" role="status" aria-atomic="true"></div>
+  <section class="wrap sentinel-board" id="sentinel" aria-label="Modo sentinela">
     <div class="sentinel-copy" id="sentinelCopy">
       <div class="sentinel-kicker"><i aria-hidden="true"></i>SENTINELA</div>
       <div class="sentinel-frame" id="sentinelFrame"></div>
@@ -1315,7 +1357,7 @@ function buildBar() {
   $('#bar').innerHTML = `<button class="filters-toggle" id="filtersToggle" aria-controls="filtersPanel" aria-expanded="${expanded}">
     Filtros <small id="filtersSummary"></small>
   </button><div class="filters-panel" id="filtersPanel">
-  <div id="prog"></div><div class="bar-row">
+  <div class="bar-row">
     <div class="seg" id="viewS"><button data-v="real">Realizado</button><button data-v="venda">Em venda · próx. 14 dias</button></div>
     <span class="k">Período</span>
     <div class="seg" id="perS">${[['7', '7d'], ['14', '14d'], ['30', '30d'], ['60', '60d'], ['90', '90d'], ['mes', 'Mês'], ['custom', 'De–até']].map(([v, l]) => `<button data-v="${v}">${l}</button>`).join('')}</div>
@@ -1347,8 +1389,10 @@ function buildBar() {
   bar.addEventListener('click', (e) => {
     const dims = DB.dims; const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'filtersToggle') {
-      const expanded = bar.classList.toggle('expanded');
-      b.setAttribute('aria-expanded', String(expanded));
+      transitionView(() => {
+        const expanded = bar.classList.toggle('expanded');
+        b.setAttribute('aria-expanded', String(expanded));
+      }, 'filter');
       return;
     }
     if (b.dataset.tok) dropTok(b.dataset.tok);
@@ -1430,10 +1474,19 @@ function syncBar() {
   $('#tokens').hidden = !tk.length; $('#clearB').hidden = !tk.length;
   $('#filtersSummary').textContent = tk.length ? `${tk.length} ativos` : 'Todas as linhas';
 }
-let raf = 0;
+let filterFrame = 0, filterRevision = 0;
 function update() {
-  saveF(); syncBar(); cancelAnimationFrame(raf);
-  raf = requestAnimationFrame(() => render(true));
+  saveF();
+  const revision = ++filterRevision;
+  cancelAnimationFrame(filterFrame);
+  filterFrame = requestAnimationFrame(() => {
+    filterFrame = 0;
+    transitionView((animated) => {
+      if (revision !== filterRevision) return;
+      syncBar();
+      render(!animated);
+    }, 'filter');
+  });
 }
 
 /* ====================================================================== */
@@ -1480,9 +1533,11 @@ function scheduleSentinel() {
   const copy = $('#sentinelCopy');
   if (!copy || !sentinel.playing || sentinel.slides.length < 2) return;
   sentinel.timer = setTimeout(() => {
-    if (document.visibilityState === 'visible' && !copy.matches(':hover') && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'))) {
-      sentinel.active = (sentinel.active + 1) % sentinel.slides.length;
-      paintSentinel();
+    if (!activeViewMotion && document.visibilityState === 'visible' && !copy.matches(':hover') && (!copy.matches(':focus-within') || $('#sentinelToggle')?.matches(':focus'))) {
+      transitionView(() => {
+        sentinel.active = (sentinel.active + 1) % sentinel.slides.length;
+        paintSentinel();
+      }, 'sentinel');
     }
     scheduleSentinel();
   }, 8000);
@@ -1557,23 +1612,25 @@ function renderSentinel(rows, total, previous, realized, range) {
   const board = $('#sentinel');
   const plotOpen = board.classList.contains('plot-open');
   const player = slides.length > 1 ? slides.map((slide, index) => `<button type="button" data-slide="${index}" aria-label="Mostrar ${esc(slide.label.toLowerCase())}" aria-controls="sentinelFrame sentinelChart">${index + 1}</button>`).join('') + '<button type="button" id="sentinelToggle"></button>' : '';
-  controls.innerHTML = player + `<button type="button" class="sentinel-chart-toggle" id="sentinelPlotToggle" aria-controls="sentinelPlot" aria-expanded="${plotOpen}">${plotOpen ? 'Ocultar gráfico' : 'Ver gráfico'}</button>`;
+  paintDashboard(controls, player + `<button type="button" class="sentinel-chart-toggle" id="sentinelPlotToggle" aria-controls="sentinelPlot" aria-expanded="${plotOpen}">${plotOpen ? 'Ocultar gráfico' : 'Ver gráfico'}</button>`);
   controls.onclick = (event) => {
     const button = event.target.closest('button');
     if (!button) return;
     if (button.id === 'sentinelPlotToggle') {
-      const open = board.classList.toggle('plot-open');
-      button.setAttribute('aria-expanded', String(open));
-      button.textContent = open ? 'Ocultar gráfico' : 'Ver gráfico';
-      if (open) drawSentinelPlot(sentinel.slides[sentinel.active].plot);
+      transitionView(() => {
+        const open = board.classList.toggle('plot-open');
+        button.setAttribute('aria-expanded', String(open));
+        button.textContent = open ? 'Ocultar gráfico' : 'Ver gráfico';
+        if (open) drawSentinelPlot(sentinel.slides[sentinel.active].plot);
+      }, 'sentinel');
       return;
     }
     if (button.id === 'sentinelToggle') {
       sentinel.playing = !sentinel.playing;
       paintSentinelControls();
     } else {
-      sentinel.active = Number(button.dataset.slide);
-      paintSentinel();
+      const next = Number(button.dataset.slide);
+      if (next !== sentinel.active || activeViewMotion) transitionView(() => { sentinel.active = next; paintSentinel(); }, 'sentinel');
     }
     scheduleSentinel();
   };
@@ -1669,7 +1726,6 @@ function render(animateChanges = false) {
   const prev = real && F.cmp ? pick(R.pa, R.pb, 0) : [];
   const T = tot(cur), P = prev.length ? tot(prev) : null;
   const us = focusShort();
-  const prog = $('#prog'); if (prog && animateChanges) { prog.style.transition = 'none'; prog.style.transform = 'scaleX(0)'; requestAnimationFrame(() => { prog.style.transition = 'transform .6s var(--ease)'; prog.style.transform = 'scaleX(1)'; setTimeout(() => prog.style.transform = 'scaleX(0)', 700); }); }
   $('#srcInfo').innerHTML = `<b>${esc(DB.data.app || 'Helios')}</b> · ClickBus${DB.data.quero ? ' · Quero Passagem' : ''}${DB.data.poltronas ? ' · BusCo' : ''} · Painel atualizado a cada ${CONFIG.refreshMin} min`;
 
   renderSentinel(cur, T, P, real, R);
@@ -1678,10 +1734,15 @@ function render(animateChanges = false) {
   const paint = (element, markup) => {
     if (paintDashboard(element, markup)) changed.add(element);
   };
+  const period = `${brY(R.a)} a ${brY(R.b)}`;
+  const scope = ['#sumR', '#sumC', '#sumH', '#sumW'].map((id) => $(id).textContent).join(' · ');
+  const amount = real ? 'passageiros estimados' : 'poltronas ocupadas estimadas';
+  paint($('#filterReceipt'), `<strong>Recorte aplicado</strong><span>${real ? 'Realizado' : 'Em venda'} · ${period}</span>
+    <b>${n0(T.pax)} ${amount}</b><small>${esc(scope)} · Foco: ${esc(focusName())}</small>`);
   const todayDetailOpen = $('#today .today-detail')?.open;
   paint($('#today'), todayHtml());
   if (todayDetailOpen) $('#today .today-detail').open = true;
-  const quero = queroSelection();
+  const quero = queroSelection(R);
   const companies = companyMetrics(cur, prev, T, quero);
   paint($('#radarGrid'), modRadar(cur, prev) + modCompanyRadar(companies, prev, quero));
   paint($('#planning'), modMarketPlan(cur, R, real));
@@ -1731,12 +1792,24 @@ function render(animateChanges = false) {
   for (const map of $$('.seat-map')) map.open = openMaps.has(map.dataset.departure);
   for (const card of $$('.seat-memory-card')) if (memoryCards.has(card.dataset.memory)) card.open = memoryCards.get(card.dataset.memory);
   changed.add($('#main'));
-  for (const link of $$('#qp-open, #maps-open, #memory-open')) link.onclick = () => { $('#analysis').open = true; };
+  for (const link of $$('#qp-open, #maps-open, #memory-open')) link.onclick = (event) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+    scrollToPanel(link.hash, sentinelMotion.matches ? 'instant' : 'smooth');
+  };
   afterRender.forEach((f) => f()); afterRender.length = 0;
   bindTable(); stampTick();
   observeDashboardMotion(animateChanges ? changed : null);
 }
 const afterRender = [];
+function scrollToPanel(hash, behavior) {
+  if (!['#qp-offers', '#seat-maps', '#seat-memory'].includes(hash)) return;
+  const target = $(hash);
+  if (!target) return;
+  $('#analysis').open = true;
+  requestAnimationFrame(() => target.scrollIntoView({behavior}));
+}
 
 /* SVGs Lucide. Licença em LUCIDE-LICENSE.txt. */
 const trendPaths = {
@@ -1972,7 +2045,7 @@ function modCompanyRadar(companies, prev, quero) {
     .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
 }
 
-function queroSelection() {
+function queroSelection(range) {
   if (!DB.data.quero) return null;
   const marketRoutes = DB.dims.rotas.filter((route, i) => ['SPO → SJR', 'SJR → SPO'].includes(shortRoute(route.l))
     && (!F.routes.size || F.routes.has(i)));
@@ -1983,12 +2056,13 @@ function queroSelection() {
     && (!F.wds.size || F.wds.has(wdOf(r[0]))) && hourOk(Number(r[4].slice(0, 2)));
   const offers = DB.data.quero.rows.filter(matches);
   const maps = DB.data.poltronas?.rows.filter(matches);
-  const memory = DB.data.memoriaPoltronas?.rows.filter(matches);
+  const memory = DB.data.memoriaPoltronas?.rows.filter((row) => matches(row) && row[0] >= range.a && row[0] <= range.b);
   const {status, ultimaTentativa} = DB.data.quero;
-  return {offers, maps, memory, status, ultimaTentativa, line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
+  return {offers, maps, memory, memoryPeriod: `${brY(range.a)} a ${brY(range.b)}`, status, ultimaTentativa,
+    line: marketRoutes.length === 1 ? shortRoute(marketRoutes[0].l) : 'SPO ↔ SJR'};
 }
 
-function modSeatMemory({memory, line}) {
+function modSeatMemory({memory, line, memoryPeriod}) {
   const groupKey = (row) => JSON.stringify([row[1], row[2], row[3], row[5], row[10]]);
   const groups = [...groupBy(memory, groupKey)].sort((a, b) => b[1].length - a[1].length);
   const cards = groups.map(([key, rows], index) => {
@@ -2016,7 +2090,7 @@ function modSeatMemory({memory, line}) {
   }).join('');
   const body = cards ? `<div class="seat-list">${cards}</div>`
     : '<p class="empty">Histórico em formação. A primeira mudança aparece quando duas leituras do mesmo mapa mostram uma poltrona que passou de livre para indisponível.</p>';
-  return mod('Memória de poltronas', `${esc(line)} · Primeiras indisponibilidades nas concorrentes`, body +
+  return mod('Memória de poltronas', `${esc(line)} · ${memoryPeriod} · Primeiras indisponibilidades nas concorrentes`, body +
     '<p class="note">“3 de 5” significa que a poltrona esteve entre as primeiras a ficar indisponíveis em 3 das 5 partidas em que estava livre antes da mudança. Mudanças na mesma leitura empatam. Indisponibilidade pode indicar venda, reserva ou bloqueio.</p>')
     .replace('<section class="mod">', '<section class="mod" id="seat-memory">');
 }
@@ -2164,19 +2238,32 @@ function modTable(cur, prev) {
     ${rows.length > 400 ? `<p class="note">Mostrando 400 de ${n0(rows.length)} — use a busca ou exporte.</p>` : ''}`);
 }
 function bindTable() {
-  $$('th[data-k]').forEach((th) => th.onclick = () => { const k = th.dataset.k; tSort = {k, d: tSort.k === k ? -tSort.d : (k === 'route' || k === 'co' ? 1 : -1)}; render(); });
-  const q = $('#tq'); if (q) q.oninput = () => { tQ = q.value; const p = q.selectionStart; render(); const n = $('#tq'); n.focus(); n.setSelectionRange(p, p); };
+  $$('th[data-k]').forEach((th) => th.onclick = () => {
+    const k = th.dataset.k;
+    transitionView((animated) => { tSort = {k, d: tSort.k === k ? -tSort.d : (k === 'route' || k === 'co' ? 1 : -1)}; render(!animated); }, 'table');
+  });
+  const q = $('#tq'); if (q) q.oninput = () => { tQ = q.value; const p = q.selectionStart; render(true); const n = $('#tq'); n.focus({preventScroll:true}); n.setSelectionRange(p, p); };
   const c = $('#csvB'); if (c) c.onclick = () => {
     const cell = (v) => v == null || (typeof v === 'number' && !Number.isFinite(v)) ? '' : typeof v === 'number' ? String(Math.round(v * 10000) / 10000).replace('.', ',') : `"${String(v).replace(/"/g, '""')}"`;
     const lines = [TCOLS.map((c) => c[1]).join(';'), ...window.__rows.map((r) => TCOLS.map(([k]) => cell(r[k])).join(';'))];
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8'}));
     const {a: d0, b: d1} = ranges(); a.download = `helios_mercado_${d0}_${d1}.csv`; a.click(); URL.revokeObjectURL(a.href); };
-  const m = $('#modeS'); if (m) m.onclick = (e) => { const b = e.target.closest('button'); if (b) { F.mode = b.dataset.m; saveF(); render(); } };
+  const m = $('#modeS'); if (m) m.onclick = (e) => {
+    const b = e.target.closest('button');
+    if (!b || b.dataset.m === F.mode) return;
+    F.mode = b.dataset.m; update();
+  };
 }
 
 /* ---------- ajuda: coleta e leitura ---------- */
-function closeHelp() { const h = $('#help'); if (h) h.hidden = true; document.body.style.overflow = ''; setTimeout(flush, 50); }
-function openHelp() { $('#helpP').innerHTML = helpHtml(); $('#help').hidden = false; document.body.style.overflow = 'hidden'; }
+function closeHelp() {
+  const help = $('#help');
+  if (!help || help.hidden) return;
+  transitionView(() => { help.hidden = true; document.body.style.overflow = ''; $('#helpB').focus({preventScroll:true}); setTimeout(flush, 50); }, 'help');
+}
+function openHelp() {
+  transitionView(() => { $('#helpP').innerHTML = helpHtml(); $('#help').hidden = false; document.body.style.overflow = 'hidden'; }, 'help');
+}
 const brtMs = (s) => s ? Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10), +s.slice(11, 13) + 3, +s.slice(14, 16)) : NaN; // horário de Brasília → UTC
 const ago = (ms) => { const m = (Date.now() - ms) / 6e4; return !Number.isFinite(m) ? '—' : m < 1 ? 'agora' : m < 60 ? `há ${Math.round(m)} min` : m < 48 * 60 ? `há ${NF1.format(m / 60)} h` : `há ${Math.round(m / 1440)} dias`; };
 function helpHtml() {
@@ -2344,14 +2431,36 @@ function bindMarketPlan(rows, range, realized) {
     if (button.dataset.planPeriod) marketPlan.period = button.dataset.planPeriod;
     else marketPlan.gain = Number(button.dataset.planGain);
     const attribute = button.dataset.planPeriod ? 'data-plan-period' : 'data-plan-gain';
-    paintDashboard(panel, modMarketPlan(rows, range, realized));
-    animateDashboard(panel);
-    panel.querySelector(`[${attribute}="${button.getAttribute(attribute)}"]`)?.focus({preventScroll: true});
+    transitionView((animated) => {
+      paintDashboard(panel, modMarketPlan(rows, range, realized));
+      if (!animated) animateDashboard(panel);
+      panel.querySelector(`[${attribute}="${button.getAttribute(attribute)}"]`)?.focus({preventScroll: true});
+    }, 'planning');
   };
 }
 
 /* Movimento do painel */
-const movingDashboard = '#briefing > section, #hourly, #quickCharts, #radarGrid > .mod, #analysis, #hero, #kpis, #analysis #main > .mod, footer';
+let activeViewMotion = null;
+function transitionView(apply, kind) {
+  if (sentinelMotion.matches || typeof document.startViewTransition !== 'function' || document.visibilityState !== 'visible') {
+    apply(false);
+    return;
+  }
+  activeViewMotion?.skipTransition();
+  hideTip();
+  const root = document.documentElement;
+  root.dataset.motion = kind;
+  const motion = document.startViewTransition(() => apply(true));
+  activeViewMotion = motion;
+  motion.ready.catch(() => {});
+  motion.finished.catch((error) => console.error('Falha ao atualizar o painel', error)).finally(() => {
+    if (activeViewMotion !== motion) return;
+    activeViewMotion = null;
+    delete root.dataset.motion;
+    flush();
+  });
+}
+const movingDashboard = '#filterReceipt, #briefing > section, #hourly, #quickCharts, #radarGrid > .mod, #analysis, #hero, #kpis, #analysis #main > .mod, footer';
 const dashboardAnimations = new WeakMap();
 const revealedDashboard = new WeakSet();
 const dashboardReveal = new IntersectionObserver((entries) => {
@@ -2369,7 +2478,7 @@ function animateDashboard(element, revealed = false) {
   dashboardAnimations.get(element)?.forEach((animation) => animation.cancel());
   const easing = 'cubic-bezier(.22,.75,.27,1)';
   const animations = [element.animate([
-    {opacity: revealed ? .8 : .94, filter: revealed ? 'blur(1.25px)' : 'none', transform: `translateY(${revealed ? 4 : 1}px)`},
+    {opacity: .8, filter: revealed ? 'blur(1.25px)' : 'none', transform: `translateY(${revealed ? 4 : 3}px)`},
     {opacity: 1, filter: 'none', transform: 'none'},
   ], {duration: revealed ? 570 : 480, easing})];
   const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v, #hour-value');
@@ -2396,18 +2505,18 @@ function observeDashboardMotion(changed = null) {
   }
 }
 
-sentinelMotion.addEventListener('change', () => observeDashboardMotion());
+sentinelMotion.addEventListener('change', () => { if (sentinelMotion.matches) activeViewMotion?.skipTransition(); observeDashboardMotion(); });
 document.addEventListener('toggle', (event) => {
   if (event.target.matches('#quickCharts, #analysis, .today-detail, .footer-method')) observeDashboardMotion();
 }, true);
 
 /* ---------- partida e atualização em segundo plano ---------- */
-let lastFetch = 0, sig = '', pending = false, busy = false, failed = false;
+let lastFetch = 0, sig = '', pending = null, busy = false, failed = false;
 const lastClickBus = (d) => {
   const sources = d.coleta?.fontes;
   return sources?.length ? sources.find((source) => source.f === 'ClickBus')?.ultima : d.coleta?.ultimaLeitura;
 };
-const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.poltronas, d.memoriaPoltronas]);
+const signature = (d) => JSON.stringify([d.hoje, d.coleta?.ultimaLeitura, lastClickBus(d), d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero, d.poltronas, d.memoriaPoltronas]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
@@ -2426,11 +2535,31 @@ function stampTick() {
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
 const canRender = () => !$$('details.dd[open]').length && $('#help')?.hidden !== false && !document.activeElement?.matches?.('input');
 function flush() {
-  if (!pending || !DB || !canRender()) return;
-  pending = false;
-  const y = scrollY;
-  syncBar(); render();
-  if (scrollY !== y) scrollTo({top: y, behavior: 'instant'});
+  if (!pending || !DB || filterFrame || activeViewMotion || !canRender()) return;
+  const next = pending;
+  pending = null;
+  transitionView((animated) => {
+    const y = scrollY;
+    const previous = DB.dims;
+    RAW = next;
+    DB = model(next);
+    if (!DB.hasClosed) F.view = 'venda';
+    if (JSON.stringify(previous) !== JSON.stringify(DB.dims)) {
+      const match = (items, label, key) => items.findIndex((item) => key(item) === label);
+      const remap = (selected, before, after, key) => new Set([...selected]
+        .filter((index) => before[index] !== undefined).map((index) => match(after, key(before[index]), key)).filter((index) => index >= 0));
+      F.routes = remap(F.routes, previous.rotas, DB.dims.rotas, (route) => route.l);
+      F.classes = remap(F.classes, previous.classes, DB.dims.classes, (name) => name);
+      if (F.focus !== 'JCA') {
+        const index = match(DB.dims.viacoes, previous.viacoes[Number(F.focus)]?.n, (company) => company.n);
+        F.focus = index < 0 ? 'JCA' : String(index);
+      }
+      saveF();
+      buildBar();
+    }
+    syncBar(); render(!animated);
+    if (scrollY !== y) scrollTo({top: y, behavior: 'instant'});
+  }, 'refresh');
 }
 async function refresh(manual) {
   if (busy || isStatic()) return;
@@ -2440,10 +2569,9 @@ async function refresh(manual) {
     if (!d) return stampTick();
     const s2 = signature(d);
     if (s2 !== sig || manual) {
-      const dimsChanged = JSON.stringify(d.dims) !== JSON.stringify(DB.dims);
-      sig = s2; RAW = d; DB = model(d); if (!DB.hasClosed) F.view = 'venda';
-      if (dimsChanged) buildBar();
-      pending = true; flush();
+      sig = s2;
+      pending = d;
+      flush();
     }
   } catch (e) { console.warn(e); busy = false; failed = true; }
   stampTick();
@@ -2491,7 +2619,7 @@ async function boot() {
   } finally {
     busy = false;
   }
-  shell(); syncBar(); render();
+  transitionView(() => { shell(); syncBar(); render(); scrollToPanel(location.hash, 'instant'); }, 'load');
 }
 const checkData = () => DB ? refresh() : lastFetch ? boot() : undefined;
 setInterval(() => { stampTick(); flush(); if (document.visibilityState === 'visible' && Date.now() - lastFetch >= CONFIG.refreshMin * 6e4) checkData(); }, 30000);
