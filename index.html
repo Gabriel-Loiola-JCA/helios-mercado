@@ -1213,11 +1213,6 @@ body {
 .demo-bar button { color: inherit; }
 .filter-receipt { border-inline-start-color: var(--market-accent); margin-block: 14px 6px; }
 
-/* ---------- cartões ---------- */
-.mod-body, .plan-card, #today .today, .kpis, .status-card {
-  background: var(--card); border: 1px solid var(--card-line); border-radius: var(--r);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-}
 .disclosure > summary { border-radius: 999px; transition: border-color .3s var(--ease), background .3s var(--ease); }
 .disclosure > summary:hover { border-color: var(--line-strong); }
 .pill { font-weight: 600; letter-spacing: 0; }
@@ -1335,7 +1330,7 @@ body {
 @media print { #bar { display: none !important; } }
 
 /* ---------- carregamento: o sol do Helios se acende ---------- */
-@property --sweep { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --reach { syntax: "<percentage>"; inherits: false; initial-value: 14%; }
 .helios-loader, #main[aria-busy="true"] .helios-loader {
   position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; align-content: center; gap: 0;
   background: radial-gradient(ellipse at 50% 46%, color-mix(in srgb, var(--market-accent) 7%, transparent), transparent 46%), var(--page);
@@ -1345,13 +1340,13 @@ body {
 .hl-mark { position: relative; width: 132px; height: 132px; }
 .hl-mark svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .hl-rays {
-  -webkit-mask-image: conic-gradient(from 0deg, #000 var(--sweep), transparent calc(var(--sweep) + .5deg));
-  mask-image: conic-gradient(from 0deg, #000 var(--sweep), transparent calc(var(--sweep) + .5deg));
-  animation: hl-sweep 1.5s cubic-bezier(.65, 0, .35, 1) .15s forwards, hl-turn 40s linear 1.6s infinite;
+  -webkit-mask-image: radial-gradient(circle, #000 var(--reach), transparent calc(var(--reach) + 6%));
+  mask-image: radial-gradient(circle, #000 var(--reach), transparent calc(var(--reach) + 6%));
+  opacity: 0; animation: hl-reach 1.6s cubic-bezier(.22, 1, .36, 1) .35s forwards;
 }
 .hl-ring { fill: none; stroke: url(#hs-gold); stroke-width: 3.2; stroke-dasharray: 1; stroke-dashoffset: 1; transform: rotate(-90deg); transform-origin: 100px 100px;
-  animation: hl-draw 1.1s var(--ease) .05s forwards; }
-.hl-pupil { fill: url(#hs-gold); transform-origin: 100px 100px; transform: scale(0); animation: hl-pupil .9s var(--ease) .75s forwards, hl-breathe 3.2s ease-in-out 1.8s infinite; }
+  animation: hl-draw 1.2s cubic-bezier(.65, 0, .35, 1) .05s forwards; }
+.hl-pupil { fill: url(#hs-gold); transform-origin: 100px 100px; transform: scale(0); animation: hl-pupil 1s var(--ease) .2s forwards; }
 .hl-word {
   margin: 30px 0 0; padding-left: .55em; color: var(--white); font-size: 15px; font-weight: 500; letter-spacing: .55em;
   animation: hl-word 1.3s var(--ease) .45s both;
@@ -1359,8 +1354,7 @@ body {
 .hl-line { position: relative; display: block; width: 150px; height: 1px; margin-top: 18px; overflow: hidden; background: var(--line); animation: hl-fade .8s ease .7s both; }
 .hl-line i { position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, var(--market-accent), transparent); animation: hl-scan 1.6s cubic-bezier(.65, 0, .35, 1) .8s infinite; }
 .helios-loader .loading-ring-label { position: static; margin-top: 14px; color: var(--muted); font-size: 10.5px; letter-spacing: .26em; text-transform: uppercase; animation: hl-fade .8s ease 1s both; }
-@keyframes hl-sweep { to { --sweep: 360deg; } }
-@keyframes hl-turn { to { transform: rotate(360deg); } }
+@keyframes hl-reach { 0% { opacity: 0; filter: blur(6px); } 35% { opacity: 1; } 100% { --reach: 72%; opacity: 1; filter: blur(0); } }
 @keyframes hl-draw { to { stroke-dashoffset: 0; } }
 @keyframes hl-pupil { to { transform: scale(1); } }
 @keyframes hl-breathe { 50% { transform: scale(.82); opacity: .8; } }
@@ -1404,13 +1398,152 @@ html[data-motion]::view-transition-new(*) { animation: vt-in .52s var(--ease) bo
 @keyframes vt-out { to { opacity: 0; filter: blur(8px); } }
 @keyframes vt-in { from { opacity: 0; filter: blur(8px); } }
 .reveal-await { opacity: 0; filter: blur(8px); transform: translateY(10px); }
-.sentinel-reading, .theater-frame > div { animation: calm-in .6s var(--ease) both; }
+.sentinel-reading, .theater-frame > div { animation: none; }
 @keyframes calm-in { from { opacity: 0; filter: blur(6px); } }
 .hb .b, .track .b { transition: width .8s var(--ease); }
 @media (prefers-reduced-motion: reduce) { .reveal-await { opacity: 1; filter: none; transform: none; } .slice { animation: none; } }
 #quickCharts .radar-grid .mod { grid-template-rows: auto 1fr; align-content: stretch; }
 #quickCharts .radar-grid .share-card .mod-body { align-content: center; }
 .share-card .share-wrap { padding-block: 8px; }
+
+/* ======================================================================
+   Formas: círculos e pílulas. Nada de retângulo com canto arredondado.
+   Blocos grandes ficam abertos, separados por linhas finas; o que é pequeno vira pílula ou círculo.
+   ====================================================================== */
+/* Blocos grandes: sem caixa. */
+.mod, .mod-body, .plan-card, #today .today, .today, .kpis, .status-card, .hour-stat, .stats, .tbl-wrap,
+.seat-map, .seat-memory-card, .analysis > main .mod.analysis-card, #quickCharts .radar-grid .mod {
+  border-radius: 0 !important; background: transparent; border-color: transparent; box-shadow: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.kpis, .stats, .tbl-wrap, .seat-map, .seat-memory-card, .hour-stat, .analysis > main .mod.analysis-card { border: 0; border-top: 1px solid var(--line); }
+.tbl-wrap { border-bottom: 1px solid var(--line); }
+.status-card { padding-inline: 0; }
+
+/* Controles: pílulas e círculos. */
+.btn, .chip, .seg, .seg button, .tok, select.sel, input.date, .live-st, .plan-switch, .plan-switch button,
+.disclosure > summary, .today-detail > summary, .footer-method > summary, .pill, .export-menu .pop button,
+.pop label, .pop .it, .company-name, #tip { border-radius: 999px !important; }
+#tip { padding: 10px 22px; }
+.btn.ico, .top .btn.ico { width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: 50% !important; }
+.sentinel-controls button { border-radius: 50%; width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; }
+.sentinel-controls .sentinel-chart-toggle { width: auto; border-radius: 999px; padding-inline: 14px; }
+.trend-icon-box, #today .trend-icon-box { border-radius: 50%; }
+.pop input[type=checkbox] { border-radius: 50%; width: 15px; height: 15px; }
+.pop input[type=checkbox]:checked::after { width: 5px; height: 5px; border: 0; border-radius: 50%; background: var(--black); transform: none; }
+.pop { border-radius: 28px; padding: 10px; }
+.pop .grp { padding-inline: 14px; }
+.pop label, .pop .it { padding-inline: 14px; }
+.pop .find, .pop label.find { border-radius: 999px !important; }
+
+/* Números do dia em círculos. */
+#today .nums { display: flex; gap: 12px; justify-content: flex-start; flex-wrap: wrap; }
+#today .nums > div {
+  flex: none; display: grid; place-content: center; justify-items: center; gap: 2px; text-align: center;
+  width: 104px; height: 104px; padding: 8px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent;
+}
+#today .nums > div:nth-child(2) { border-color: color-mix(in srgb, var(--market-accent) 70%, transparent); background: var(--gold-soft); }
+#today .nums > div:nth-child(2) b { color: var(--market-accent); }
+#today .nums b { font-size: 20px; line-height: 1.05; }
+#today .nums span { font-size: 10px; letter-spacing: .06em; line-height: 1.2; }
+/* Contagem por linha (perde / ganha / estável) em pílulas. */
+#today .trend-kpi { border-radius: 999px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+#today .trend-kpi b { font-size: 16px; }
+#today .trend-kpi span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Barras com pontas redondas; marcadores de legenda redondos. */
+.track .b, .track .b.pos, .track .b.neg, .meter, .meter i, .minibar, .stack, .stack i, .plan-scale > div,
+.cols .seg2 i, .cols .seg2 i.us, .cols .seg2 i:last-child, .today .cols .seg2 i, .spark i, .seat-order-track i { border-radius: 999px !important; }
+.stack { gap: 3px; }
+.hour-bars button { align-items: center; gap: 3px; border-radius: 999px; }
+.hour-bars button:is(:hover, [aria-pressed="true"]) { background: var(--gold-soft); }
+.hour-bars button:focus-visible { outline: none; background: var(--gold-soft); }
+.hour-bars i { width: min(9px, 60%); border-radius: 999px !important; background: color-mix(in srgb, var(--white) 20%, transparent); }
+.hour-bars i:first-child { background: var(--market-accent); }
+.hour-bars button[aria-pressed="true"] i:not(:first-child) { background: color-mix(in srgb, var(--white) 36%, transparent); }
+.covg i { border-radius: 999px !important; }
+.legend i, .lg2 i.bx { border-radius: 50%; }
+.lg2 i.bm { border-radius: 999px; }
+.track .zero { border-radius: 999px; }
+
+@media (max-width: 700px) {
+  #today .nums > div { width: 92px; height: 92px; }
+  #today .nums b { font-size: 17px; }
+}
+
+
+/* ---------- clique para filtrar: sem contorno quadrado, só luz no que foi tocado ---------- */
+.radar .ax, .radar .ax:focus, .radar .ax:focus-visible, .radar g:focus, .slice:focus, .slice:focus-visible,
+[data-filter-routes]:focus, [data-filter-focus]:focus, [data-company-focus]:focus, [data-route-focus]:focus { outline: none; }
+.radar .ax:hover .hit, .radar .ax:focus-visible .hit { fill: color-mix(in srgb, var(--market-accent) 4%, transparent); }
+.radar .ax:hover .lab, .radar .ax:focus-visible .lab { fill: var(--market-accent); }
+.radar .ax:hover .od, .radar .ax:focus-visible .od { fill: var(--market-accent); }
+.radar .ax .lab, .radar .ax .od { transition: fill .3s var(--ease); }
+.radar .hit { transition: fill .35s var(--ease); }
+.slice[data-filter-focus] { cursor: pointer; }
+.slice:focus-visible { stroke-width: 24; }
+.share-legend li[data-filter-focus] { cursor: pointer; border-radius: 999px; transition: background .3s var(--ease); }
+.share-legend li[data-filter-focus]:hover, .share-legend li[data-filter-focus]:focus-visible { background: var(--gold-soft); }
+.share-legend li { padding-inline: 10px; }
+button.trend-kpi { font: inherit; color: inherit; text-align: left; cursor: pointer; border: 1px solid var(--line);
+  transition: border-color .3s var(--ease), transform .35s var(--ease), background .3s var(--ease); }
+button.trend-kpi:hover:not(:disabled), button.trend-kpi:focus-visible { border-color: var(--market-accent); transform: translateY(-1px); outline: none; }
+button.trend-kpi:disabled { opacity: .45; cursor: default; }
+.filter-link { font: inherit; color: inherit; background: none; border: 0; padding: 2px 10px; margin-inline: -10px 0; border-radius: 999px; cursor: pointer; transition: background .3s var(--ease); }
+.filter-link:hover, .filter-link:focus-visible { background: var(--gold-soft); outline: none; }
+.trend-highlights .filter-link.down { color: var(--neg-text); } .trend-highlights .filter-link.up { color: var(--pos-text); }
+.tl[data-filter-routes] { cursor: pointer; border-radius: 999px; transition: background .3s var(--ease); }
+.tl[data-filter-routes]:hover, .tl[data-filter-routes]:focus-visible { background: var(--gold-soft); outline: none; }
+.radar g[data-filter-routes] { cursor: pointer; }
+
+
+button.trend-kpi.is-on, .filter-link.is-on, .tl.is-on, .share-legend li.is-on { background: var(--gold-soft); border-color: var(--market-accent); }
+.slice.is-on { stroke-width: 24; }
+.radar g.is-on .lab { fill: var(--market-accent); }
+
+
+/* Três cartões: fatia e linhas em cima, empresas na largura toda. */
+#quickCharts .radar-grid .company-card { grid-column: 1 / -1; border-inline-start: 0 !important; padding-inline-start: 0 !important; }
+#quickCharts .radar-grid .company-card .mod-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 14px 40px; align-items: start; }
+#quickCharts .radar-grid .company-card .mod-body > :is(.company-tools, .lg2, .insight, .note, .color-key) { grid-column: 1; }
+#quickCharts .radar-grid .company-card .mod-body > :is(.radar, .bloc-bars) { grid-column: 1; }
+#quickCharts .radar-grid .company-card .mod-body > .company-values { grid-column: 2; grid-row: 1 / span 8; }
+#quickCharts .radar-grid .company-card .radar svg { max-height: 330px; }
+@media (max-width: 1000px) {
+  #quickCharts .radar-grid .company-card .mod-body { grid-template-columns: minmax(0, 1fr); }
+  #quickCharts .radar-grid .company-card .mod-body > .company-values { grid-column: 1; grid-row: auto; }
+}
+
+/* Barra dividida (poucas linhas): grupo em dourado, concorrência em cinza. */
+.bloc-bars { display: grid; gap: 6px; }
+.bloc-row { display: grid; grid-template-columns: minmax(70px, 140px) minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 8px 12px; border-radius: 999px; cursor: pointer; transition: background .3s var(--ease); }
+.bloc-row:hover, .bloc-row:focus-visible { background: var(--gold-soft); outline: none; }
+.bloc-name { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.bloc-split { display: flex; gap: 3px; height: 10px; }
+.bloc-split i { display: block; height: 100%; border-radius: 999px; background: color-mix(in srgb, var(--white) 20%, transparent); }
+.bloc-split i:first-child { background: var(--market-accent); flex: none; }
+.bloc-split i:last-child { flex: 1; }
+.bloc-vals { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bloc-vals b { color: var(--market-accent); font-weight: 600; }
+
+
+.radar-grid .hb { gap: 6px; }
+.radar-grid .hrow { grid-template-columns: minmax(70px, 140px) minmax(0, 1fr) auto; gap: 16px; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; transition: background .3s var(--ease); }
+.radar-grid .hrow:hover { background: var(--gold-soft); }
+.radar-grid .hrow .nm { text-align: left; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.radar-grid .hrow .nm .company-name { padding: 0; font-weight: 500; letter-spacing: inherit; text-transform: inherit; color: inherit; }
+.radar-grid .hrow .track { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--white) 8%, transparent); overflow: hidden; }
+.radar-grid .hrow .track .b { background: var(--market-accent); }
+.company-columns { grid-template-columns: minmax(150px, 1.2fr) minmax(0, 1fr); }
+
+
+/* Colunas em cápsulas finas: dourado para nós, cinza translúcido para a concorrência. */
+.cols .seg2 { align-items: center; gap: 3px; }
+.cols .seg2 i { width: min(10px, 55%); background: color-mix(in srgb, var(--white) 18%, transparent); }
+.cols .seg2 i.us { background: var(--market-accent); }
+.cols .c:hover .seg2 i:not(.us) { background: color-mix(in srgb, var(--white) 32%, transparent); }
+.cols:hover .c:not(:hover) { opacity: .6; }
+.cols .c { transition: opacity .35s var(--ease); }
 
 </style>
 </head>
@@ -1593,10 +1726,10 @@ async function model(data) {
 }
 
 /* ---------- filtros ---------- */
-const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set(), classes: new Set(), hours: new Set(), wds: new Set(), focus: 'JCA', direct: '', group: true, mode: 'dir'};
+const F = {per: '30', from: '', to: '', cmp: true, view: 'real', routes: new Set(), classes: new Set(), hours: new Set(), wds: new Set(), focus: 'JCA', direct: '', group: true, rivals: false, mode: 'dir'};
 function loadF() {
   try { const s = JSON.parse(store.get('f') || '{}');
-    for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'direct', 'group', 'mode']) if (s[k] !== undefined) F[k] = s[k];
+    for (const k of ['per', 'from', 'to', 'cmp', 'focus', 'direct', 'group', 'rivals', 'mode']) if (s[k] !== undefined) F[k] = s[k];
     if (s.view === 'real' || s.view === 'venda') F.view = s.view;
     for (const k of ['routes', 'classes', 'hours', 'wds']) if (Array.isArray(s[k])) F[k] = new Set(s[k]);
     if (s.keys) {
@@ -1756,7 +1889,7 @@ function radarSvg(axes, series, {tip, max, signal, label = 'Gráfico de radar'} 
     const y0 = sn < -.3 ? l[1] - (lines.length - 1) * 12 : sn > .3 ? l[1] + 8 : l[1] - (lines.length - 1) * 6 + 4;
     const w0 = at(a - st / 2, R + 46), w1 = at(a, R + 46), w2 = at(a + st / 2, R + 46);
     const axis = axes[i];
-    const filter = axis.route !== undefined ? `data-route-focus="${esc(axis.route)}"` :
+    const filter = axis.routes !== undefined ? `data-filter-routes="${esc(axis.routes)}"` : axis.route !== undefined ? `data-route-focus="${esc(axis.route)}"` :
       axis.key !== undefined ? `data-company-focus="${esc(axis.key)}"` : '';
     const focus = filter ? ` ${filter} role="button" tabindex="0" aria-label="Focar ${esc(axis.label)}"` : '';
     g += `<g class="ax"${focus}${tip ? tipAttr(tip(i)) : ''}><path class="hit" d="M${cx},${cy}L${f(w0)}L${f(w1)}L${f(w2)}Z"/><circle class="od${axis.tone ? ' signal-' + axis.tone : ''}"${axis.tone ? ' data-tone' : ''} cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="${axis.tone ? 5 : 3}"/>` +
@@ -2042,6 +2175,33 @@ function buildBar() {
   $('#ddF').addEventListener('toggle', () => { if ($('#ddF').open) { $('#fq').value = ''; $$('#focusL .it').forEach((b) => b.hidden = false); setTimeout(() => $('#fq').focus(), 30); } });
 }
 const toggle = (set, v) => set.has(v) ? set.delete(v) : set.add(v);
+/* Clique para filtrar: linhas (data-filter-routes) ou foco em uma viação (data-filter-focus). Clicar de novo desfaz. */
+function applyClickFilter(el) {
+  if (!DB || el.disabled) return;
+  if (el.dataset.filterRoutes !== undefined) {
+    const idx = el.dataset.filterRoutes.split(',').filter(Boolean).map(Number);
+    if (!idx.length) return;
+    const same = F.routes.size === idx.length && idx.every((i) => F.routes.has(i));
+    F.routes = new Set(same ? [] : idx);
+  } else {
+    const focus = el.dataset.filterFocus;
+    F.focus = F.focus === focus ? 'JCA' : focus;
+    F.direct = '';
+  }
+  hideTip();
+  update();
+}
+document.addEventListener('click', (e) => {
+  const el = e.target.closest?.('[data-filter-routes], [data-filter-focus]');
+  if (el) applyClickFilter(el);
+});
+document.addEventListener('keydown', (e) => {
+  if (!['Enter', ' '].includes(e.key)) return;
+  const el = e.target.closest?.('[role="button"][data-filter-routes], [role="button"][data-filter-focus]');
+  if (!el) return;
+  e.preventDefault();
+  applyClickFilter(el);
+});
 function setBubble(open) {
   const bar = $('#bar');
   if (!bar) return;
@@ -2150,12 +2310,29 @@ function paintSentinel(animate = false) {
   drawSentinelPlot(slide.plot, animate);
 }
 
+/* Troca suave: o que está em tela sai com leve desfoque e o próximo entra do mesmo jeito. */
+function softSwap(elements, apply) {
+  const live = elements.filter((el) => el && el.isConnected && el.animate && !sentinelMotion.matches);
+  if (!live.length) { apply(); return; }
+  const out = live.map((el) => el.animate([{opacity: 1, filter: 'blur(0)'}, {opacity: 0, filter: 'blur(5px)'}],
+    {duration: 280, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards'}));
+  // Trava: com a aba em segundo plano a animação pode não terminar; a troca acontece mesmo assim.
+  Promise.race([Promise.all(out.map((a) => a.finished.catch(() => {}))), new Promise((resolve) => setTimeout(resolve, 420))]).then(() => {
+    apply();
+    live.forEach((el) => {
+      el.animate([{opacity: 0, filter: 'blur(5px)', transform: 'translateY(4px)'}, {opacity: 1, filter: 'blur(0)', transform: 'none'}],
+        {duration: 720, easing: 'cubic-bezier(.22,1,.36,1)'});
+      out.forEach((a) => a.cancel());
+    });
+  });
+}
+
 function selectSentinel(next) {
   if (next === sentinel.active || !sentinel.slides[next]) return;
   document.documentElement.classList.remove('quiet-refresh');
   hideTip();
   sentinel.active = next;
-  paintSentinel(true);
+  softSwap([$('#sentinelFrame'), $('#sentinelPlot')], () => paintSentinel(false));
 }
 
 function scheduleSentinel() {
@@ -2219,8 +2396,8 @@ function drawSentinelPlot(plot, animate = false) {
   chart.querySelector('.dots')?.replaceChildren();
   chart.replaceChildren(node);
   if (animate && !sentinelMotion.matches && node.animate) {
-    node.animate([{transform: 'translateY(6px)'}, {transform: 'none'}], {
-      duration: 340, easing: 'cubic-bezier(.16,1,.3,1)',
+    node.animate([{opacity: 0, filter: 'blur(4px)'}, {opacity: 1, filter: 'blur(0)'}], {
+      duration: 640, easing: 'cubic-bezier(.22,1,.36,1)',
     });
   }
 }
@@ -2457,7 +2634,7 @@ function paintTheater() {
 function stepTheater(step) {
   const count = theater.cards.length;
   theater.index = (theater.index + step + count) % count;
-  paintTheater();
+  softSwap([$('#theaterFrame'), $('#theaterTrend')], paintTheater);
 }
 
 function scheduleTheater() {
@@ -2661,9 +2838,10 @@ function renderDashboardDetails({R, real, cur, prev, T, P, us, changed, paint, a
   const quero = externalSelection(R);
   const companies = companyMetrics(cur, prev, T, quero);
   const shares = companyMetrics(cur, prev, T, null, F.focus === 'JCA');
-  paint($('#radarGrid'), modShare(shares, prev, T) + modBloc(cur, prev) + modRadar(cur, prev) + modCompanyRadar(companies, prev, quero));
+  paint($('#radarGrid'), modShare(shares, prev, T) + modRadar(cur, prev) + modCompanyRadar(companies, prev, quero, cur));
   $('#radarGrid').onclick = (event) => {
     if (event.target.closest('#radarGroup')) { F.group = !F.group; update(); return; }
+    if (event.target.closest('#radarRivals')) { F.rivals = !F.rivals; update(); return; }
     const mode = event.target.closest('[data-radar-mode]')?.dataset.radarMode;
     if (mode) { if (F.mode !== mode) { F.mode = mode; update(); } return; }
     const route = event.target.closest('[data-route-focus]')?.dataset.routeFocus;
@@ -2783,9 +2961,10 @@ function lineTrendSummary(lines, total) {
   const scope = all && counts.down === total ? 'Perda de parcela em todas as linhas.' :
     all && counts.up === total ? 'Ganho de parcela em todas as linhas.' :
     `${compared.length} de ${total} linhas comparadas.`;
-  const extreme = (label, line, direction) => `<span class="${direction}">${label} <b>${esc(shortRoute(line.l))}</b> ${pp(line.delta)}</span>`;
+  const extreme = (label, line, direction) => `<button type="button" class="${direction} filter-link" data-filter-routes="${line.i}" title="Filtrar ${esc(shortRoute(line.l))}">${label} <b>${esc(shortRoute(line.l))}</b> ${pp(line.delta)}</button>`;
+  const routesOf = (trend) => compared.filter((line) => shareTrend(line.delta) === trend).map((line) => line.i).join(',');
   return `<div class="trend-counts" aria-label="Variação por linha">${['down', 'up', 'flat'].map((trend) =>
-    `<div class="trend-kpi ${trend}"><b>${trendIcon(trend)} ${counts[trend]}</b><span>${trendText[trend]}</span></div>`).join('')}</div>
+    `<button type="button" class="trend-kpi ${trend}" data-filter-routes="${routesOf(trend)}" ${counts[trend] ? '' : 'disabled'} title="Filtrar as linhas: ${trendText[trend].toLowerCase()}"><b>${trendIcon(trend)} ${counts[trend]}</b><span>${trendText[trend]}</span></button>`).join('')}</div>
     <p class="trend-scope">${scope}</p>
     ${counts.down || counts.up ? `<div class="trend-highlights">
       ${counts.down ? extreme('Maior perda', compared[0], 'down') : ''}
@@ -2821,10 +3000,10 @@ function todayHtml() {
   else { refName = 'Em venda · 14 dias'; for (const r of DB.rows) if (r.open && dimOk(r)) { const o = ref.get(r.r) || z(); o.t += r.pax; if (isUs(r)) o.u += r.pax; ref.set(r.r, o); } }
   const byMkt = (map) => { const out = new Map(DB.markets.map((m) => [m, z()])); for (const [r, o] of map) { const x = out.get(DB.dims.rotas[r].m); if (x) { x.t += o.t; x.u += o.u; } } return out; };
   const md = byMkt(day), mr = byMkt(ref), sv = (o) => o && o.t ? o.u / o.t : null;
-  const radar = radarSvg(DB.markets.map((m) => ({label: shortRoute(m)})), [
+  const radar = radarSvg(DB.markets.map((m) => ({label: shortRoute(m), routes: DB.dims.rotas.flatMap((r, i) => r.m === m ? [i] : []).join(',')})), [
     {kind: 's1', values: DB.markets.map((m) => sv(md.get(m)))}, {kind: 's2', values: DB.markets.map((m) => sv(mr.get(m)))}],
     {tip: (i) => { const m = DB.markets[i], a = md.get(m), b = mr.get(m); return `${m}\n${us} hoje: ${pct(sv(a) ?? NaN)} · ${n0(a.u)} de ${n0(a.t)} compras\n${refName}: ${pct(sv(b) ?? NaN)}`; }});
-  const lines = DB.dims.rotas.map((r, i) => ({l: r.l, a: day.get(i) || z(), b: ref.get(i)})).filter((x) => x.a.t > 0).sort((x, y) => y.a.t - x.a.t);
+  const lines = DB.dims.rotas.map((r, i) => ({i, l: r.l, a: day.get(i) || z(), b: ref.get(i)})).filter((x) => x.a.t > 0).sort((x, y) => y.a.t - x.a.t);
   for (const line of lines) {
     const reference = sv(line.b);
     line.delta = has7 && reference != null ? line.a.u / line.a.t - reference : NaN;
@@ -2835,7 +3014,7 @@ function todayHtml() {
     const badge = Number.isFinite(x.delta)
       ? `<span class="pill trend-pill ${trend}" aria-label="${trendText[trend]} ${pp(x.delta)}">${trendIcon(trend)}${pp(x.delta)}</span>`
       : `<span class="mut">${n0(x.a.t)} compras</span>`;
-    return `<div class="tl${x.a.t < 5 ? ' low' : ''}"${tipAttr(`${x.l}\n${us}: ${n0(x.a.u)} de ${n0(x.a.t)} compras hoje (${pct(s)})${rv != null ? `\n${refName}: ${pct(rv)}` : ''}`)}>
+    return `<div class="tl${x.a.t < 5 ? ' low' : ''}" data-filter-routes="${x.i}" role="button" tabindex="0"${tipAttr(`${x.l}\n${us}: ${n0(x.a.u)} de ${n0(x.a.t)} compras hoje (${pct(s)})${rv != null ? `\n${refName}: ${pct(rv)}` : ''}`)}>
       <div class="nm">${esc(shortRoute(x.l))}</div><div class="bar2"><i style="width:${s * 100}%"></i>${rv != null ? `<b style="left:${rv * 100}%"></b>` : ''}</div>
       <div class="v">${pct(s, 0)}</div><div class="p">${badge}</div></div>`; };
   return `<div class="today">
@@ -2919,8 +3098,8 @@ function modShare(companies, prev, total) {
   const compare = prev.some((r) => r.pax > 0);
   const oldOf = (list) => list.reduce((sum, entry) => sum + (Number.isFinite(entry.previous) ? entry.previous : 0), 0);
   const slices = [
-    {name: focusName(), pax: usPax, share: usPax / total.pax, old: oldOf(usEntry), us: true},
-    ...top.map((entry) => ({name: entry.name, pax: entry.pax, share: entry.pax / total.pax, old: entry.previous})),
+    {name: focusName(), pax: usPax, share: usPax / total.pax, old: oldOf(usEntry), us: true, focus: F.focus},
+    ...top.map((entry) => ({name: entry.name, pax: entry.pax, share: entry.pax / total.pax, old: entry.previous, focus: entry.focus})),
     ...(restPax > 0 ? [{name: `Outras ${rest.length}`, pax: restPax, share: restPax / total.pax, old: oldOf(rest), rest: true}] : []),
   ];
   const tones = [62, 46, 34, 25, 18, 12];
@@ -2930,7 +3109,8 @@ function modShare(companies, prev, total) {
     const length = Math.max(0, slice.share * C - gap);
     const tone = slice.us ? 'var(--market-accent)' : `color-mix(in srgb, var(--white) ${tones[Math.min(i - 1, tones.length - 1)]}%, transparent)`;
     const tip = `${slice.name}\n${n0(slice.pax)} passageiros · ${pct(slice.share)}${compare && Number.isFinite(slice.old) ? `\nPeríodo anterior: ${pct(slice.old)}` : ''}`;
-    const arc = `<circle class="slice${slice.us ? ' us' : ''}" cx="100" cy="100" r="${R}" style="--i:${i};stroke:${tone}" stroke-dasharray="${length.toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-start).toFixed(2)}"${tipAttr(tip)}/>`;
+    const pick = slice.focus != null && !slice.us ? ` data-filter-focus="${esc(slice.focus)}" role="button" tabindex="0"` : '';
+    const arc = `<circle class="slice${slice.us ? ' us' : ''}"${pick} cx="100" cy="100" r="${R}" style="--i:${i};stroke:${tone}" stroke-dasharray="${length.toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-start).toFixed(2)}"${tipAttr(tip)}/>`;
     start += slice.share * C;
     slice.tone = tone;
     return arc;
@@ -2939,7 +3119,7 @@ function modShare(companies, prev, total) {
   const delta = compare && Number.isFinite(lead.old) ? lead.share - lead.old : NaN;
   const donut = `<div class="donut"><svg viewBox="0 0 200 200" role="img" aria-label="Fatia de mercado em passageiros"><g transform="rotate(-90 100 100)"><circle class="donut-track" cx="100" cy="100" r="${R}"/>${arcs}</g></svg>
     <div class="donut-center"><strong>${pct(lead.share)}</strong><span>${esc(focusShort())}</span>${Number.isFinite(delta) ? `<small class="${cls(delta, 5e-4)}">${pp(delta)}</small>` : ''}</div></div>`;
-  const legend = `<ul class="share-legend">${slices.map((slice) => `<li class="${slice.us ? 'us' : ''}"${tipAttr(`${slice.name}\n${n0(slice.pax)} passageiros`)}>
+  const legend = `<ul class="share-legend">${slices.map((slice) => `<li class="${slice.us ? 'us' : ''}"${slice.focus != null && (!slice.us || F.focus !== 'JCA') ? ` data-filter-focus="${esc(slice.us ? 'JCA' : slice.focus)}" role="button" tabindex="0"` : ''}${tipAttr(`${slice.name}\n${n0(slice.pax)} passageiros`)}>
     <i style="background:${slice.tone}"></i><span>${esc(slice.name)}</span><b>${pct(slice.share)}</b>
     <small>${compare && Number.isFinite(slice.old) ? pp(slice.share - slice.old) : n0(slice.pax)}</small></li>`).join('')}</ul>`;
   return mod('Fatia de mercado', '', `<p class="share-sub">Passageiros estimados · ClickBus · ${n0(total.pax)} no recorte</p><div class="share-wrap">${donut}${legend}</div>`)
@@ -2947,31 +3127,35 @@ function modShare(companies, prev, total) {
 }
 
 /* Quem puxa os passageiros em cada linha: o grupo inteiro contra toda a concorrência somada.
-   Cada eixo é normalizado pelo líder da linha, para linhas grandes e pequenas pesarem igual. */
-function modBloc(cur, prev) {
+   Cada eixo vai até o líder da linha, para linhas grandes e pequenas pesarem igual. */
+function blocView(cur) {
   const byM = F.mode === 'mkt';
   const keyOf = byM ? (r) => DB.dims.rotas[r.r].m : (r) => DB.dims.rotas[r.r].l;
   const groups = groupBy(cur, keyOf);
   const keys = (byM ? DB.markets : DB.dims.rotas.map((r) => r.l)).filter((k) => groups.has(k));
-  const T = keys.map((k) => tot(groups.get(k)));
-  const lines = keys.map((key, i) => ({key, us: T[i].upax, them: T[i].them, total: T[i].pax})).filter((line) => line.total > 0);
+  const lines = keys.map((key) => { const t = tot(groups.get(key)); return {key, us: t.upax, them: t.them, total: t.pax}; }).filter((line) => line.total > 0);
   const us = focusShort(), them = F.focus === 'JCA' ? 'Concorrência' : 'Demais viações';
-  const title = `${F.focus === 'JCA' ? 'Grupo JCA' : esc(us)} × ${them.toLowerCase()}`;
-  if (lines.length < 3) return mod(title, '', '<div class="empty">O radar precisa de pelo menos 3 linhas com passageiros no recorte.</div>')
-    .replace('<section class="mod">', '<section class="mod bloc-card">');
-  const lead = lines.map((line) => Math.max(line.us, line.them) || 1);
   const wins = lines.filter((line) => line.us > line.them).length;
   const sumUs = lines.reduce((sum, line) => sum + line.us, 0), sumThem = lines.reduce((sum, line) => sum + line.them, 0);
-  const axes = lines.map((line) => ({label: shortRoute(line.key).replace('⇄', '↔'), route: line.key, tone: line.us > line.them ? 'up' : ''}));
-  const chart = radarSvg(axes, [
-    {kind: 's1', values: lines.map((line, i) => line.us / lead[i])},
-    {kind: 's2', values: lines.map((line, i) => line.them / lead[i])},
-  ], {max: 1, label: 'Passageiros por linha · foco contra a concorrência somada',
-    tip: (i) => `${lines[i].key}\n${us}: ${n0(lines[i].us)} · ${them}: ${n0(lines[i].them)}\n${us} leva ${pct(lines[i].us / lines[i].total)} dos passageiros`});
-  return mod(title, '', `<p class="insight">${esc(us)} lidera em <em>${wins} de ${lines.length} ${byM ? 'mercados' : 'linhas'}</em></p>
-    <div class="lg2"><span><i></i>${esc(F.focus === 'JCA' ? 'Grupo JCA · todas as marcas' : us)}</span><span><i class="d"></i>${esc(them)} somada</span></div>
-    ${chart}<p class="note">${n0(sumUs)} × ${n0(sumThem)} passageiros estimados · cada eixo vai até o líder da linha</p>`)
-    .replace('<section class="mod">', '<section class="mod bloc-card">');
+  const tip = (line) => `${line.key}\n${us}: ${n0(line.us)} · ${them}: ${n0(line.them)}\n${us} leva ${pct(line.us / line.total)} dos passageiros`;
+  let chart;
+  if (lines.length >= 3) {
+    const lead = lines.map((line) => Math.max(line.us, line.them) || 1);
+    chart = radarSvg(lines.map((line) => ({label: shortRoute(line.key).replace('⇄', '↔'), route: line.key, tone: line.us > line.them ? 'up' : ''})), [
+      {kind: 's1', values: lines.map((line, i) => line.us / lead[i])},
+      {kind: 's2', values: lines.map((line, i) => line.them / lead[i])},
+    ], {max: 1, label: 'Passageiros por linha · grupo contra a concorrência somada', tip: (i) => tip(lines[i])});
+  } else {
+    // Poucas linhas: uma barra dividida por linha, no lugar do radar.
+    chart = lines.length ? `<div class="bloc-bars">${lines.map((line) => `<div class="bloc-row" data-route-focus="${esc(line.key)}" role="button" tabindex="0"${tipAttr(tip(line))}>
+      <span class="bloc-name">${esc(shortRoute(line.key).replace('⇄', '↔'))}</span>
+      <div class="bloc-split"><i style="width:${(line.us / line.total * 100).toFixed(1)}%"></i><i></i></div>
+      <span class="bloc-vals"><b>${pct(line.us / line.total)}</b> × ${pct(line.them / line.total)}</span></div>`).join('')}</div>`
+      : '<div class="empty">Sem passageiros no recorte.</div>';
+  }
+  const legend = `<div class="lg2"><span><i></i>${esc(F.focus === 'JCA' ? 'Grupo JCA · todas as marcas' : us)}</span><span><i class="d"></i>${esc(them)} somada</span></div>`;
+  const insight = lines.length ? `<p class="insight">${esc(us)} lidera em <em>${wins} de ${lines.length} ${byM ? (lines.length === 1 ? 'mercado' : 'mercados') : (lines.length === 1 ? 'linha' : 'linhas')}</em></p>` : '';
+  return {chart, legend, insight, sumUs, sumThem, us, them};
 }
 
 /* Sentinela em tela cheia: série diária de cada cartão, para o gráfico de fundo. */
@@ -3052,7 +3236,7 @@ function modRadar(cur, prev) {
   const chart = radar ? radarSvg(axes, ser, {tip, label: byM ? 'Radar por mercado' : 'Radar por sentido'})
     : hbars(axes.map((axis, i) => ({...axis, name: axis.label, i, share: T[i].share})).filter((x) => Number.isFinite(x.share)),
       {max: 1, val: (x) => x.share, right: (x) => `<b>${pct(x.share)}</b>`, tip: (x) => tip(x.i), us: () => false,
-        route: (x) => x.route, color: (x) => `var(--signal-${x.tone || 'flat'})`});
+        route: (x) => x.route});
   const controls = `<div class="seg" aria-label="Agrupamento de linhas"><button type="button" data-radar-mode="dir" aria-pressed="${!byM}">Por sentido</button>
     <button type="button" data-radar-mode="mkt" aria-pressed="${byM}">Por mercado</button></div>`;
   return mod(radar ? 'Radar das linhas' : 'Parcela por linha', '',
@@ -3116,7 +3300,7 @@ function companyMetrics(cur, prev, total, quero, grouped = F.group) {
   return [...companies.values()].sort((a, b) => (b.pax ?? -1) - (a.pax ?? -1) || a.name.localeCompare(b.name, 'pt-BR'));
 }
 
-function modCompanyRadar(companies, prev, quero) {
+function modCompanyRadar(companies, prev, quero, cur = []) {
   const leaders = companies.filter((entry) => entry.pax > 0).slice(0, 7);
   const compare = prev.some((r) => r.pax > 0);
   const lead = leaders[0];
@@ -3131,7 +3315,22 @@ function modCompanyRadar(companies, prev, quero) {
   ], {tip: (i) => tip(leaders[i]), signal, label: 'Parcela estimada de passageiros por empresa'}) : '';
   const legend = chart ? `<div class="lg2"><span><i></i>Recorte atual</span>${compare ? '<span><i class="d"></i>Período anterior</span>' : ''}</div>` : '';
   const headline = lead ? `<p class="insight signal-${signal}">${esc(lead.name)} · <em style="color:var(--signal)">${n0(lead.pax)} passageiros (${pct(lead.share)})</em></p>` : '';
-  const controls = `<div class="company-tools"><button id="radarGroup" class="chip" type="button" aria-pressed="${F.group}">Agrupar JCA</button></div>`;
+  const controls = `<div class="company-tools"><button id="radarGroup" class="chip" type="button" aria-pressed="${F.group}">Agrupar JCA</button><button id="radarRivals" class="chip" type="button" aria-pressed="${F.rivals}" title="Grupo JCA contra toda a concorrência somada, linha a linha">Agrupar concorrência</button></div>`;
+  if (F.rivals) {
+    const bloc = blocView(cur);
+    const all = bloc.sumUs + bloc.sumThem;
+    const rec = (jca) => companies.reduce((sum, entry) => sum + ((!!entry.jca === jca) && entry.rec ? entry.rec : 0), 0);
+    const pair = [
+      {name: F.focus === 'JCA' ? 'Grupo JCA · todas as marcas' : bloc.us, pax: bloc.sumUs, rec: F.focus === 'JCA' ? rec(true) : null, us: true},
+      {name: `${bloc.them} · todas somadas`, pax: bloc.sumThem, rec: F.focus === 'JCA' ? rec(false) : null, us: false},
+    ];
+    const rows = `<div class="company-head company-columns" aria-hidden="true"><span>Bloco</span><div class="company-metrics"><span>Passageiros<small>ClickBus</small></span><span>Receita estimada<small>ClickBus</small></span></div></div>
+      <ul aria-label="Valores por bloco">${pair.map((entry) => `<li class="company-row company-columns"><span class="company-name signal-${entry.us ? 'up' : 'down'}"><i class="dot" style="--c:var(--signal)"></i>${esc(entry.name)}</span>
+      <dl class="company-metrics"><div><dt>Passageiros</dt><dd>${n0(entry.pax)} <small>${all ? pct(entry.pax / all) : ''}</small></dd></div><div><dt>Receita</dt><dd${entry.rec ? '' : ' class="missing"'}>${entry.rec ? BRL.format(entry.rec) : '—'}</dd></div></dl></li>`).join('')}</ul>`;
+    return mod('Por empresa', '', controls + bloc.legend + bloc.chart + bloc.insight +
+      `<p class="note">${n0(bloc.sumUs)} × ${n0(bloc.sumThem)} passageiros estimados · cada eixo vai até o líder da linha</p><div class="company-values">${rows}</div>`)
+      .replace('<section class="mod">', '<section class="mod company-card" id="por-empresa">');
+  }
   const fareSources = quero?.hasQuero && quero?.hasBusco ? 'Quero Passagem / BusCo' : quero?.hasBusco ? 'BusCo' : 'Quero Passagem';
   const headers = `<div class="company-head company-columns" aria-hidden="true"><span>Viação</span><div class="company-metrics">
     <span>Passageiros<small>ClickBus</small></span><span>Receita estimada<small>ClickBus</small></span>
@@ -3725,7 +3924,16 @@ function animateDashboard(element, revealed = false) {
   dashboardAnimations.set(element, animations);
 }
 
+/* Marca em dourado o que está filtrado agora (linhas ou foco). */
+function markActiveFilters() {
+  for (const el of $$('[data-filter-routes]')) {
+    const idx = el.dataset.filterRoutes.split(',').filter(Boolean).map(Number);
+    el.classList.toggle('is-on', !!idx.length && F.routes.size === idx.length && idx.every((i) => F.routes.has(i)));
+  }
+  for (const el of $$('[data-filter-focus]')) el.classList.toggle('is-on', F.focus !== 'JCA' && el.dataset.filterFocus === String(F.focus));
+}
 function observeDashboardMotion(changed = null) {
+  markActiveFilters();
   const elements = new Set($$(movingDashboard));
   if (sentinelMotion.matches) {
     dashboardReveal.disconnect();
