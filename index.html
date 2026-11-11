@@ -1174,42 +1174,96 @@ const HOURS = [{k: 'mad', l: 'Madrugada', a: 0, b: 5}, {k: 'man', l: 'Manhã', a
 
 /* ---------- dados ---------- */
 let RAW = null, DB = null;
-async function gunzip64(b64) {
-  const bin = Uint8Array.from(atob(b64.replace(/\s+/g, '')), (c) => c.charCodeAt(0));
-  const stream = new Blob([bin]).stream().pipeThrough(new DecompressionStream('gzip'));
-  return JSON.parse(await new Response(stream).text());
+function createDataDecoder() {
+  let previous = '';
+  return async function decode(text, force, requireOk) {
+    let json = text;
+    if (!text.trimStart().startsWith('{')) {
+      const bytes = Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+      json = await new Response(stream).text();
+    }
+    const d = JSON.parse(json);
+    if ((requireOk && !d.ok) || !d.dims?.viacoes || !Array.isArray(d.viagens?.rows)) {
+      throw new Error(d.erro || 'Resposta inválida da API.');
+    }
+    const metadata = {app: d.app, gerado: d.gerado, coleta: d.coleta};
+    const signature = JSON.stringify([d.hoje, d.dims, d.hojeHoras, d.viagens.rows,
+      d.vendas?.rows, d.quero, d.busco, d.poltronas, d.memoriaPoltronas]);
+    if (!force && signature === previous) return {metadata};
+    previous = signature;
+    return {data: d, metadata};
+  };
+}
+const decodeLocally = createDataDecoder();
+let dataWorker;
+async function decodeData(text, force, requireOk) {
+  let decoded;
+  try {
+    if (dataWorker === undefined) {
+      const source = `const decode = (${createDataDecoder.toString()})();
+self.onmessage = async ({data}) => {
+        try { self.postMessage(await decode(...data)); }
+        catch (error) { self.postMessage({error: error.message}); }
+      };`;
+      const url = URL.createObjectURL(new Blob([source], {type: 'text/javascript'}));
+      try { dataWorker = new Worker(url); }
+      finally { URL.revokeObjectURL(url); }
+    }
+    if (dataWorker) {
+      decoded = await new Promise((resolve, reject) => {
+        dataWorker.onmessage = (event) => resolve(event.data);
+        dataWorker.onerror = reject;
+        dataWorker.onmessageerror = reject;
+        dataWorker.postMessage([text, force, requireOk]);
+      });
+    }
+  } catch (error) {
+    dataWorker?.terminate();
+    dataWorker = null;
+    force = true;
+  }
+  if (decoded?.error) throw new Error(decoded.error);
+  return decoded || decodeLocally(text, force, requireOk);
 }
 function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get('k')) store.set('k', h.get('k'));
   if (h.get('k') || h.get('api')) history.replaceState(null, '', location.pathname + location.search);
 }
-async function fetchData() {
+async function fetchData(force = false) {
   const embedded = $('#helios-gz').textContent.trim();
-  if (embedded) return gunzip64(embedded);
+  if (embedded) return decodeData(embedded, force, false);
   const q = new URLSearchParams(location.search);
-  if (q.has('demo')) { const r = await fetch(q.get('src') || 'demo.json', {cache: 'no-cache'}); return r.json(); }
-  if (q.get('src')) { const r = await fetch(q.get('src'), {cache: 'no-cache'}); return r.json(); }
+  if (q.has('demo') || q.get('src')) {
+    const response = await fetch(q.get('src') || 'demo.json', {cache: 'no-cache'});
+    if (!response.ok) throw new Error(`A base respondeu ${response.status}.`);
+    return decodeData(await response.text(), force, false);
+  }
   const k = store.get('k'), api = CONFIG.api;
   if (!k || !api) return null;
   const gz = !!window.DecompressionStream;
-  const r = await fetch(`${api}?fmt=${gz ? 'gz' : 'json'}&dias=${CONFIG.dias}&k=${encodeURIComponent(k)}`, {cache: 'no-store', redirect: 'follow'});
-  if (!r.ok) throw new Error(`A API respondeu ${r.status}.`);
-  const text = await r.text();
-  const data = gz && !text.trim().startsWith('{') ? await gunzip64(text) : JSON.parse(text);
-  if (!data.ok) throw new Error(data.erro || 'Resposta inválida da API.');
-  return data;
+  const response = await fetch(`${api}?fmt=${gz ? 'gz' : 'json'}&dias=${CONFIG.dias}&k=${encodeURIComponent(k)}`,
+    {cache: 'no-store', redirect: 'follow', signal: AbortSignal.timeout?.(60000)});
+  if (!response.ok) throw new Error(`A API respondeu ${response.status}.`);
+  return decodeData(await response.text(), force, true);
 }
 function model(data) {
   const dims = data.dims;
   const jca = dims.viacoes.map((v) => v.g === 'JCA');
   const rows = data.viagens.rows.map((r) => ({d: r[0], r: r[1], v: r[2], c: r[3], h: r[4], n: r[5], cap: r[6], pax: r[7], pax1: r[8], rec: r[9], open: r[10], wd: wdOf(r[0]), j: jca[r[2]]}));
   const sales = (data.vendas?.rows || []).map((s) => ({d: s[0], r: s[1], v: s[2], c: s[3], a: s[4], pax: s[5], rec: s[6], wd: wdOf(s[0]), j: jca[s[2]]}));
-  const closed = rows.filter((r) => !r.open).map((r) => r.d);
-  const lastClosed = closed.length ? closed.reduce((a, b) => a > b ? a : b) : addD(data.hoje, -1);
-  const firstDay = rows.length ? rows.reduce((a, r) => a < r.d ? a : r.d, '9999') : lastClosed;
+  const byDate = [new Map(), new Map()];
+  for (const row of rows) {
+    const index = byDate[row.open ? 1 : 0];
+    if (!index.has(row.d)) index.set(row.d, []);
+    index.get(row.d).push(row);
+  }
+  const closed = [...byDate[0].keys()].sort();
+  const lastClosed = closed.at(-1) ?? addD(data.hoje, -1);
+  const firstDay = rows.length ? [...closed, ...byDate[1].keys()].sort()[0] : lastClosed;
   const markets = [...new Set(dims.rotas.map((r) => r.m))];
-  return {data, dims, jca, rows, sales, lastClosed, firstDay, today: data.hoje, markets, hasClosed: closed.length > 0};
+  return {data, dims, jca, rows, sales, byDate, lastClosed, firstDay, today: data.hoje, markets, hasClosed: closed.length > 0};
 }
 
 /* ---------- filtros ---------- */
@@ -1252,7 +1306,15 @@ const dimOk = (r) => (!F.routes.size || F.routes.has(r.r)) && (!F.classes.size |
 function isUs(r) { return F.focus === 'JCA' ? r.j : r.v === Number(F.focus); }
 const focusName = () => F.focus === 'JCA' ? 'Grupo JCA' : shortCompany(DB.dims.viacoes[Number(F.focus)]?.n || '—');
 const focusShort = () => F.focus === 'JCA' ? 'JCA' : focusName();
-function pick(a, b, open) { if (!a) return []; return DB.rows.filter((r) => r.open === open && r.d >= a && r.d <= b && dimOk(r) && hourOk(r.h)); }
+function pick(a, b, open) {
+  if (!a) return [];
+  const selected = [];
+  for (const [day, rows] of DB.byDate[open]) {
+    if (day < a || day > b) continue;
+    for (const row of rows) if (dimOk(row) && hourOk(row.h)) selected.push(row);
+  }
+  return selected;
+}
 
 /* ---------- contas ---------- */
 function tot(list) { const t = {pax: 0, cap: 0, n: 0, rec: 0, upax: 0, ucap: 0, un: 0, urec: 0, pax1: 0, upax1: 0};
@@ -1325,14 +1387,13 @@ function closedSmooth(p) {
   return d + 'Z';
 }
 /** Radar: um eixo por linha/mercado. series: [{kind:'s1'|'s2'|'s3', values:[0..1|null]}]. s1 = cheio, s2 = tracejado, s3 = pontilhado. */
-let radN = 0;
 function radarSvg(axes, series, {tip, max, label = 'Gráfico de radar'} = {}) {
   const N = axes.length;
   if (N < 3) return '<div class="empty">O radar precisa de pelo menos 3 linhas no recorte.</div>';
   const vals = series.flatMap((x) => x.values).filter(Number.isFinite);
   if (!vals.length) return '<div class="empty">Sem dados ainda.</div>';
   const mx = max || Math.min(1, Math.max(.1, Math.ceil(Math.max(...vals) * 1.12 * 10) / 10));
-  const W = 560, H = 410, cx = W / 2, cy = H / 2 + 2, R = 150, id = 'rg' + (++radN), st = 2 * Math.PI / N;
+  const W = 560, H = 410, cx = W / 2, cy = H / 2 + 2, R = 150, id = 'radar-' + nrm(label).replace(/[^a-z0-9]+/g, '-'), st = 2 * Math.PI / N;
   const ang = (i) => -Math.PI / 2 + i * st;
   const at = (a, r) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
   const P = (i, v) => at(ang(i), R * Math.max(0, Math.min(1, (v || 0) / mx)));
@@ -2866,7 +2927,7 @@ document.addEventListener('toggle', (event) => {
 }, true);
 
 /* ---------- partida e atualização em segundo plano ---------- */
-let lastFetch = 0, sig = '', pending = null, busy = false, failed = false, manualRefresh = false;
+let lastFetch = 0, pending = null, busy = false, failed = false, manualRefresh = false, refreshScheduled = false;
 const lastClickBus = (d) => {
   const sources = d.coleta?.fontes;
   const click = sources?.find((source) => source.f === 'ClickBus');
@@ -2879,6 +2940,7 @@ function collectionStatus(data) {
   if (data.demo) return {text: 'Demonstração', alert: false};
   if (tick && Date.now() - tick.at > 25 * 60000) return {text: 'Gatilho sem resposta', alert: true};
   if (tick?.state === 'orcamento') return {text: 'Pausa por limite de execução', alert: true};
+  if (tick?.state === 'janela') return {text: 'Coleta aguarda a próxima hora', alert: true};
   if (tick?.state === 'pausado') return {text: 'Coleta pausada', alert: true};
   if (tick?.state === 'erro') return {text: 'Erro na automação', alert: true};
   if (tick?.clickbusUntil > Date.now()) return {text: 'ClickBus em pausa', alert: true};
@@ -2886,7 +2948,6 @@ function collectionStatus(data) {
   if (mins > 120) return {text: 'Coleta atrasada', alert: true};
   return {text: mins <= 20 ? 'Ao vivo' : 'Última coleta', alert: false};
 }
-const signature = (d) => JSON.stringify([d.hoje, d.dims, d.hojeHoras, d.viagens?.rows, d.vendas?.rows, d.quero?.rows, d.busco?.rows, d.poltronas, d.memoriaPoltronas]);
 const isStatic = () => !DB || DB.data.demo || !!$('#helios-gz').textContent.trim();
 function stampTick() {
   const s = $('#stamp'), b = $('#reload'); if (!s || !DB) return;
@@ -2906,8 +2967,26 @@ function stampTick() {
 }
 // só redesenha quando ninguém está mexendo (lista aberta, painel do "?" ou digitando)
 const canRender = () => !$$('details.dd[open]').length && $('#help')?.hidden !== false && !document.activeElement?.matches?.('input');
+const canApplyRefresh = () => pending && DB && document.visibilityState === 'visible'
+  && !filterFrame && !activeViewMotion && canRender();
 function flush() {
-  if (!pending || !DB || filterFrame || activeViewMotion || !canRender()) return;
+  if (refreshScheduled || !canApplyRefresh()) return;
+  refreshScheduled = true;
+  const apply = () => {
+    refreshScheduled = false;
+    if (!canApplyRefresh()) return;
+    try {
+      applyRefresh();
+    } catch (error) {
+      console.warn(error);
+      failed = true;
+      stampTick();
+    }
+  };
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(apply, {timeout: 2000});
+  else setTimeout(apply, 0);
+}
+function applyRefresh() {
   const next = pending;
   pending = null;
   document.documentElement.classList.add('quiet-refresh');
@@ -2938,16 +3017,14 @@ async function refresh(manual) {
   busy = true;
   if (manualRefresh) stampTick();
   try {
-    const d = await fetchData(); busy = false; failed = false; lastFetch = Date.now();
-    if (!d) { manualRefresh = false; return stampTick(); }
-    const s2 = signature(d);
-    if (s2 !== sig || pending) {
-      sig = s2;
-      pending = d;
+    const result = await fetchData(failed);
+    busy = false; failed = false; lastFetch = Date.now();
+    if (result) {
+      const {data, metadata} = result;
+      if (data) pending = data;
+      Object.assign(DB.data, metadata);
+      if (pending) Object.assign(pending, metadata);
       flush();
-    } else {
-      RAW = d;
-      DB.data = d;
     }
   } catch (e) { console.warn(e); busy = false; failed = true; }
   manualRefresh = false;
@@ -2981,9 +3058,10 @@ async function boot() {
   lastFetch = Date.now();
   panelLoading();
   try {
-    RAW = await fetchData();
+    const result = await fetchData(true);
+    RAW = result?.data;
     DB = model(RAW);
-    sig = signature(RAW);
+    pending = null;
     lastFetch = Date.now();
     failed = false;
     loadF();
@@ -3000,7 +3078,11 @@ async function boot() {
 }
 const checkData = () => DB ? refresh() : lastFetch ? boot() : undefined;
 setInterval(() => { stampTick(); flush(); if (document.visibilityState === 'visible' && Date.now() - lastFetch >= CONFIG.refreshMin * 6e4) checkData(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - lastFetch >= 6e4) checkData(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  flush();
+  if (Date.now() - lastFetch >= 6e4) checkData();
+});
 addEventListener('online', checkData);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeHelp(); $$('details.dd[open]').forEach((d) => d.open = false); } });
 let rz = 0; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => DB && render(), 250); });
