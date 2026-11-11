@@ -662,6 +662,7 @@ html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animati
   details::details-content { transition: none !important; }
 }
 .status-card { background: var(--card); }
+.status-card .btn { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
 @media (max-width: 920px) {
   .briefing { grid-template-columns: minmax(0, 1fr); }
 }
@@ -1164,6 +1165,7 @@ html[data-motion] .sentinel-reading { animation: none; }
    ====================================================================== */
 const CONFIG = {
   api: 'https://script.google.com/macros/s/AKfycbxbEosQX7BIxqU43Y87x0GH_2w_84nIx6R7OKl8-3AHJESWzFLgbW3siwVSHbgDbzZEUg/exec', // App da Web do Helios (sem a chave não responde)
+  login: 'https://script.google.com/a/macros/viacaocometa.com.br/s/AKfycbyr7l3iBK3qNhq8uSYHA5WEosJTYF_OEbunSVKS8d6a5xc8gH4tt0mn5kEWeef1_43mSA/exec?entrar=google',
   dias: 120,
   refreshMin: 5, // a página busca sozinha em segundo plano enquanto está aberta
 };
@@ -1220,6 +1222,7 @@ function createDataDecoder() {
       json = await new Response(stream).text();
     }
     const d = JSON.parse(json);
+    if (requireOk && d.ok === false && d.erro === 'Chave inválida ou ausente.') return {accessDenied: true};
     if ((requireOk && !d.ok) || !d.dims?.viacoes || !Array.isArray(d.viagens?.rows)) {
       throw new Error(d.erro || 'Resposta inválida da API.');
     }
@@ -1262,9 +1265,15 @@ self.onmessage = async ({data}) => {
   if (decoded?.error) throw new Error(decoded.error);
   return decoded || decodeLocally(text, force, requireOk);
 }
+class PanelAccessError extends Error {}
+let panelKey = store.get('k');
+
 function readHash() {
   const h = new URLSearchParams(location.hash.slice(1));
-  if (h.get('k')) store.set('k', h.get('k'));
+  if (h.get('k')) {
+    panelKey = h.get('k');
+    store.set('k', panelKey);
+  }
   if (h.get('k') || h.get('api')) history.replaceState(null, '', location.pathname + location.search);
 }
 async function fetchData(force = false) {
@@ -1276,13 +1285,15 @@ async function fetchData(force = false) {
     if (!response.ok) throw new Error(`A base respondeu ${response.status}.`);
     return decodeData(await response.text(), force, false);
   }
-  const k = store.get('k'), api = CONFIG.api;
+  const k = panelKey, api = CONFIG.api;
   if (!k || !api) return null;
   const gz = !!window.DecompressionStream;
   const response = await fetch(`${api}?fmt=${gz ? 'gz' : 'json'}&dias=${CONFIG.dias}&k=${encodeURIComponent(k)}`,
     {cache: 'no-store', redirect: 'follow', signal: AbortSignal.timeout?.(60000)});
   if (!response.ok) throw new Error(`A API respondeu ${response.status}.`);
-  return decodeData(await response.text(), force, true);
+  const decoded = await decodeData(await response.text(), force, true);
+  if (decoded.accessDenied) throw new PanelAccessError();
+  return decoded;
 }
 const yieldToPage = () => globalThis.scheduler?.yield?.() || new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -3449,7 +3460,18 @@ async function refresh(manual) {
       if (pending) Object.assign(pending.data, metadata);
       flush();
     }
-  } catch (e) { console.warn(e); busy = false; failed = true; }
+  } catch (error) {
+    busy = false;
+    if (error instanceof PanelAccessError) {
+      manualRefresh = false;
+      DB = RAW = pending = null;
+      clearTimeout(sentinel.timer);
+      shell();
+      return panelSignIn(true);
+    }
+    console.warn(error);
+    failed = true;
+  }
   manualRefresh = false;
   stampTick();
 }
@@ -3468,15 +3490,27 @@ function panelStatus(title, message, retry = false) {
     ${retry ? '<button class="btn" id="retry">Tentar novamente</button>' : ''}</section>`;
   if (retry) $('#retry').onclick = boot;
 }
+function panelSignIn(expired = false) {
+  if (expired) {
+    panelKey = null;
+    store.set('k', null);
+  }
+  lastFetch = 0;
+  panelStatus('Entrar no Hélios Mercado', expired
+    ? 'Confirme sua conta Google do trabalho para renovar o acesso.'
+    : 'Use sua conta Google do trabalho para abrir o painel.');
+  const link = document.createElement('a');
+  link.className = 'btn';
+  link.href = CONFIG.login;
+  link.textContent = 'Entrar com Google';
+  $('#main .status-card').append(link);
+}
 async function boot() {
   if (busy) return;
   readHash();
   shell();
   const q = new URLSearchParams(location.search);
-  if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !(store.get('k') && CONFIG.api)) {
-    lastFetch = 0;
-    return panelStatus('Acesso ao painel', 'Abra o link autorizado pelo menu Helios → Painel web na planilha.');
-  }
+  if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !panelKey) return panelSignIn();
   busy = true;
   lastFetch = Date.now();
   panelLoading();
@@ -3490,8 +3524,9 @@ async function boot() {
     loadF();
     if (!DB.hasClosed) F.view = 'venda';
   } catch (error) {
-    console.warn(error);
     DB = null;
+    if (error instanceof PanelAccessError) return panelSignIn(true);
+    console.warn(error);
     panelStatus('Dados temporariamente indisponíveis', 'A consulta será repetida automaticamente enquanto o painel estiver aberto.', true);
     return;
   } finally {
