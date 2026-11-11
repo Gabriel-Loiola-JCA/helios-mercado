@@ -1068,6 +1068,7 @@ html[data-motion] :is(.sentinel-reading, .sentinel-plot .chart-series) { animati
 .radar [role="button"]:focus-visible .lab { fill: var(--white); }
 .sentinel-theater { position: fixed; inset: 0; width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; border: 0;
   color: var(--white); background: var(--page, var(--black)); padding: clamp(20px, 5vw, 80px); overflow: auto; }
+html:has(.sentinel-theater[open]) { overflow: hidden; }
 .sentinel-theater:not([open]) { display: none; }
 .sentinel-theater[open] { display: grid; grid-template-rows: auto 1fr auto; gap: 20px; }
 .sentinel-theater::backdrop { background: #000; }
@@ -2188,13 +2189,22 @@ function scheduleTheater() {
 
 function bindTheater() {
   const dialog = $('#sentinelTheater');
-  $('#sentinelFull').onclick = () => {
+  const trigger = $('#sentinelFull');
+  trigger.onclick = async () => {
+    trigger.disabled = true;
+    const root = document.documentElement;
+    if (!document.fullscreenElement && document.fullscreenEnabled && root.requestFullscreen) {
+      try {
+        await root.requestFullscreen({navigationUI: 'hide'});
+        theater.fullscreen = document.fullscreenElement === root;
+      } catch { /* A janela ainda pode apresentar a Sentinela. */ }
+    }
+    trigger.disabled = false;
     theater.index = 0;
     theater.playing = !sentinelMotion.matches;
     dialog.showModal();
     buildTheaterCards();
     scheduleTheater();
-    if (dialog.requestFullscreen) dialog.requestFullscreen().catch(() => {});
   };
   dialog.onclick = (event) => {
     const action = event.target.closest('[data-theater]')?.dataset.theater;
@@ -2212,16 +2222,17 @@ function bindTheater() {
   };
   dialog.onclose = () => {
     clearTimeout(theater.timer);
-    if (document.fullscreenElement === dialog) document.exitFullscreen().catch(() => {});
-    $('#sentinelFull')?.focus({preventScroll: true});
+    const shouldExit = theater.fullscreen && document.fullscreenElement === document.documentElement;
+    theater.fullscreen = false;
+    if (shouldExit) document.exitFullscreen().catch(() => {});
+    trigger.focus({preventScroll: true});
   };
 }
 
 document.addEventListener('fullscreenchange', () => {
-  const dialog = $('#sentinelTheater');
-  const active = Boolean(dialog && document.fullscreenElement === dialog);
-  if (!active && theater.fullscreen && dialog?.open) dialog.close();
-  theater.fullscreen = active;
+  if (!theater.fullscreen || document.fullscreenElement) return;
+  theater.fullscreen = false;
+  $('#sentinelTheater')?.close();
 });
 
 const hourSlots = Array.from({length: 24}, (_, hour) => hour);
