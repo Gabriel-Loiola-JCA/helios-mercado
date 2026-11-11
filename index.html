@@ -1397,7 +1397,7 @@ html[data-motion]::view-transition-old(*) { animation: vt-out .42s var(--ease) b
 html[data-motion]::view-transition-new(*) { animation: vt-in .52s var(--ease) both; }
 @keyframes vt-out { to { opacity: 0; filter: blur(8px); } }
 @keyframes vt-in { from { opacity: 0; filter: blur(8px); } }
-.reveal-await { opacity: 0; filter: blur(8px); transform: translateY(10px); }
+.reveal-await { filter: blur(5px); transform: translateY(8px); }
 .sentinel-reading, .theater-frame > div { animation: none; }
 @keyframes calm-in { from { opacity: 0; filter: blur(6px); } }
 .hb .b, .track .b { transition: width .8s var(--ease); }
@@ -1544,6 +1544,113 @@ button.trend-kpi.is-on, .filter-link.is-on, .tl.is-on, .share-legend li.is-on { 
 .cols .c:hover .seg2 i:not(.us) { background: color-mix(in srgb, var(--white) 32%, transparent); }
 .cols:hover .c:not(:hover) { opacity: .6; }
 .cols .c { transition: opacity .35s var(--ease); }
+
+
+/* ---------- tela cheia: entra e sai com esmaecimento e desfoque ---------- */
+.sentinel-theater[open] { animation: theater-in .8s cubic-bezier(.22, 1, .36, 1) both; }
+.sentinel-theater[open]::backdrop { animation: backdrop-in .8s ease both; }
+.sentinel-theater[open] .theater-frame { animation: theater-rise 1s cubic-bezier(.22, 1, .36, 1) .12s both; }
+.sentinel-theater[open] :is(.theater-top, .theater-controls) { animation: backdrop-in .9s ease .25s both; }
+.sentinel-theater.leaving { animation: theater-out .56s cubic-bezier(.4, 0, .2, 1) both; pointer-events: none; }
+.sentinel-theater.leaving::backdrop { animation: backdrop-out .56s ease both; }
+@keyframes theater-in { from { opacity: 0; filter: blur(16px); transform: scale(1.015); } }
+@keyframes theater-out { to { opacity: 0; filter: blur(16px); transform: scale(1.015); } }
+@keyframes theater-rise { from { opacity: 0; filter: blur(8px); transform: translateY(10px); } }
+@keyframes backdrop-in { from { opacity: 0; } }
+@keyframes backdrop-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-theater[open], .sentinel-theater.leaving, .sentinel-theater[open] .theater-frame, .sentinel-theater[open] :is(.theater-top, .theater-controls) { animation: none; }
+}
+
+/* ---------- Sentinela: cartões com gráfico ao lado ---------- */
+.theater-frame { width: min(100%, 1320px); }
+.theater-frame > .has-visual { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(28px, 5vw, 80px); align-items: center; }
+.theater-frame > .has-visual strong { font-size: clamp(40px, 6.4vw, 104px); }
+.theater-frame strong.long { font-size: clamp(30px, 4.4vw, 68px); letter-spacing: -.045em; line-height: 1.08; text-wrap: balance; }
+.theater-visual { min-width: 0; }
+.theater-visual .radar svg { max-height: min(56vh, 520px); }
+.theater-visual .share-wrap { grid-template-columns: minmax(200px, 320px) minmax(0, 1fr); }
+.theater-visual .donut { max-width: 320px; }
+.theater-visual .share-legend li { font-size: 15px; padding-block: 11px; }
+.theater-visual .cols { height: 270px; }
+.theater-visual .hb { gap: 8px; }
+.theater-visual .hrow { grid-template-columns: minmax(90px, 190px) minmax(0, 1fr) auto; gap: 18px; min-height: 36px; }
+.theater-visual .hrow .nm { text-align: left; font-size: 14px; color: var(--muted); }
+.theater-visual .hrow.us .nm { color: var(--market-accent); font-weight: 600; }
+.theater-visual .track { height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--white) 7%, transparent); }
+.theater-visual .track .b { background: color-mix(in srgb, var(--white) 32%, transparent); }
+.theater-visual .hrow.us .track .b, .theater-visual .track .b.pos { background: var(--market-accent); }
+.theater-visual .track .b.neg { background: color-mix(in srgb, var(--white) 28%, transparent); }
+.theater-visual .hrow b { font-size: 15px; font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) {
+  .theater-frame > .has-visual { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .theater-visual .share-wrap { grid-template-columns: 1fr; }
+}
+
+/* ---------- Sentinela do painel: pizza e radar no lugar do gráfico de linhas ---------- */
+.sentinel-visual { min-height: 270px; display: grid; align-items: center; }
+.sentinel-visual .radar svg { max-height: 330px; }
+.sentinel-visual .share-wrap { grid-template-columns: minmax(170px, 250px) minmax(0, 1fr); }
+.sentinel-visual .bloc-bars { padding-block: 20px; }
+
+/* ---------- bolinha de filtros: ícone sempre no centro ---------- */
+#bar .filters-toggle { justify-content: center; align-content: center; text-align: center; }
+
+
+/* ---------- celular ---------- */
+.sentinel-controls { flex-wrap: wrap; row-gap: 8px; }
+.sentinel-controls .sentinel-chart-toggle { white-space: nowrap; }
+@media (max-width: 700px) {
+  :root { --pad: 16px; }
+  .top { flex-wrap: nowrap; gap: 8px; min-height: 56px; padding-block: 8px; }
+  .top .brand { min-width: 0; gap: 8px; }
+  .top .brand svg.brand-sun { width: 26px; height: 26px; }
+  .brand-word { letter-spacing: .26em; font-size: 11px; }
+  .brand-word small { display: none; }
+  .top .acts { flex-wrap: nowrap; gap: 6px; margin-left: auto; }
+  .top .live-st { width: 30px; height: 30px; padding: 0; justify-content: center; border-radius: 50% !important; }
+  .top .live-st span { display: none; }
+  .top .btn { padding: 7px 11px; font-size: 9.5px; letter-spacing: .12em; }
+  .top .btn.ico { width: 30px; height: 30px; }
+  .sentinel-board { padding: 18px 0 22px; }
+  .sentinel-controls button { width: 34px; height: 34px; }
+  .sentinel-visual { min-height: 0; }
+  .sentinel-visual .share-wrap, .share-wrap { grid-template-columns: 1fr; justify-items: center; }
+  .share-legend { width: 100%; }
+  .donut { max-width: 200px; }
+  #today .nums { justify-content: space-between; gap: 8px; }
+  #today .nums > div { width: 31%; max-width: 104px; height: auto; aspect-ratio: 1; }
+  #today .trend-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  #today .trend-kpi { padding: 7px 10px; gap: 6px; justify-content: center; }
+  #today .trend-kpi span { display: none; }
+  .trend-highlights { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .filter-link { margin-inline: 0; padding-inline: 8px; }
+  #quickCharts .radar-grid { grid-template-columns: minmax(0, 1fr); }
+  #quickCharts .radar-grid .mod { border-inline-start: 0 !important; padding-inline: 0 !important; }
+  #quickCharts .radar-grid .mod + .mod { border-top: 1px solid var(--line); padding-top: 18px; }
+  .radar .lab { font-size: 9px; letter-spacing: .08em; }
+  .bloc-row, .radar-grid .hrow { grid-template-columns: minmax(58px, 90px) minmax(0, 1fr) auto; gap: 10px; padding-inline: 8px; }
+  .company-columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .theater-frame strong.long { font-size: clamp(26px, 8vw, 40px); }
+  .theater-controls { gap: 6px; }
+  .hour-stat { padding: 14px 0; }
+}
+
+
+@media (max-width: 700px) {
+  .company-columns, .company-row.company-columns { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .company-head { display: none; }
+  .company-row { padding-block: 10px; }
+  .company-row .company-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 4px 14px; }
+  .company-row .company-metrics dd { white-space: nowrap; }
+  .sentinel-controls .sentinel-chart-toggle { margin-left: 0; }
+  #bar .pop { left: auto !important; right: 0; max-width: calc(100vw - 32px); }
+}
+
+
+.theater-frame .theater-visual strong { display: block; font-size: clamp(26px, 2.6vw, 42px); letter-spacing: -.055em; line-height: 1; color: var(--market-accent); }
+.theater-frame .theater-visual p { font-size: inherit; }
+.theater-visual .donut-center span { font-size: 12px; }
 
 </style>
 </head>
@@ -2352,6 +2459,16 @@ function canAdvanceSentinel(copy) {
 }
 
 function sentinelPlot(plot) {
+  if (plot.html) {
+    const key = JSON.stringify([plot.title, plot.html]);
+    if (sentinel.plots.has(key)) return sentinel.plots.get(key);
+    const container = document.createElement('div');
+    container.className = 'sentinel-visual';
+    container.innerHTML = plot.html;
+    const graphic = {title: plot.title, legend: '', tone: 'flat', node: container};
+    sentinel.plots.set(key, graphic);
+    return graphic;
+  }
   const {title, values, against, format, percentage, totals} = plot;
   const own = F.focus === 'JCA' ? 'Grupo JCA' : focusName();
   const other = F.focus === 'JCA' ? 'Concorrência' : 'Demais viações';
@@ -2448,6 +2565,22 @@ function renderSentinel(rows, total, previous, realized, range) {
       plot: {title: 'Parcela de passageiros por dia', values: daily.map((day) => day?.share),
         against: daily.map((day) => day?.pax ? 1 - day.share : null), totals: [total.share, 1 - total.share], format: formatShare, percentage: true},
     });
+    const donut = shareVisual(rows, total);
+    if (donut) slides.push({
+      tone: 'mix', label: 'Fatia de mercado', value: pct(total.share),
+      detail: `${scope} · ${n0(total.upax)} de ${n0(total.pax)} passageiros`,
+      plot: {title: 'Fatia de mercado · passageiros', html: donut},
+    });
+    const bloc = blocView(rows);
+    if (bloc.sumUs + bloc.sumThem > 0) {
+      const lines = new Set(rows.map((row) => F.mode === 'mkt' ? DB.dims.rotas[row.r].m : DB.dims.rotas[row.r].l)).size;
+      const wins = Number((bloc.insight.match(/(\d+) de/) || [])[1] || 0);
+      slides.push({
+        tone: 'bloc', label: 'Linhas lideradas', value: `${wins} de ${lines}`,
+        detail: `${scope} × ${bloc.them.toLowerCase()} somada · ${n0(bloc.sumUs)} × ${n0(bloc.sumThem)} passageiros`,
+        plot: {title: `${F.focus === 'JCA' ? 'Grupo JCA' : scope} × ${bloc.them.toLowerCase()} por linha`, html: bloc.chart},
+      });
+    }
     const routes = [...groupBy(rows, (row) => row.r)].map(([key, items]) => ({key, ...tot(items)}));
     const leader = routes.sort((a, b) => b.upax - a.upax)[0];
     if (leader?.upax > 0) {
@@ -2572,7 +2705,50 @@ function buildTheaterCards() {
   $('#theaterScope').textContent = [$('#sentinelScope').textContent, range.a && range.b ? br(range.a) + ' a ' + br(range.b) : ''].filter(Boolean).join(' · ');
   const current = theater.cards[theater.index]?.key;
   const signal = signalFor(total.upax, total.them);
-  const cards = slides.map((slide) => ({...slide, key: slide.tone, tone: signal}));
+  const cards = slides.map((slide) => ({...slide, key: slide.tone, tone: signal, visual: slide.plot?.html || ''}));
+  const prevRows = F.view === 'real' && F.cmp && range.pa ? pick(range.pa, range.pb, 0) : [];
+  const verdict = verdictOf(total, previous);
+  if (verdict) cards.push({
+    key: 'verdict', label: 'Leitura do período', value: verdict.text, long: true, tone: verdict.tone,
+    detail: `Mercado ${dpct(total.pax / previous.pax - 1)} · ${focus} ${dpct(total.upax / previous.upax - 1)} · parcela ${pp(total.share - previous.share)}`,
+  });
+  if (prevRows.length) {
+    const now = groupBy(rows, (row) => row.r), before = groupBy(prevRows, (row) => row.r);
+    const lines = [...now].map(([key, items]) => {
+      const t = tot(items), p = before.has(key) ? tot(before.get(key)) : null;
+      return {key, name: shortRoute(DB.dims.rotas[key].l), share: t.share, d: p && p.pax && t.pax ? t.share - p.share : NaN};
+    }).filter((line) => Number.isFinite(line.d)).sort((a, b) => b.d - a.d);
+    if (lines.length) {
+      const up = lines.filter((line) => shareTrend(line.d) === 'up').length, down = lines.filter((line) => shareTrend(line.d) === 'down').length;
+      cards.push({
+        key: 'lines', label: 'Linhas em alta e em baixa', value: `${up} em alta · ${down} em baixa`, long: true, tone: up >= down ? 'up' : 'down',
+        detail: `Maior ganho ${lines[0].name} ${pp(lines[0].d)} · maior perda ${lines.at(-1).name} ${pp(lines.at(-1).d)}`,
+        visual: divbars(lines.length > 10 ? [...lines.slice(0, 5), ...lines.slice(-5)] : lines, {val: (line) => line.d, right: (line) => `<b>${pp(line.d)}</b>`, tip: (line) => `${line.name}\nParcela ${pct(line.share)} · ${pp(line.d)}`}),
+      });
+    }
+  }
+  const ranking = companyMetrics(rows, prevRows, total, null, F.focus === 'JCA').filter((entry) => entry.pax > 0);
+  if (ranking.length > 1) {
+    const position = ranking.findIndex((entry) => companyIsUs(entry.focus)) + 1;
+    const top = ranking.slice(0, 7);
+    cards.push({
+      key: 'rank', label: 'Quem leva os passageiros', value: position ? `${position}º de ${ranking.length}` : '—', tone: position === 1 ? 'up' : 'flat',
+      detail: `${ranking[0].name} lidera com ${pct(ranking[0].share)} · ${n0(ranking[0].pax)} passageiros`,
+      visual: hbars(top, {max: top[0].share, val: (entry) => entry.share, us: (entry) => companyIsUs(entry.focus),
+        right: (entry) => `<b>${pct(entry.share)}</b>`, tip: (entry) => `${entry.name}\n${n0(entry.pax)} passageiros · ${pct(entry.share)}`}),
+    });
+  }
+  if (total.pax > 0) {
+    const byHour = groupBy(rows, (row) => row.h);
+    const hours = Array.from({length: 24}, (_, hour) => ({hour, t: tot(byHour.get(hour) || [])}));
+    const peak = hours.reduce((best, item) => item.t.pax > best.t.pax ? item : best, hours[0]);
+    cards.push({
+      key: 'hours', label: 'Pico de passageiros', value: `${String(peak.hour).padStart(2, '0')}h`, tone: 'flat',
+      detail: `${n0(peak.t.pax)} passageiros saem nessa hora · ${focus} leva ${pct(peak.t.share)}`,
+      visual: columns(hours, {h: 230, hours: true, label: (item) => item.hour % 3 === 0 ? `${item.hour}h` : '', us: (item) => item.t.upax, them: (item) => item.t.them,
+        tip: (item) => `${String(item.hour).padStart(2, '0')}h · ${n0(item.t.pax)} passageiros\n${focus}: ${n0(item.t.upax)} · demais: ${n0(item.t.them)}`}),
+    });
+  }
   cards.push({
     key: 'supply', label: 'Ocupação das poltronas', value: pct(total.lfUs),
     detail: `${focus} · ${pct(total.lfThem)} nas demais viações · ${n0(total.cap)} poltronas ofertadas no recorte`,
@@ -2614,8 +2790,10 @@ function buildTheaterCards() {
     detail: lastClickBus(DB.data) ? `Última leitura válida da ClickBus · ${lastClickBus(DB.data)}` : 'Aguardando a primeira leitura válida',
     tone: collectionStatus(DB.data).alert ? 'down' : 'flat',
   });
-  attachTrends(cards, rows);
-  theater.cards = cards;
+  const order = ['share', 'verdict', 'mix', 'volume', 'bloc', 'lines', 'rank', 'hours', 'route', 'supply', 'revenue', 'sales', 'period', 'update', 'status'];
+  const sorted = cards.filter((card) => card.key !== 'company').sort((a, b) => (order.indexOf(a.key) + 1 || 99) - (order.indexOf(b.key) + 1 || 99));
+  attachTrends(sorted, rows);
+  theater.cards = sorted;
   theater.index = Math.max(0, cards.findIndex((card) => card.key === current));
   if ($('#sentinelTheater')?.open) paintTheater();
 }
@@ -2624,8 +2802,9 @@ function paintTheater() {
   const card = theater.cards[theater.index];
   const dialog = $('#sentinelTheater');
   if (!card || !dialog?.open) return;
-  paintDashboard($('#theaterFrame'), `<div><h2>${esc(card.label)}</h2><strong class="signal-text signal-${card.tone}">${esc(card.value)}</strong>
-    <p>${esc(card.detail)}</p></div>`);
+  paintDashboard($('#theaterFrame'), `<div class="${card.visual ? 'has-visual' : ''}"><div class="theater-copy"><h2>${esc(card.label)}</h2>
+    <strong class="signal-text signal-${card.tone}${card.long || String(card.value).length > 14 ? ' long' : ''}">${esc(card.value)}</strong>
+    <p>${esc(card.detail)}</p></div>${card.visual ? `<div class="theater-visual">${card.visual}</div>` : ''}</div>`);
   $('#theaterPosition').textContent = `${theater.index + 1} de ${theater.cards.length}`;
   paintTheaterTrend(card);
   dialog.querySelector('[data-theater="play"]').textContent = theater.playing ? 'Pausar' : 'Reproduzir';
@@ -2649,26 +2828,28 @@ function scheduleTheater() {
 function bindTheater() {
   const dialog = $('#sentinelTheater');
   const trigger = $('#sentinelFull');
-  trigger.onclick = async () => {
-    trigger.disabled = true;
-    const root = document.documentElement;
-    if (!document.fullscreenElement && document.fullscreenEnabled && root.requestFullscreen) {
-      try {
-        await root.requestFullscreen({navigationUI: 'hide'});
-        theater.fullscreen = document.fullscreenElement === root;
-      } catch { /* A janela ainda pode apresentar a Sentinela. */ }
-    }
-    trigger.disabled = false;
+  trigger.onclick = () => {
+    // A cena aparece primeiro, com esmaecimento; a tela cheia do navegador vem por trás dela.
     theater.index = 0;
     theater.playing = !sentinelMotion.matches;
+    theater.leaving = false;
+    dialog.classList.remove('leaving');
     dialog.showModal();
     buildTheaterCards();
     scheduleTheater();
+    const root = document.documentElement;
+    if (!document.fullscreenElement && document.fullscreenEnabled && root.requestFullscreen) {
+      root.requestFullscreen({navigationUI: 'hide'}).then(() => {
+        theater.fullscreen = document.fullscreenElement === root;
+        if (dialog.open) paintTheater();
+      }).catch(() => { /* A janela ainda pode apresentar a Sentinela. */ });
+    }
   };
+  dialog.oncancel = (event) => { event.preventDefault(); closeTheater(); };
   dialog.onclick = (event) => {
     const action = event.target.closest('[data-theater]')?.dataset.theater;
     if (!action) return;
-    if (action === 'close') { dialog.close(); return; }
+    if (action === 'close') { closeTheater(); return; }
     if (action === 'play') { theater.playing = !theater.playing; paintTheater(); }
     else stepTheater(action === 'prev' ? -1 : 1);
     scheduleTheater();
@@ -2688,10 +2869,25 @@ function bindTheater() {
   };
 }
 
+/* Saída suave: deixa a tela cheia ainda coberta pela cena e só então se dissolve. */
+async function closeTheater() {
+  const dialog = $('#sentinelTheater');
+  if (!dialog?.open || theater.leaving) return;
+  theater.leaving = true;
+  clearTimeout(theater.timer);
+  const full = theater.fullscreen && document.fullscreenElement === document.documentElement;
+  theater.fullscreen = false;
+  if (full) { try { await document.exitFullscreen(); } catch {} }
+  dialog.classList.add('leaving');
+  await new Promise((resolve) => setTimeout(resolve, sentinelMotion.matches ? 0 : 560));
+  dialog.close();
+  dialog.classList.remove('leaving');
+  theater.leaving = false;
+}
 document.addEventListener('fullscreenchange', () => {
   if (!theater.fullscreen || document.fullscreenElement) return;
   theater.fullscreen = false;
-  $('#sentinelTheater')?.close();
+  closeTheater();
 });
 
 const hourSlots = Array.from({length: 24}, (_, hour) => hour);
@@ -3158,6 +3354,25 @@ function blocView(cur) {
   return {chart, legend, insight, sumUs, sumThem, us, them};
 }
 
+/* Pizza da fatia de mercado, só o gráfico e a legenda (para a Sentinela). */
+function shareVisual(rows, total) {
+  if (!total.pax) return '';
+  const box = document.createElement('div');
+  box.innerHTML = modShare(companyMetrics(rows, [], total, null, F.focus === 'JCA'), [], total);
+  return box.querySelector('.share-wrap')?.outerHTML || '';
+}
+
+/* Leitura do período: o mesmo veredito do topo da análise. */
+function verdictOf(T, P) {
+  if (!T.pax || !P || !P.pax) return null;
+  const effMkt = (T.pax - P.pax) * P.share, effShr = T.pax * (T.share - P.share);
+  if (effShr < 0 && Math.abs(effShr) >= Math.abs(effMkt)) return {text: 'Passageiros indo para a concorrência', tone: 'down'};
+  if (effMkt < 0 && Math.abs(effMkt) > Math.abs(effShr)) return effShr >= 0 ? {text: 'Mercado encolheu, nossa parcela segurou', tone: 'flat'} : {text: 'Faltam passageiros no mercado', tone: 'down'};
+  if (effShr > 0 && effShr >= Math.abs(effMkt)) return {text: 'Ganhando passageiros da concorrência', tone: 'up'};
+  if (effMkt > 0) return effShr < 0 ? {text: 'Mercado cresceu, a concorrência cresceu mais', tone: 'down'} : {text: 'Mercado cresceu e acompanhamos', tone: 'up'};
+  return {text: 'Estável', tone: 'flat'};
+}
+
 /* Sentinela em tela cheia: série diária de cada cartão, para o gráfico de fundo. */
 function attachTrends(cards, rows) {
   const byDay = groupBy(rows, (row) => row.d);
@@ -3192,6 +3407,7 @@ function trendOf(values) {
 function paintTheaterTrend(card) {
   const host = $('#theaterTrend');
   if (!host) return;
+  if (card.visual) { host.innerHTML = ''; return; }
   const raw = card.series || [];
   // Média móvel centrada: mostra a direção, não o vaivém de cada dia.
   const win = Math.max(1, Math.round(raw.length / 6));
@@ -3907,13 +4123,13 @@ function animateDashboard(element, revealed = false) {
   dashboardAnimations.get(element)?.forEach((animation) => animation.cancel());
   const easing = 'cubic-bezier(.16,1,.3,1)';
   const animations = [element.animate([
-    {opacity: revealed ? 0 : .55, filter: revealed ? 'blur(8px)' : 'blur(2px)', transform: `translateY(${revealed ? 10 : 0}px)`},
-    {opacity: 1, filter: 'blur(0)', transform: 'none'},
+    {filter: revealed ? 'blur(5px)' : 'blur(2px)', transform: `translateY(${revealed ? 8 : 0}px)`},
+    {filter: 'blur(0)', transform: 'none'},
   ], {duration: revealed ? 760 : 420, easing})];
   const numbers = element.querySelectorAll('.headline-share strong, .nums b, [data-plan-seats]:is(strong), .plan-elasticity-head > strong, .kpi .v, #hour-value');
   numbers.forEach((number, index) => animations.push(number.animate([
-    {opacity: 0, filter: 'blur(6px)'},
-    {opacity: 1, filter: 'blur(0)'},
+    {filter: 'blur(5px)'},
+    {filter: 'blur(0)'},
   ], {duration: 600, delay: 80 + Math.min(index * 60, 180), fill: 'backwards', easing})));
   if (revealed && element.id !== 'analysis') {
     element.querySelectorAll('.chart-series').forEach((series) => animations.push(series.animate([
