@@ -1779,6 +1779,37 @@ function readHash() {
   }
   if (h.get('k') || h.get('api')) history.replaceState(null, '', location.pathname + location.search);
 }
+/* Entrega ao HELIOS. O botão "Conectar com o Google" do HELIOS abre este site com
+   ?helios=<código>&porta=<porta>. O site usa a chave que já tem, ou faz o login do
+   Google de sempre (a sessão do navegador, a mesma do acesso ao HELIOS), e devolve a
+   chave só para o HELIOS deste computador (127.0.0.1). Sem o código, nada muda. */
+const HANDOFF = 'helios-volta';
+function heliosHandoffStart() {
+  const q = new URLSearchParams(location.search);
+  const n = q.get('helios'), p = q.get('porta') || '47831';
+  if (!n) return;
+  if (/^[a-f0-9]{24,64}$/.test(n) && /^\d{4,5}$/.test(p)) {
+    if (q.get('renovar') === '1') { panelKey = null; store.set('k', null); }
+    store.set(HANDOFF, JSON.stringify({n, p, at: Date.now(), tries: 0}));
+  }
+  history.replaceState(null, '', location.pathname);
+}
+function heliosHandoff() {
+  let v = null;
+  try { v = JSON.parse(store.get(HANDOFF) || 'null'); } catch { v = null; }
+  if (!v) return false;
+  const port = Number(v.p);
+  if (Date.now() - v.at > 15 * 60000 || !(port >= 1024 && port <= 65535)) { store.set(HANDOFF, null); return false; }
+  if (!panelKey) {
+    if (v.tries) { store.set(HANDOFF, null); return false; } // o login não trouxe a chave: fica na tela de entrar
+    store.set(HANDOFF, JSON.stringify({...v, tries: 1}));
+    location.replace(CONFIG.login);
+    return true;
+  }
+  store.set(HANDOFF, null);
+  location.replace(`http://127.0.0.1:${port}/mercado/conectar?n=${v.n}#k=${encodeURIComponent(panelKey)}`);
+  return true;
+}
 async function fetchData(force = false) {
   const embedded = $('#helios-gz').textContent.trim();
   if (embedded) return decodeData(embedded, force, false);
@@ -4329,6 +4360,8 @@ async function boot() {
   if (busy) return;
   bootStarted = Date.now();
   readHash();
+  heliosHandoffStart();
+  if (heliosHandoff()) return;
   shell();
   const q = new URLSearchParams(location.search);
   if (!$('#helios-gz').textContent.trim() && !q.has('demo') && !q.get('src') && !panelKey) return panelSignIn();
